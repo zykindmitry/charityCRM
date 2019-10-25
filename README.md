@@ -46,9 +46,9 @@ Format conventions
 
    Use standard c# code blocks style:
    
-   <statements>
+   block statement
    {
-   <four spaces><statement>
+       four spaces ... inner statement
    }
     
    possible exclusions:
