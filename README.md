@@ -46,10 +46,7 @@ Format conventions
 
    Use standard c# code blocks style:
    
-   block statement
-   {
-       four spaces ... inner statement
-   }
+   (block statement) line break { line break, four spaces, inner statement, line break, }
     
    possible exclusions:
    Simple properties formatting can be simplified (e.g. public string Name { get; set; } )
