@@ -50,3 +50,12 @@ Format conventions
     
    possible exclusions:
    Simple properties formatting can be simplified (e.g. public string Name { get; set; } )
+   
+Spacing conventions
+   
+   Each statement should be on its own line
+   There should be an additional line above and below: property, method, constructor, event
+   
+In-class grouping conventions
+
+   A code within class should be grouped based on functionality (not member type)
