@@ -5,5 +5,7 @@
     /// </summary>
     class Ward
     {
+        //comment
+        private const string test = "test";
     }
 }
