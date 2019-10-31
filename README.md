@@ -22,7 +22,7 @@ Coding style convention
 
 Programming language: C#
 
-Naming convetion:
+NAMING:
   No abbrevations allowed exept:
   CRM,UI,INT,CHAR,BOOL
   
@@ -30,7 +30,7 @@ Naming convetion:
   
   Omit the keyword "this" is possible
   
-  Identifiers naming style:
+  IDENFIERS:
     class - Pascal
     struct - Pascal
     interface - Pascal, starts with capital I, it's recommended to treat I as first person pronoun (example ICanDo, IAllowCopy etc.)
@@ -42,7 +42,7 @@ Naming convetion:
     local variables - camel
     public or internal constants - Pascal
 
-Format conventions
+FORMATTING:
 
    Use standard c# code blocks style:
    
@@ -50,3 +50,21 @@ Format conventions
     
    possible exclusions:
    Simple properties formatting can be simplified (e.g. public string Name { get; set; } )
+   
+SPACING
+   
+   Each statement should be on its own line
+   There should be an additional line above and below: property, method, constructor, event  
+   
+IN-CLASS GROUPING
+
+   A code within class should be grouped based on functionality (not member type)
+   
+WRAPPING
+
+  Different statements should not be on the same line
+  Statement should not be wrapped unless its length exceeds 100 characters (including spaces)
+  Wraping is allowed after the following tokens:
+  parameter identifier, round brakets, class or type identifier
+  If wrapping after a certain token needed then one should do wraping after each same token at the same level and all tokens of higher     level
+  
