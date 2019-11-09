@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevFactoryZ.CharityCRM.Persistence.EFCore\DevFactoryZ.CharityCRM.Persistence.EFCore.csproj" />
+    <ProjectReference Include="..\DevFactoryZ.CharityCRM\DevFactoryZ.CharityCRM.csproj" />
+  </ItemGroup>
+
+</Project>
