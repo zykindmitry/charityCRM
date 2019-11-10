@@ -1,121 +1,117 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DevFactoryZ.CharityCRM
 {
+
+    /// <summary>
+    /// Представляет заявку на создание (регистрацию) фонда в системе.
+    /// Содержит необходимые первичные данные: 
+    ///  - название фонда;
+    ///  - пояснения/комментарии текущего обработчика заявки (при необходимости); 
+    ///  - уникальная (в рамках данного решения) переменная часть (идентификатор) ссылки на регистрационную форму. Вся ссылка, содержащая, в т.ч. и идентификатор, отправляется инициатору создания фонда (для заполнения регистрационной формы) пользователем данного класса;
+    ///  - дата/время создания идентификатора ссылки на регистрационную форму;
+    ///  - максимальная продолжительность жизни ссылки на регистрационную форму. Если интервал времени от момента создания идентификатора ссылки до момента DateTime.Now превышает это значение, то ссылка теряет актуальность и не подлежит дальнейшему использованию.
+    /// Содержит методы для создания и валидации идентификатора ссылки на регистрационную форму.
+    /// Содержит дату/время обработки текущей заявки иницитором, т.е. дату/время создания (регистрации) фонда в системе.
+    /// </summary>
     public class FundRegistration
     {
-        #region .ctor and properties
+        #region .ctor
 
+        /// <summary>
+        /// Создает экземпляр типа FundRegistration. 
+        /// Создает идентификатор ссылки на регистрационную форму, фиксирует дату/время создания идентификатора.
+        /// </summary>
+        /// <param name="name">Название фонда.</param>
+        /// <param name="description">Краткое описание/пояснения/комментарии к заявке.</param>
+        /// <param name="linkMaxLifeTime">Максимальная продолжительность жизни ссылки на регистрационную форму.</param>
         public FundRegistration(string name, string description, TimeSpan linkMaxLifeTime)
         {
-            this.name = name;
-            this.description = description;
-            this.registrationLinkMaxLifeTime = linkMaxLifeTime;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name), "Название фонда не может быть пустым.");
+            }
+
+            Name = name;
+            
+            Description = description;
+            
+            RegistrationLinkMaxLifeTime = linkMaxLifeTime;
+
+            RegistrationLinkGUID = System.Guid.NewGuid();
+
+            RegistrationLinkGUIDCreatedTimeUTC = DateTime.UtcNow;
         }
 
-        string name;
+        #endregion
+
+        #region Первичные данные для регистрации
+
         /// <summary>
         /// Наименование фонда. Передается в конструкторе класса.
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
+        public string Name { get; }
 
-        string description;
         /// <summary>
-        /// Краткое описание. Может быть пустым. Передается в конструкторе класса.
+        /// Краткое описание/пояснение к заявке. Может быть пустым. Передается в конструкторе класса.
+        /// Можеь быть изменено на протяжении жизненного цикла заявки текущим обработчиком заявки.
         /// </summary>
-        public string Description
-        {
-            get
-            {
-                return description;
-            }
-            set
-            {
-                description = value;
-            }
-        }
+        public string Description { get; set; }
 
-        string registrationLink;
-        /// <summary>
-        /// Переменная часть ссылки на регистрационную форму. 
-        /// Создается в момент регистрации заявки на открытие нового фонда в системе, в методе CreateRegistrationLink. 
-        /// Возвращается вызовом метода TryGetRegistrationLink.
-        /// </summary>
-        string RegistrationLink
-        {
-            get
-            {
-                return registrationLink;
-            }
-        }
-
-        DateTime registrationLinkCreatedTimeUTC;
-        /// <summary>
-        /// Дата и время создания ссылки на регистрационную форму. 
-        /// Создается в момент регистрации заявки на открытие нового фонда в системе, в методе CreateRegistrationLink. 
-        /// Используется для определения валидности ссылки в методе TryGetRegistrationLink.
-        /// </summary>
-        DateTime RegistrationLinkCreatedTimeUTC
-        {
-            get
-            {
-                return registrationLinkCreatedTimeUTC;
-            }
-        }
-
-        TimeSpan registrationLinkMaxLifeTime;
-        /// <summary>
-        /// Максимальная продолжительность жизни ссылки на регистрационную форму. Передается в конструкторе класса.
-        /// Используется для определения валидности ссылки в методе TryGetRegistrationLink.
-        /// </summary>
-        TimeSpan RegistrationLinkMaxLifeTime
-        {
-            get
-            {
-                return registrationLinkMaxLifeTime;
-            }
-        }
         #endregion
 
-        #region methods
+        #region Обработка идентификатора ссылки на регистрационную форму. Хранение, проверка валмдности.
 
         /// <summary>
-        /// Создание переменной части ссылки на регистрационную форму.
-        /// Вызывать в момент регистрации заявки на открытие нового фонда в системе.
+        /// Идентификатор ссылки на регистрационную форму. 
+        /// Инициализируется в конструкторе в момент создания заявки на регистрацию нового фонда в системе. 
         /// </summary>
-        public void CreateRegistrationLink()
-        {
-            registrationLink = System.Guid.NewGuid().ToString();
-            registrationLinkCreatedTimeUTC = DateTime.UtcNow;
-        }
+        public Guid RegistrationLinkGUID { get; }
 
         /// <summary>
-        /// Проверяет валидность переменной части ссылки на регистрационную форму и возвращает результат проверки.
-        /// Если с момента создания ссылки прошло больше времени, чем заданная в свойстве RegistrationLinkMaxLifeTime продолжительность жизни ссылки, 
-        /// то возвращает false и пустую строку.
-        /// В противном случае возвращает true и ссылку.
+        /// Дата и время создания ссылки на регистрационную форму. 
+        /// Инициализируется в конструкторе в момент создания заявки на регистрацию нового фонда в системе. 
+        /// Используется для определения валидности ссылки.
         /// </summary>
-        /// <param name="link">Переменная часть ссылки на регистрационную форму.</param>
+        DateTime RegistrationLinkGUIDCreatedTimeUTC { get; }
+
+        /// <summary>
+        /// Максимальная продолжительность жизни ссылки на регистрационную форму. Передается в конструкторе класса.
+        /// Используется для определения валидности ссылки.
+        /// </summary>
+        TimeSpan RegistrationLinkMaxLifeTime { get; }
+
+        /// <summary>
+        /// Проверяет валидность ссылки на регистрационную форму и возвращает результат проверки.
+        /// Если с момента создания идентификатора ссылки прошло больше времени, чем заданная в свойстве RegistrationLinkMaxLifeTime продолжительность жизни ссылки, 
+        /// либо значение DateOfRegistration больше DateTime.MinValue и меньше DateTime.UtcNow, то возвращает false.
+        /// В противном случае возвращает true.
+        /// </summary>
         /// <returns>Результат проверки валидности ссылки.</returns>
-        public bool TryGetRegistrationLink(out string link)
+        public bool IsValid()
         {
-            if (DateTime.UtcNow.Subtract(registrationLinkCreatedTimeUTC) > registrationLinkMaxLifeTime)
+            if (DateTime.UtcNow.Subtract(RegistrationLinkGUIDCreatedTimeUTC) > RegistrationLinkMaxLifeTime)
             {
-                link = string.Empty;
                 return false;
             }
-                        
-            link = this.registrationLink;
+
+            if (DateOfRegistration < DateTime.UtcNow && DateOfRegistration > DateTime.MinValue)
+            {
+                return false;
+            }
+
             return true;
         }
+
+        #endregion
+
+        #region Информация о регистрации фонда
+
+        /// <summary>
+        /// Дата/время обработки текущей заявки иницитором, т.е. дата/время создания (регистрации) фонда в системе.
+        /// </summary>
+        public DateTime DateOfRegistration { get; }
+
         #endregion
     }
 }
