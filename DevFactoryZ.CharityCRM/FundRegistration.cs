@@ -24,23 +24,20 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         /// <param name="name">Название фонда.</param>
         /// <param name="description">Краткое описание/пояснения/комментарии к заявке.</param>
-        /// <param name="linkMaxLifeTime">Максимальная продолжительность жизни ссылки на регистрационную форму.</param>
-        public FundRegistration(string name, string description, TimeSpan linkMaxLifeTime)
+        /// <param name="maxLifeTime">Максимальная продолжительность жизни заявки.</param>
+        public FundRegistration(string name, string description, TimeSpan maxLifeTime)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name), "Название фонда не может быть пустым.");
             }
 
-            Name = name;
-            
+            Name = name;            
             Description = description;
             
-            RegistrationLinkMaxLifeTime = linkMaxLifeTime;
-
+            MaxLifeTime = maxLifeTime;
             RegistrationLinkGUID = System.Guid.NewGuid();
-
-            RegistrationLinkGUIDCreatedTimeUTC = DateTime.UtcNow;
+            CreatedAt = DateTime.UtcNow;
         }
 
         #endregion
@@ -64,54 +61,64 @@ namespace DevFactoryZ.CharityCRM
 
         /// <summary>
         /// Идентификатор ссылки на регистрационную форму. 
-        /// Инициализируется в конструкторе в момент создания заявки на регистрацию нового фонда в системе. 
+        /// Используется при формировании http-ссылки на регистрационную форму, которая отправляется инициатору заявки.
+        /// Инициализируется в конструкторе. 
         /// </summary>
         public Guid RegistrationLinkGUID { get; }
 
         /// <summary>
-        /// Дата и время создания ссылки на регистрационную форму. 
-        /// Инициализируется в конструкторе в момент создания заявки на регистрацию нового фонда в системе. 
+        /// Дата/время создания заявки на регистрацию нового фонда в системе, в формате UTC. 
         /// Используется для определения валидности ссылки.
+        /// Инициализируется в конструкторе. 
         /// </summary>
-        DateTime RegistrationLinkGUIDCreatedTimeUTC { get; }
+        DateTime CreatedAt { get; }
 
         /// <summary>
-        /// Максимальная продолжительность жизни ссылки на регистрационную форму. Передается в конструкторе класса.
+        /// Максимальная продолжительность жизни заявки.
         /// Используется для определения валидности ссылки.
+        /// Инициализируется в конструкторе. 
         /// </summary>
-        TimeSpan RegistrationLinkMaxLifeTime { get; }
+        TimeSpan MaxLifeTime { get; }
 
         /// <summary>
         /// Проверяет валидность ссылки на регистрационную форму и возвращает результат проверки.
-        /// Если с момента создания идентификатора ссылки прошло больше времени, чем заданная в свойстве RegistrationLinkMaxLifeTime продолжительность жизни ссылки, 
-        /// либо значение DateOfRegistration больше DateTime.MinValue и меньше DateTime.UtcNow, то возвращает false.
+        /// Если с момента создания идентификатора ссылки прошло больше времени, чем заданная в свойстве MaxLifeTime продолжительность жизни ссылки, 
+        /// либо задано значение SucceededAt, то возвращает false.
         /// В противном случае возвращает true.
         /// </summary>
         /// <returns>Результат проверки валидности ссылки.</returns>
         public bool IsValid()
         {
-            if (DateTime.UtcNow.Subtract(RegistrationLinkGUIDCreatedTimeUTC) > RegistrationLinkMaxLifeTime)
-            {
-                return false;
-            }
-
-            if (DateOfRegistration < DateTime.UtcNow && DateOfRegistration > DateTime.MinValue)
-            {
-                return false;
-            }
-
-            return true;
+            return DateTime.UtcNow.Subtract(CreatedAt) > MaxLifeTime || SuccessedAt != null ? false : true;
         }
 
         #endregion
 
-        #region Информация о регистрации фонда
+        #region Информация о регистрации фонда по текущей заявке
 
         /// <summary>
-        /// Дата/время обработки текущей заявки иницитором, т.е. дата/время создания (регистрации) фонда в системе.
+        /// Дата/время обработки текущей заявки иницитором, т.е. дата/время создания (регистрации) фонда в системе, в формате UTC.
+        /// Соответственно, дата/время закрытия текущей заявки на регистрацию.
         /// </summary>
-        public DateTime DateOfRegistration { get; }
+        public DateTime? SuccessedAt { get; private set; }
+        
+        public void Success()
+        {
+            if (SuccessedAt != null)
+            {
+                if (SuccessedAt <= DateTime.UtcNow)
+                {
+                    throw new InvalidOperationException($"Заявка уже обработана. Дата обработки: {SuccessedAt}.");
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Некорректная дата обработки заявки: {SuccessedAt}.");
+                }
+            }
 
+            SuccessedAt = DateTime.UtcNow;
+        }
+        
         #endregion
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DevFactoryZ.CharityCRM.Persistence
 {
     /// <summary>
-    /// Интерфейс взаимодействия с хранилищем.
+    /// Интерфейс взаимодействия с хранилищем для типа FundRegistration.
     /// </summary>
     public interface IFundRegistrationRepository
     {
@@ -13,17 +13,10 @@ namespace DevFactoryZ.CharityCRM.Persistence
         /// </summary>
         /// <param name="entity">Объект, для которого будет создана новая запись в хранилище.</param>
         /// <returns>Primary key созданной записи в хранилище.</returns>
-        int Create(FundRegistration entity);
+        Guid Create(FundRegistration entity);
 
         /// <summary>
-        /// Получение объекта типа FundRegistration из хранилища по заданному primary key.
-        /// </summary>
-        /// <param name="id">Значение primary key для поиска нужной записи.</param>
-        /// <returns>Найденный в хранилище объект типа FundRegistration.</returns>
-        FundRegistration GetById(int id);
-
-        /// <summary>
-        /// Получение объекта типа FundRegistration из хранилища по заданному значению поля registrationLinkGUID.
+        /// Получение объекта типа FundRegistration из хранилища по заданному primary key - значению поля registrationLinkGUID.
         /// </summary>
         /// <param name="registrationLinkGUID">Значение поля registrationLinkGUID для поиска нужной записи.</param>
         /// <returns>Найденный в хранилище объект типа FundRegistration.</returns>
@@ -36,9 +29,9 @@ namespace DevFactoryZ.CharityCRM.Persistence
         IEnumerable<FundRegistration> GetAll();
 
         /// <summary>
-        /// Удаление из хранилища записи по заданному primary key.
+        /// Удаление из хранилища записи по заданному primary key - значению поля registrationLinkGUID.
         /// </summary>
-        /// <param name="id">Primary key записи, которую надо удалить.</param>
-        void Delete(int id);
+        /// <param name="registrationLinkGUID">Primary key записи, которую надо удалить.</param>
+        void Delete(Guid registrationLinkGUID);
     }
 }
