@@ -6,7 +6,7 @@ namespace DevFactoryZ.CharityCRM
     /// <summary>
     /// Этот класс представляет роль пользователя или именованный набор разрешений
     /// </summary>
-    public class Role
+    public class Role : IAmPersistent<int>
     {
         protected Role()
         {
@@ -32,6 +32,11 @@ namespace DevFactoryZ.CharityCRM
         /// Возвращает идентификатор роли в хранилище
         /// </summary>
         public int Id { get; protected set; }
+
+        /// <summary>
+        /// Возвращает признак доступности цдаления разрешения из хранилища данных системы
+        /// </summary>
+        public bool CanBeDeleted => true;
 
         /// <summary>
         /// Возвращает или задает имя роли

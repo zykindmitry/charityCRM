@@ -4,34 +4,38 @@ using System.Collections.Generic;
 namespace DevFactoryZ.CharityCRM.Persistence
 {
     /// <summary>
-    /// Интерфейс взаимодействия с хранилищем для типа FundRegistration.
+    /// Этот интерфейс описывает методы шаблона Repository для сущности FundRegistration
     /// </summary>
     public interface IFundRegistrationRepository
     {
         /// <summary>
-        /// Создание новой записи для объекта типа FundRegistration в хранилище.
+        /// Добавляет заявку на регистрацию БФ в UnitOfWork для последующего сохранения в хранилище
+        /// см. IUnitOfWork.Save
+        /// Если IsValid заявки равен false, то генерирует исключение InvalidEntityException
         /// </summary>
-        /// <param name="entity">Объект, для которого будет создана новая запись в хранилище.</param>
-        /// <returns>Primary key созданной записи в хранилище.</returns>
-        Guid Create(FundRegistration entity);
+        /// <param name="entity">Объект, который необходимо добавить.</param>
+        void Create(FundRegistration entity);
 
         /// <summary>
-        /// Получение объекта типа FundRegistration из хранилища по заданному primary key - значению поля registrationLinkGUID.
+        /// Ищет заявку на регистрацию БФ в хранилище по идентификатору. 
+        /// Возвращает заявку если она найдена иначе генерирует исключение EntityNotFoundException
         /// </summary>
-        /// <param name="registrationLinkGUID">Значение поля registrationLinkGUID для поиска нужной записи.</param>
-        /// <returns>Найденный в хранилище объект типа FundRegistration.</returns>
-        FundRegistration GetByGuid(Guid registrationLinkGUID);
+        /// <param name="id">Значение Id заявки на регистрацию БФ (см. FundRegistration.Id)</param>
+        /// <returns>Заявка на регистрацию БФ, удовлетворяющая критерию поиска</returns>
+        FundRegistration GetByGuid(Guid id);
 
         /// <summary>
-        /// Получение всех объектов типа FundRegistration из хранилища. 
+        /// Возвращает все заявки на регистрацию БФ
         /// </summary>
-        /// <returns>Все найденные в хранилище объекты типа FundRegistration.</returns>
+        /// <returns>Перечисление заявок на регистрацию БФ</returns>
         IEnumerable<FundRegistration> GetAll();
 
         /// <summary>
-        /// Удаление из хранилища записи по заданному primary key - значению поля registrationLinkGUID.
+        /// Помечает на удаление заявку на регистрацию БФ по значению идентификатора       
+        /// см. IUnitOfWork.Save
+        /// Если IsValid заявки равен false, то генерирует исключение InvalidEntityException
         /// </summary>
-        /// <param name="registrationLinkGUID">Primary key записи, которую надо удалить.</param>
-        void Delete(Guid registrationLinkGUID);
+        /// <param name="id">Идентификатор удаляемой заявки на регистрацию БФ</param>
+        void Delete(Guid id);
     }
 }

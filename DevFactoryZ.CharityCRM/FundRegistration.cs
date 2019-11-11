@@ -14,7 +14,7 @@ namespace DevFactoryZ.CharityCRM
     /// Содержит методы для создания и валидации идентификатора ссылки на регистрационную форму.
     /// Содержит дату/время обработки текущей заявки иницитором, т.е. дату/время создания (регистрации) фонда в системе.
     /// </summary>
-    public class FundRegistration
+    public class FundRegistration : IAmPersistent<Guid>
     {
         #region .ctor
 
@@ -32,11 +32,11 @@ namespace DevFactoryZ.CharityCRM
                 throw new ArgumentNullException(nameof(name), "Название фонда не может быть пустым.");
             }
 
-            Name = name;            
+            Name = name;
             Description = description;
-            
+
             MaxLifeTime = maxLifeTime;
-            RegistrationLinkGUID = System.Guid.NewGuid();
+            Id = Guid.NewGuid();
             CreatedAt = DateTime.UtcNow;
         }
 
@@ -45,78 +45,82 @@ namespace DevFactoryZ.CharityCRM
         #region Первичные данные для регистрации
 
         /// <summary>
-        /// Наименование фонда. Передается в конструкторе класса.
+        /// Возврашает наименование БФ. 
         /// </summary>
-        public string Name { get; }
+        public string Name { get; protected set; }
 
         /// <summary>
-        /// Краткое описание/пояснение к заявке. Может быть пустым. Передается в конструкторе класса.
-        /// Можеь быть изменено на протяжении жизненного цикла заявки текущим обработчиком заявки.
+        /// Возращает или задает описание/пояснение к заявке на регистрацию БФ. Может быть пустым или null 
         /// </summary>
         public string Description { get; set; }
+
+        #endregion
+
+        #region Реализация интерфейса IAmPersistent<Guid>
+
+        /// <summary>
+        /// Возвращает идентификатор данной заявки на регистрацию БФ
+        /// Инициализируется в конструкторе. 
+        /// </summary>
+        public Guid Id { get; protected set; }
+
+        /// <summary>
+        /// Возвращает признак возможности удаления заявки на регистрацию БФ из хранилища данных
+        /// </summary>
+        public bool CanBeDeleted => !Succeeded;
 
         #endregion
 
         #region Обработка идентификатора ссылки на регистрационную форму. Хранение, проверка валмдности.
 
         /// <summary>
-        /// Идентификатор ссылки на регистрационную форму. 
-        /// Используется при формировании http-ссылки на регистрационную форму, которая отправляется инициатору заявки.
-        /// Инициализируется в конструкторе. 
-        /// </summary>
-        public Guid RegistrationLinkGUID { get; }
-
-        /// <summary>
-        /// Дата/время создания заявки на регистрацию нового фонда в системе, в формате UTC. 
-        /// Используется для определения валидности ссылки.
-        /// Инициализируется в конструкторе. 
+        /// Возвращает дату и время создания заявки на регистрацию БФ в системе в UTC
+        /// Инициализируется в конструкторе текущей датой в UTC
         /// </summary>
         DateTime CreatedAt { get; }
 
         /// <summary>
-        /// Максимальная продолжительность жизни заявки.
-        /// Используется для определения валидности ссылки.
+        /// Возвращает интервал времени доступности ссылки на регистрацию фонда
         /// Инициализируется в конструкторе. 
         /// </summary>
         TimeSpan MaxLifeTime { get; }
 
+        private bool TimedOut => DateTime.UtcNow.Subtract(CreatedAt) <= MaxLifeTime;
+
         /// <summary>
-        /// Проверяет валидность ссылки на регистрационную форму и возвращает результат проверки.
-        /// Если с момента создания идентификатора ссылки прошло больше времени, чем заданная в свойстве MaxLifeTime продолжительность жизни ссылки, 
-        /// либо задано значение SucceededAt, то возвращает false.
-        /// В противном случае возвращает true.
+        /// Возвращает признак доступности данной заявки на регистрацию БФ для регистрации
+        /// Заявка доступна если она еще не просрочена (см. CreatedAt и MaxLifeTime) 
+        /// и еще не была использована (см. SucceededAt)
         /// </summary>
         /// <returns>Результат проверки валидности ссылки.</returns>
-        public bool IsValid()
-        {
-            return DateTime.UtcNow.Subtract(CreatedAt) > MaxLifeTime || SuccessedAt != null ? false : true;
-        }
+        public bool CanBeSucceeded => !(TimedOut || Succeeded);
 
         #endregion
 
         #region Информация о регистрации фонда по текущей заявке
 
+        private bool Succeeded => SucceededAt.HasValue;
+
         /// <summary>
-        /// Дата/время обработки текущей заявки иницитором, т.е. дата/время создания (регистрации) фонда в системе, в формате UTC.
-        /// Соответственно, дата/время закрытия текущей заявки на регистрацию.
+        /// Возращает дату и время успешной регистрации фонда по данной заявке инициатором в UTC.
         /// </summary>
-        public DateTime? SuccessedAt { get; private set; }
-        
-        public void Success()
+        public DateTime? SucceededAt { get; private set; }
+
+        public void Succeed()
         {
-            if (SuccessedAt != null)
+            if (SucceededAt != null)
             {
-                if (SuccessedAt <= DateTime.UtcNow)
+                if (SucceededAt <= DateTime.UtcNow)
                 {
-                    throw new InvalidOperationException($"Заявка уже обработана. Дата обработки: {SuccessedAt}.");
+                    throw new InvalidOperationException($"Заявка уже обработана. Дата обработки: {SucceededAt}.");
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Некорректная дата обработки заявки: {SuccessedAt}.");
+                    throw new InvalidOperationException($"Некорректная дата обработки заявки: {SucceededAt}.");
                 }
             }
 
-            SuccessedAt = DateTime.UtcNow;
+            SucceededAt = DateTime.UtcNow;
         }
         
         #endregion

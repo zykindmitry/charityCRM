@@ -3,7 +3,7 @@
     /// <summary>
     /// Этот класс представляет разрешение, требуемое для выполнение определенной операции
     /// </summary>
-    public class Permission
+    public class Permission : IAmPersistent<int>
     {
         protected Permission()
         {
@@ -22,6 +22,11 @@
         /// Возвращает идентифтикатор разрешения в хранилище данных
         /// </summary>
         public int Id { get; protected set; }
+
+        /// <summary>
+        /// Возвращает признак доступности цдаления разрешения из хранилища данных системы
+        /// </summary>
+        public bool CanBeDeleted => true;
 
         /// <summary>
         /// Возвращает имя разрешения
