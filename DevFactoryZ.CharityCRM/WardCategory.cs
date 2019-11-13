@@ -6,9 +6,11 @@ namespace DevFactoryZ.CharityCRM
     /// <summary>
     /// Категория подопечного благотворительного фонда
     /// </summary>
-    class WardCategory
+    public class WardCategory
     {
+
         #region .ctor
+
         /// <summary>
         /// Создает экземпляр класса WardCategory
         /// </summary>
@@ -17,19 +19,18 @@ namespace DevFactoryZ.CharityCRM
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(name), "Название категории подопечный благотворительного фонда " +
-                    "не может быть пустым.");
+                throw new ArgumentNullException(
+                        nameof(name),
+                        "Название категории подопечного не может быть пустым.");
             }
 
             this.name = name;
-            Id = Guid.NewGuid();
         }
+
         #endregion
 
         #region Поля и свойства класса
-        /// <summary>
-        /// Имя категории подопечного БФ.
-        /// </summary>
+
         private string name;
 
         /// <summary>
@@ -45,37 +46,34 @@ namespace DevFactoryZ.CharityCRM
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException(nameof(value), "Название категории подопечный благотворительного фонда " +
-                        "не может быть пустым.");
+                    throw new ArgumentNullException(
+                        nameof(value), 
+                        "Название категории подопечного не может быть пустым.");
                 }
                 name = value;
             }
         }
 
         /// <summary>
-        /// Возвращает/присваивает родительскую категорию БФ.
-        /// </summary>
-        public WardCategory Parent { get; private set; }
-
-        /// <summary>
         /// Возвращает/присваивает идентификатор гатегории БФ.
         /// </summary>
-        public Guid Id { get; private set; }
+        public int Id { get; protected set; }
         
         /// <summary>
         /// Возвращает перечень дочерних категорий БФ.
         /// </summary>
-        IEnumerable<WardCategory> SubCategories { get; }
+        List<WardCategory> SubCategories { get; set; }
+
         #endregion
 
         #region Методы класса
 
         /// <summary>
-        /// Внутренний метод, проверяющий совпадает ли категория с любой из ее подкатегорий.
+        /// Внутренний метод, проверяющий, является ли категория потомком текущей категории.
         /// </summary>
-        /// <param name="wardCategory">Категория подопечного БФ.</param>
+        /// <param name="wardCategory">Категория подопечного.</param>
         /// <returns>true/false</returns>
-        private bool IsCategoryEqualsAnyOfItsChildren(WardCategory wardCategory)
+        private bool IsChild(WardCategory wardCategory)
         {
             foreach (var item in SubCategories)
             {
@@ -88,28 +86,43 @@ namespace DevFactoryZ.CharityCRM
         }
 
         /// <summary>
-        /// Добавляет подкатегорию подопечного БФ.
+        /// Добавляет подкатегорию подопечного.
         /// </summary>
         /// <param name="wardCategory">Объект категории подопечного БФ, которому будет присвоен в качестве родителя текущий экземпляр класса</param>
         public void AddChild(WardCategory wardCategory)
         {
-            if (!wardCategory.Parent.Equals(this) && !IsCategoryEqualsAnyOfItsChildren(wardCategory))
+            if (!wardCategory.IsChild(this))
             {
-                wardCategory.Parent = this;
+                this.SubCategories.Add(wardCategory);
             }
         }
 
         /// <summary>
-        /// Удаляет информацию о родителе переданной в параметре категории БФ.
+        /// Удаляет подкатегорию подопечного.
         /// </summary>
         /// <param name="wardCategory"></param>
         public void RemoveChild(WardCategory wardCategory)
         {
-            if (wardCategory.Parent.Equals(this))
+            if (wardCategory.IsChild(this))
             {
-                wardCategory.Parent = null;
+                this.SubCategories.Remove(wardCategory);
             }
         }
+
         #endregion
+
+        #region Переопределенные методы
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is WardCategory))
+            {
+                return false;
+            }
+            return this == (WardCategory)obj;
+        }
+
+        #endregion
+
     }
 }
