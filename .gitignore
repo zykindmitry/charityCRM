@@ -5,3 +5,5 @@
 /.vs
 bin/
 obj/
+/DevFactoryZ.CharityCRM/Account.cs
+/DevFactoryZ.CharityCRM/Persistence/IAccountRepository.cs
