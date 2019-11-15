@@ -16,11 +16,13 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         static string Alias = "?";
 
-        public string Help => $"Type '{Name}' or '{Alias}' for a list of supported commands";
+        public string Help => $"Напишите '{Name}' or '{Alias}' для получения списка всех поддерживаемых комманд";
 
         public void Execute(string[] parameters)
-        {
+        {            
             commands.Each(command => Console.WriteLine($"- {command.Help}"));
+            Console.WriteLine("[ ... ] - обязательный параметр");
+            Console.WriteLine("( ... ) - необязательный параметр");
         }
 
         public bool Recognize(string command)

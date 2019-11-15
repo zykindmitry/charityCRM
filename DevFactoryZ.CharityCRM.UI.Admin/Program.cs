@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DevFactoryZ.CharityCRM.Persistence.EFCore;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,9 +8,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 {
     class Program
     {
-        static List<ICommand> Commands = new List<ICommand>
-        {
-        };
+        static List<ICommand> Commands = new List<ICommand>();
 
         static string Exit = "exit";
 
@@ -16,8 +16,14 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         static void Main(string[] args)
         {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+            var unitOfWorkCreator = new UnitOfWorkCreator(config.GetConnectionString("dev"));
             var helpCommand = new HelpCommand(Commands);
             Commands.Add(helpCommand);
+            Commands.Add(new PermissionCreateCommand(unitOfWorkCreator));
             string commandName = null;
 
             Console.WriteLine(
@@ -36,7 +42,14 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
                 if (commandToExecute != null)
                 {
-                    commandToExecute.Execute(parts.Skip(1).ToArray());
+                    try
+                    {
+                        commandToExecute.Execute(parts.Skip(1).ToArray());
+                    }
+                    catch(Exception error)
+                    {
+                        WriteException(error);
+                    }
                 }
                 else if (commandName != Exit)
                 {
@@ -44,6 +57,19 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 }
             }
             while (commandName != Exit);
+        }
+
+        static void WriteException(Exception error)
+        {
+            Console.WriteLine(error.Message);
+            Console.WriteLine(error.StackTrace);
+
+            if (error.InnerException != null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Внутреннее исключение:");
+                WriteException(error.InnerException);
+            }
         }
     }
 }
