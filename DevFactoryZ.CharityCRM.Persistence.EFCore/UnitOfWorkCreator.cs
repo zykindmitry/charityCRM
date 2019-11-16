@@ -48,7 +48,10 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         #region Implementation of IRepositoryFactory
 
         private readonly Dictionary<Type, Func<CharityDbContext, object>> factories =
-            new Dictionary<Type, Func<CharityDbContext, object>>();
+            new Dictionary<Type, Func<CharityDbContext, object>>
+            {
+                { typeof(IPermissionRepository), db => new PermissionRepository(db.Set<Permission>()) }
+            };
 
         public TRepository CreateRepository<TRepository>()
         {

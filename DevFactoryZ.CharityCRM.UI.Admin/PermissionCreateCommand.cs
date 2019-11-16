@@ -15,10 +15,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private static string NameParameter = "Имя разрешения";
 
-        private static string DescriptionParameter = "Описание разрешения";
-
         public string Help => 
-            $"Напишите '{CommandText} [{NameParameter}] ({DescriptionParameter})', чтобы создать разрешение";
+            $"Напишите '{CommandText} [{NameParameter}]', чтобы создать разрешение";
 
         private readonly ICreateUnitOfWork unitOfWorkCreator;
 
@@ -33,7 +31,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             using(var unitOfWork = unitOfWorkCreator.Create())
             {
                 var permission = 
-                    new Permission(parameters[0], string.Join(' ', parameters.Skip(1)));
+                    new Permission(parameters.First(), string.Empty);
 
                 unitOfWork.Add(permission);
                 unitOfWork.Save();
