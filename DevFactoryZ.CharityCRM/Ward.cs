@@ -5,6 +5,5 @@
     /// </summary>
     class Ward
     {
-
     }
 }
