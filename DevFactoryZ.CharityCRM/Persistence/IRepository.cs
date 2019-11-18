@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM.Persistence
 {
@@ -17,7 +15,7 @@ namespace DevFactoryZ.CharityCRM.Persistence
         /// см. IUnitOfWorkSave
         /// </summary>
         /// <param name="id">Идентификатор объекта типа T, который необходимо удалить</param>
-        void Delete(int id);
+        void Delete(object id);
 
         /// <summary>
         /// Добавляет объект типа T в IUnitOfWork для последующей вставки в хранилище данных системы
@@ -25,5 +23,11 @@ namespace DevFactoryZ.CharityCRM.Persistence
         /// </summary>
         /// <param name="repositoryType">Реализация типа T</param>
         void Create(T repositoryType);
+
+        /// <summary>
+        /// Возвращает экземпляр класса T, если он найден по его id
+        /// </summary>
+        /// <param name="id"></param>
+        T GetById(object id);
     }
 }
