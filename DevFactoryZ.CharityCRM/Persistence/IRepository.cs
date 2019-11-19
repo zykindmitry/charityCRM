@@ -2,32 +2,32 @@
 
 namespace DevFactoryZ.CharityCRM.Persistence
 {
-    public interface IRepository<T>
+    public interface IRepository<TEntity, TKey>
     {
         /// <summary>
-        /// Возвращает все сущности типа T в системе
+        /// Возвращает все сущности типа TEntity в системе
         /// </summary>
         /// <returns></returns>
-        IEnumerable<T> GetAll();
+        IEnumerable<TEntity> GetAll();
 
         /// <summary>
-        /// Помечает объект типа T на удаление в IUnitOfWork
+        /// Помечает объект типа TEntity на удаление в IUnitOfWork
         /// см. IUnitOfWorkSave
         /// </summary>
-        /// <param name="id">Идентификатор объекта типа T, который необходимо удалить</param>
-        void Delete(object id);
+        /// <param name="id">Идентификатор объекта обобщенного типа TKey</param>
+        void Delete(TKey id);
 
         /// <summary>
-        /// Добавляет объект типа T в IUnitOfWork для последующей вставки в хранилище данных системы
+        /// Добавляет объект типа TEntity в IUnitOfWork для последующей вставки в хранилище данных системы
         /// см. IUnitOfWork.Save
         /// </summary>
-        /// <param name="repositoryType">Реализация типа T</param>
-        void Create(T repositoryType);
+        /// <param name="repositoryType"></param>
+        void Create(TEntity repositoryType);
 
         /// <summary>
-        /// Возвращает экземпляр класса T, если он найден по его id
+        /// Возвращает экземпляр класса TEntity, если он найден по его id
         /// </summary>
         /// <param name="id"></param>
-        T GetById(object id);
+        TEntity GetById(TKey id);
     }
 }
