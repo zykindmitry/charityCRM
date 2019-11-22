@@ -1,7 +1,7 @@
 ﻿namespace DevFactoryZ.CharityCRM
 {
     /// <summary>
-    /// Подопечный благотворительного фонда
+    /// Подопечный фонда
     /// </summary>
     class Ward
     {
