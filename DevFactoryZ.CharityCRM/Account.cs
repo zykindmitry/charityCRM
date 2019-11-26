@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -9,53 +10,58 @@ namespace DevFactoryZ.CharityCRM
     /// </summary>
     public class Account
     {
+        #region .ctor
+
         /// <summary>
-        /// ВНИМАНИЕ!!! ИСПОЛЬЗУЕТСЯ ДЛЯ РЕГИСТРАЦИИ НОВОГО ПОЛЬЗОВАТЕЛЯ.
-        /// Создает экземпляр Account с временным случайным паролем, сгенерированным в экземпляре Password.
+        /// <para>ВНИМАНИЕ!!! ИСПОЛЬЗУЕТСЯ ДЛЯ РЕГИСТРАЦИИ НОВОГО ПОЛЬЗОВАТЕЛЯ.</para>
+        /// Создает экземпляр Account с временным случайным паролем, сгенерированным в экземпляре <see cref="Password"/>.
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <param name="login">Имя пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(string login, IPasswordConfig passwordConfig)
+        public Account(string login, IPasswordConfig passwordConfig) 
+            : this(login
+                  , new Password(passwordConfig)
+                  , DateTime.UtcNow)
         {
-            Login = !string.IsNullOrWhiteSpace(login)
-                ? login
-                : throw new ArgumentNullException(nameof(login), "Имя пользователя не может быть пустым.");
 
-            Password = new Password(passwordConfig);
-            CreatedAt = DateTime.UtcNow;
         }
 
         /// <summary>
-        /// ВНИМАНИЕ!!! Используется при входе пользоателя в систему.
+        /// <para>ВНИМАНИЕ!!! Используется при первом входе пользоателя в систему или смене пароля.</para>
         /// Создает экземпляр Account c именем и паролем, введенными пользователем в экранной форме.
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <param name="login">Имя пользователя.</param>
         /// <param name="password">Текстовое представление пароля пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(string login, char[] password, IPasswordConfig passwordConfig)
-        {
-            Login = !string.IsNullOrWhiteSpace(login) 
-                ? login 
-                : throw new ArgumentNullException(nameof(login), "Имя пользователя не может быть пустым.");
-            
-            Password = password != null
-                ? new Password(password, passwordConfig) 
-                : new Password(Array.Empty<char>(), passwordConfig);            
+        public Account(string login, char[] password, IPasswordConfig passwordConfig) 
+            : this(login
+                  , new Password(passwordConfig, password ?? Array.Empty<char>())
+                  , null)
+        {            
+
         }
 
         /// <summary>
-        /// Создает экземпляр Account.
-        /// Используется при получении данных из репозитория аккаунтов.
+        /// <para>Создает экземпляр Account с заданными параметрами.</para>
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <param name="Login">Имя пользователя.</param>
         /// <param name="password">Экземпляр Password.</param>
         /// <param name="createdAt">Время создания аккаунта.</param>
         public Account(string login, Password password, DateTime? createdAt)
         {
-            Login = login;
+            Login = !string.IsNullOrWhiteSpace(login)
+                ? login
+                : throw new ArgumentNullException(nameof(login), "Имя пользователя не может быть пустым.");
+            
             Password = password;
             CreatedAt = createdAt;
         }
+
+        #endregion
+
 
         /// <summary>
         /// Имя пользователя в системе.
@@ -72,29 +78,22 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         public DateTime? CreatedAt { get; }
 
+
+        #region Аутентификация, авторизация
+
         /// <summary>
-        /// Аутентификация пользователя в указанном репозитории аккаунтов. 
-        /// Если в указанном репозитории существует пользователь с именем, указанным в поле Login текущего экземпляра Account,
-        /// и хеш указанного пароля (с солью из репозитория) совпадает с хешем пароля в репозитории, то аутентификация успешна.
+        /// Аутентификация пользователя. 
         /// </summary>
-        /// <param name="repository">Репозиторий аккаунтов, в котором производится аутентификация текущего пользователя.</param>
         /// <param name="passwordClearText">Пароль, введенный пользователем.</param>
         /// <param name="errorText">string.Empty, если аутентификация успешна, текст ошибки - в ином случае.</param>
         /// <returns>Результат проверки: true, если аутентификация успешна, false - в ином случае.</returns>
-        public bool IsAuthenticated(Persistence.IAccountRepository repository, char[] passwordClearText, out string errorText)
+        public bool Authenticate(char[] passwordClearText, out string errorText)
         {
             errorText = string.Empty;
-            var fromRepository = repository.GetByLogin(Login);
 
-            if (fromRepository == null)
-            {
-                errorText = "Неверное имя пользователя.";
+            var password = new Password(Password.Config, passwordClearText, Password.Salt);
 
-                return false;
-            }
-
-            var password = new Password(passwordClearText, fromRepository.Password.Config, fromRepository.Password.Salt);
-            if (!fromRepository.Password.Equals(password))
+            if (!Password.Equals(password))
             {
                 errorText = "Неверный пароль.";
 
@@ -106,18 +105,24 @@ namespace DevFactoryZ.CharityCRM
 
         /// <summary>
         /// Авторизация пользователя в системе.
-        /// ВНИМАНИЕ!!! В текущей реализации критерии авторизации не определены, поэтому всегда возвращает true.
+        /// В текущей имплиментации проверяется срок действия пароля.
         /// </summary>
-        /// <param name="repository">Репозиторий аккаунтов, в котором производится авторизация текущего пользователя.</param>
         /// <param name="errorText">string.Empty, если авторизация успешна, текст ошибки - в ином случае.</param>
         /// <returns>Результат проверки: true, если авторизация успешна, false - в ином случае.</returns>
-        public bool IsAuthorized(Persistence.IAccountRepository repository, out string errorText)
+        public bool Authorize(out string errorText)
         {
             errorText = string.Empty;
-            var fromRepository = repository.GetByLogin(Login);
+
+            if (!Password.IsAlive)
+            {
+                errorText = "Срок действия пароля истек.";
+
+                return false;
+            }
 
             return true;
         }
 
+        #endregion
     }
 }

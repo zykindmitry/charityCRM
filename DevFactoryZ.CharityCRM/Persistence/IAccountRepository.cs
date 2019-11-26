@@ -1,40 +1,17 @@
 ﻿using System.Collections.Generic;
+using DevFactoryZ.CharityCRM;
 
 namespace DevFactoryZ.CharityCRM.Persistence
 {
-    public interface IAccountRepository
+    public interface IAccountRepository<TKey> : IRepository<Account, TKey>
     {
         /// <summary>
-        /// Создание новой записи для объекта типа Account в хранилище.
+        /// Возвращает объект типа <see cref="Account"/> из хранилища по заданному <see cref="Account.Login"/>.
+        /// Генерирует <see cref="EntityNotFoundException"/>, если объект не найден.
         /// </summary>
-        /// <param name="entity">Объект, для которого будет создана новая запись в хранилище.</param>
-        /// <returns>Primary key созданной записи в хранилище.</returns>
-        int Create(Account entity);
-
-        /// <summary>
-        /// Получение объекта типа Account из хранилища по заданному primary key.
-        /// </summary>
-        /// <param name="id">Значение primary key для поиска нужной записи.</param>
-        /// <returns>Найденный в хранилище объект типа Account.</returns>
-        Account GetById(int id);
-
-        /// <summary>
-        /// Получение объекта типа Account из хранилища по заданному Login.
-        /// </summary>
-        /// <param name="id">Значение Login для поиска нужной записи.</param>
-        /// <returns>Найденный в хранилище объект типа Account.</returns>
-        Account GetByLogin(string login);
-
-        /// <summary>
-        /// Получение всех объектов типа Account из хранилища. 
-        /// </summary>
-        /// <returns>Все найденные в хранилище объекты типа Account.</returns>
-        IEnumerable<Account> GetAll();
-
-        /// <summary>
-        /// Удаление из хранилища записи по заданному primary key.
-        /// </summary>
-        /// <param name="id">Primary key записи, которую надо удалить.</param>
-        void Delete(int id);
+        /// <exception cref="EntityNotFoundException"></exception>
+        /// <param name="login">Значение <see cref="Account.Login"/> для поиска нужной записи.</param>
+        /// <returns>Найденный в хранилище объект типа <see cref="Account"/>.</returns>
+        Account GetByLogin(TKey login);        
     }
 }
