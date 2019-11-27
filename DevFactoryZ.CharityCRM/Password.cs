@@ -311,7 +311,9 @@ namespace DevFactoryZ.CharityCRM
 
                 // хэшируем данные массива
                 using (var hashAlgorithm = new SHA512Managed())
+                {
                     hash = hashAlgorithm.ComputeHash(data, 0, RawSalt.Length + byteCount);
+                }
             }
             finally
             {
@@ -374,20 +376,7 @@ namespace DevFactoryZ.CharityCRM
                 ? password.RawHash
                 : passwordToCompare as byte[] ?? Array.Empty<byte>();
 
-            if (hashToCompare.Length == RawHash.Length)
-            {
-                for (int i = 0; i < hashToCompare.Length; i++)
-                {
-                    if (hashToCompare[i] != RawHash[i])
-                        return false;
-                }
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Enumerable.SequenceEqual(RawHash, hashToCompare);
         }
 
         public override int GetHashCode()
