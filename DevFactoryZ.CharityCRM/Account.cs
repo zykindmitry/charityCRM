@@ -91,7 +91,7 @@ namespace DevFactoryZ.CharityCRM
         {
             errorText = string.Empty;
 
-            var password = new Password(Password.Config, passwordClearText, Password.Salt);
+            var password = new Password(Password.Config, passwordClearText, Password.RawSalt);
 
             if (!Password.Equals(password))
             {

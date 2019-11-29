@@ -25,71 +25,71 @@ namespace DevFactoryZ.CharityCRM
         #region .ctor
 
         /// <summary>
-        /// Универсальный конструктор. Варианты использования:
-        /// <para><c>new Password(config)</c> - ИСПОЛЬЗУЕТСЯ ДЛЯ РЕГИСТРАЦИИ НОВОГО ПОЛЬЗОВАТЕЛЯ.
-        /// Создает экземпляр Password со сгенерированным случайным временным паролем.</para>
-        /// <para><c>new Password(config, passwordText)</c> - cоздает экземпляр <see cref="Password"/> с паролем, введенным пользователем, и новой "солью".</para>
+        ///  ИСПОЛЬЗУЕТСЯ ДЛЯ РЕГИСТРАЦИИ НОВОГО ПОЛЬЗОВАТЕЛЯ. Создает экземпляр <see cref="Password"/> со сгенерированным случайным временным паролем.
+        /// </summary>
+        /// <param name="config">Конфигурация параметров сложности пароля.</param>
+        public Password(IPasswordConfig config)
+           : this(config
+                  , null
+                  , Array.Empty<byte>())
+        {
+            Reset();
+        }
+
+        /// <summary>
+        /// Используется при первом входе пользоателя в систему или смене пароля.
+        /// <para><c>new Password(config, passwordText)</c> - cоздает экземпляр <see cref="Password"/> с паролем, введенным пользователем, и новой "солью". </para>
+        /// </summary>
+        /// <param name="config">Конфигурация параметров сложности пароля.</param>
+        /// <param name="clearText">Текст пароля.</param>
+        public Password(IPasswordConfig config, char[] clearText)
+           : this(config
+                  , clearText ?? Array.Empty<char>()
+                  , Array.Empty<byte>())
+        {
+            ChangedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Используется при сравнении паролей с одинаковой "солью".
         /// <para><c>new Password(config, passwordText, saltText)</c> - cоздает экземпляр <see cref="Password"/> с паролем, введенным пользователем, и указанной "солью".</para>
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <param name="config">Конфигурация параметров сложности пароля.</param>
-        /// <param name="clearText">Введенный пароль.</param>
-        /// <param name="salt">"Соль", или синхропосылка.</param>
-        public Password(IPasswordConfig config, char[] clearText = null, string salt = "")   
-            : this(salt
-                  , null
-                  , null
-                  , config)
+        /// <param name="clearText">Текст пароля.</param>
+        /// <param name="salt">Соль" (синхропосылка).</param>
+        public Password(IPasswordConfig config, char[] clearText, byte[] salt)
         {
-            // Если пароль опущен, создаем экземпляр Password со сгенерированным случайным временным паролем, ...
-            if (clearText == null)
-            {
-                Reset();
-            }
-            else // ... иначе - создаем экземпляр Password с паролем, введенным пользователем
-            {
-                if (!Password.Validate(clearText, Config, out List<string> errortext))
-                    throw new ArgumentException(string.Join(" ", errortext), nameof(clearText));
-
-                TemporaryPassword = null;
-                RawSalt = string.IsNullOrWhiteSpace(salt) ? GenerateRandom(Config.SaltLength) : RawSalt;
-                RawHash = HashPassword(clearText);
-            }
-        }
-
-        /// <summary>
-        /// Создает экземпляр <see cref="Password"/> с заданными значениями компонентов пароля: "соль", хеш пароля, дата последнего измнения.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <param name="salt">"Соль" (синхропосылка).</param>
-        /// <param name="hash">Хеш пароля.</param>
-        /// <param name="changedAt">Дата последнего изменения пароля.</param>
-        /// <param name="config">Конфигурация параметров сложности пароля.</param>
-        public Password(string salt, string hash, DateTime? changedAt, IPasswordConfig config)
-            : this(string.IsNullOrWhiteSpace(salt) ? Array.Empty<byte>() : Convert.FromBase64String(salt)
-                  , string.IsNullOrWhiteSpace(hash) ? Array.Empty<byte>() : Convert.FromBase64String(hash)
-                  , changedAt
-                  , config)
-        {
-
-        }
-
-        /// <summary>
-        /// Создает экземпляр <see cref="Password"/> с заданными значениями компонентов пароля: "соль", хеш пароля, дата последнего измнения.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <param name="salt">"Соль" (синхропосылка).</param>
-        /// <param name="hash">Хеш пароля.</param>
-        /// <param name="changedAt">Дата последнего изменения пароля.</param>
-        /// <param name="config">Конфигурация параметров сложности пароля.</param>
-        public Password(byte[] salt, byte[] hash, DateTime? changedAt, IPasswordConfig config)
-        {
-            Config = config 
+            Config = config
                 ?? throw new ArgumentNullException(
-                    nameof(config), 
+                    nameof(config),
                     "Не инициализирована конфигурация параметров сложности пароля.");
+            
+            if (clearText != null && !Password.Validate(clearText, Config, out List<string> errortext))
+            {
+                throw new ArgumentException(string.Join(" ", errortext), nameof(clearText));
+            }
 
+            TemporaryPassword = null;
+            RawSalt = salt.Length == 0 ? GenerateRandom(Config.SaltLength) : salt;
+            RawHash = HashPassword(clearText ?? Array.Empty<char>());
+        }
+
+        /// <summary>
+        /// Создает экземпляр <see cref="Password"/> с заданными значениями компонентов пароля: "соль", хеш пароля, дата последнего измнения.
+        /// Используется для получения данных из хранилища. 
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="config">Конфигурация параметров сложности пароля.</param>
+        /// <param name="salt">"Соль" (синхропосылка).</param>
+        /// <param name="hash">Хеш пароля.</param>
+        /// <param name="changedAt">Дата последнего изменения пароля.</param>
+        public Password(IPasswordConfig config, byte[] salt, byte[] hash, DateTime? changedAt)
+            : this(config
+                  , null
+                  , Array.Empty<byte>())
+        {
             RawSalt = salt;
             RawHash = hash;
             ChangedAt = changedAt;
@@ -175,33 +175,28 @@ namespace DevFactoryZ.CharityCRM
         public static bool Validate(char[] clearText, IPasswordConfig config, out List<string> errorText)
         {
             errorText = new List<string>();
-            var returnResult = true;
 
             if (config.MinLength > clearText.Length)
             {
                 errorText.Add($"Длина пароля должна быть не менее {config.MinLength} символов.");
-                returnResult = false;
             }
 
             if (config.UseDigits && (clearText.Where(s => char.IsDigit(s)).Count() == 0))
             {
                 errorText.Add("Пароль должен содержать хотя бы одну цифру.");
-                returnResult = false;
             }
 
             if (config.UseUpperCase && (clearText.Where(s => char.IsUpper(s)).Count() == 0))
             {
                 errorText.Add("Пароль должен содержать хотя бы один символ в верхнем регистре.");
-                returnResult = false;
             }
 
             if (config.UseSpecialSymbols && !clearText.Any(s => config.SpecialSymbols.Contains(s)))
             {
                 errorText.Add($"Пароль должен содержать хотя бы один из символов {string.Join(",", config.SpecialSymbols)}.");
-                returnResult = false;
             }
 
-            return returnResult;
+            return !errorText.Any();
         }
 
         #endregion
@@ -331,6 +326,11 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="newPasswordClearText">Текстовое представление нового пароляю</param>
         public void ChangeTo(char[] newPasswordClearText)
         {
+            if (!Validate(newPasswordClearText ?? Array.Empty<char>(), Config, out List<string> errors))
+            {
+                throw new ArgumentException(string.Join(" ", errors), nameof(newPasswordClearText));
+            }
+
             // Хеш нового пароля со старой "солью".
             var newRawHash = HashPassword(newPasswordClearText);
             
