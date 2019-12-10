@@ -3,7 +3,7 @@
     /// <summary>
     /// Интерфейс описывает шаблон репозиторий для разрешений
     /// </summary>
-    public interface IPermissionRepository : IRepository<Permission>
+    public interface IPermissionRepository : IRepository<Permission, int>
     {
 
     }

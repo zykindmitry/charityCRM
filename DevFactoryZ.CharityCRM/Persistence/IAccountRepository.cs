@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using DevFactoryZ.CharityCRM;
-
-namespace DevFactoryZ.CharityCRM.Persistence
+﻿namespace DevFactoryZ.CharityCRM.Persistence
 {
-    public interface IAccountRepository<TKey> : IRepository<Account, TKey>
+    public interface IAccountRepository : IRepository<Account, int>
     {
         /// <summary>
         /// Возвращает объект типа <see cref="Account"/> из хранилища по заданному <see cref="Account.Login"/>.
@@ -12,6 +9,6 @@ namespace DevFactoryZ.CharityCRM.Persistence
         /// <exception cref="EntityNotFoundException"></exception>
         /// <param name="login">Значение <see cref="Account.Login"/> для поиска нужной записи.</param>
         /// <returns>Найденный в хранилище объект типа <see cref="Account"/>.</returns>
-        Account GetByLogin(TKey login);        
+        Account GetByLogin(string login);        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,9 +9,12 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
     {
         private readonly DbSet<Permission> setOfPermissions;
 
-        public PermissionRepository(DbSet<Permission> setOfPermissions)
+        private readonly Action save;
+
+        public PermissionRepository(DbSet<Permission> setOfPermissions, Action save)
         {
             this.setOfPermissions = setOfPermissions;
+            this.save = save;
         }
 
         public void Create(Permission permission)
@@ -26,6 +30,16 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         public IEnumerable<Permission> GetAll()
         {
             return setOfPermissions.ToArray();
+        }
+
+        public Permission GetById(int id)
+        {
+            return setOfPermissions.Find(id);
+        }
+
+        public void Save()
+        {
+            save();
         }
     }
 }

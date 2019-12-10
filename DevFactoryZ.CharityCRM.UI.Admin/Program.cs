@@ -20,7 +20,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
 
-            var unitOfWorkCreator = new UnitOfWorkCreator(config.GetConnectionString("dev"));
+            var unitOfWorkCreator = new UnitOfWorkCreator(config, "dev");
             var helpCommand = new HelpCommand(Commands);
             Commands.Add(helpCommand);
             Commands.Add(new PermissionCreateCommand(unitOfWorkCreator));
