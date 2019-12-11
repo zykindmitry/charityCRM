@@ -12,7 +12,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         /// <summary>
         /// Создает экземпляр класса CharityDbContext для создания миграций
         /// </summary>
-        public CharityDbContext() : this("<... Скопируйте строку соединения сюда ... >")
+        public CharityDbContext() : this("server = localhost\\SQLEXPRESS; database=charity-crm;Integrated security = SSPI;")
         {
         }
 

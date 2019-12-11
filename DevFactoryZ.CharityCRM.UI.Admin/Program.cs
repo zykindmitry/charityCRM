@@ -1,5 +1,6 @@
-﻿using DevFactoryZ.CharityCRM.Persistence.EFCore;
-using Microsoft.Extensions.Configuration;
+﻿using DevFactoryZ.CharityCRM.Ioc;
+using DevFactoryZ.CharityCRM.Persistence;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,22 +9,22 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 {
     class Program
     {
-        static List<ICommand> Commands = new List<ICommand>();
-
         static string Exit = "exit";
 
         static char ParametersSeparator = ' ';
 
         static void Main(string[] args)
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, true)
-                .Build();
+            var services = new ServiceCollection()
+                .WithJsonConfig("appsettings.json")
+                .WithDataAccessComponents("local")
+                .BuildServiceProvider();
+            var commands = new List<ICommand>();
 
-            var unitOfWorkCreator = new UnitOfWorkCreator(config, "dev");
-            var helpCommand = new HelpCommand(Commands);
-            Commands.Add(helpCommand);
-            Commands.Add(new PermissionCreateCommand(unitOfWorkCreator));
+            var helpCommand = new HelpCommand(commands);
+            commands.Add(helpCommand);
+            commands.Add(new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()));
+
             string commandName = null;
 
             Console.WriteLine(
@@ -38,7 +39,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 commandName = parts[0].ToLower(); //parse command
 
                 var commandToExecute = 
-                    Commands.FirstOrDefault(command => command.Recognize(commandName));
+                    commands.FirstOrDefault(command => command.Recognize(commandName));
 
                 if (commandToExecute != null)
                 {

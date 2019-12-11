@@ -15,25 +15,36 @@ namespace DevFactoryZ.CharityCRM.Ioc
         /// </summary>
         /// <param name="services">Ссылка на IServiceCollection</param>
         /// <param name="connectionName">Имя строки соединения с БД в конфигурационном файле</param>
-        public static void RegisterDataAccessComponents(this IServiceCollection services, string connectionName)
+        public static IServiceCollection WithDataAccessComponents(this IServiceCollection services, string connectionName)
         {
             // Register UnitOfWorkCreator single per lifetime
-            services.AddScoped(
-                provider => 
-                    new UnitOfWorkCreator(provider.GetService<IConfiguration>(), connectionName));
-            services.AddScoped<ICreateUnitOfWork>(
-                provider => provider.GetService<UnitOfWorkCreator>());
-            services.AddScoped<IRepositoryFactory>(
-                provider => provider.GetService<UnitOfWorkCreator>());
-
-            // Register repositories new instance per resolve
-            services.RegisterRepository<IPermissionRepository>();
+            return services
+                .AddScoped(
+                    provider => 
+                        new UnitOfWorkCreator(provider.GetService<IConfiguration>(), connectionName))
+                .AddScoped<ICreateUnitOfWork>(
+                    provider => provider.GetService<UnitOfWorkCreator>())
+                .AddScoped<IRepositoryFactory>(
+                    provider => provider.GetService<UnitOfWorkCreator>())
+                .WithRepository<IPermissionRepository>();
         }
 
-        private static void RegisterRepository<TRepository>(this IServiceCollection services)
+        public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)
+        {
+            var configBuilder = new ConfigurationBuilder();
+
+            foreach (var filename in configFilenames)
+            {
+                configBuilder.AddJsonFile(filename, true, true);
+            }
+
+            return services.AddSingleton<IConfiguration>(configBuilder.Build());
+        }
+
+        private static IServiceCollection WithRepository<TRepository>(this IServiceCollection services)
             where TRepository : class
         {
-            services.AddTransient(
+            return services.AddTransient(
                provider => 
                 provider
                     .GetService<IRepositoryFactory>()
