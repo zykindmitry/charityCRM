@@ -16,6 +16,8 @@
         /// <param name="description">Описание разрешения</param>
         public Permission(string name, string description) : this()
         {
+            Name = name;
+            Description = description;
         }
 
         /// <summary>
