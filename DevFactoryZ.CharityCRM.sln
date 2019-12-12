@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFactoryZ.CharityCRM.Pers
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFactoryZ.CharityCRM.UI.Admin", "DevFactoryZ.CharityCRM.UI.Admin\DevFactoryZ.CharityCRM.UI.Admin.csproj", "{A1D2EA04-55ED-4476-8A05-CC47FE0E18E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevFactoryZ.CharityCRM.Ioc", "DevFactoryZ.CharityCRM.Ioc\DevFactoryZ.CharityCRM.Ioc.csproj", "{B999B8A3-84BC-4CCD-991D-E658FC5613BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFactoryZ.CharityCRM.Ioc", "DevFactoryZ.CharityCRM.Ioc\DevFactoryZ.CharityCRM.Ioc.csproj", "{B999B8A3-84BC-4CCD-991D-E658FC5613BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

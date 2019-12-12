@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -8,7 +9,9 @@ namespace DevFactoryZ.CharityCRM
     /// </summary>
     public class Role : IAmPersistent<int>
     {
-        protected Role()
+        #region .ctor
+
+        protected Role() // for ORM 
         {
         }
 
@@ -25,8 +28,12 @@ namespace DevFactoryZ.CharityCRM
                     ? name 
                     : throw new ArgumentException("Имя роли не может быть пустым", nameof(name));
             Description = description;
-            permissions.Each(permission => this.permissions.Add(permission));
+            permissions.Each(permission => Grant(permission));
         }
+
+        #endregion
+
+        #region Хранение и идентификация
 
         /// <summary>
         /// Возвращает идентификатор роли в хранилище
@@ -38,6 +45,10 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         public bool CanBeDeleted => true;
 
+        #endregion
+
+        #region Описание
+
         /// <summary>
         /// Возвращает или задает имя роли
         /// </summary>
@@ -48,11 +59,76 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         public string Description { get; set; }
 
-        private readonly HashSet<Permission> permissions = new HashSet<Permission>();
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        #endregion
+
+        #region Разрешения
+
+        public class RolePermission
+        {
+            protected RolePermission() // for ORM
+            {
+            }
+
+            internal RolePermission(Permission permission)
+            {
+                Permission = permission;
+            }
+
+            public Permission Permission { get; protected set; }
+        }
+
+        public static string RolePermissionsFieldName => nameof(permissions);
+
+        private readonly List<RolePermission> permissions = new List<RolePermission>();
 
         /// <summary>
         /// Возвращает коллекцию разрешений роли
         /// </summary>
-        public ICollection<Permission> Permissions => permissions;
+        public IEnumerable<RolePermission> Permissions => permissions.AsReadOnly();
+
+        /// <summary>
+        /// Выдает разрешение пользователям в данной роли
+        /// </summary>
+        /// <param name="permission">Разрешение, которое нужно выдать роли</param>
+        public void Grant(Permission permission)
+        {
+            if (permissions
+                .Any(x => x.Permission.Equals(PermissionOrNullException(permission))))
+            {
+                throw new InvalidOperationException(
+                    $"Роли {this} уже доступно разрешение {permission}");
+            }
+
+            permissions.Add(new RolePermission(permission));
+        }
+
+        /// <summary>
+        /// Отозвать разрешение, выданное данным пользователям
+        /// </summary>
+        /// <param name="permission">Разрешение. которое необходимо отозвать</param>
+        public void Deny(Permission permission)
+        {
+            var rolePermission = permissions
+                .FirstOrDefault(x => x.Permission.Equals(PermissionOrNullException(permission)));
+
+            if (rolePermission == null)
+            {
+                throw new InvalidOperationException($"Роль {this} не имеет разрешения {permission}");
+            }
+
+            permissions.Remove(rolePermission);
+        }
+
+        private Permission PermissionOrNullException(Permission permission)
+        {
+            return permission ?? throw new ArgumentNullException(nameof(permission));
+        }
+
+        #endregion
     }
 }
