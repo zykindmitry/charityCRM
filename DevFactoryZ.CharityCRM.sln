@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFactoryZ.CharityCRM.UI.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFactoryZ.CharityCRM.Ioc", "DevFactoryZ.CharityCRM.Ioc\DevFactoryZ.CharityCRM.Ioc.csproj", "{B999B8A3-84BC-4CCD-991D-E658FC5613BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevFactoryZ.CharityCRM.UI.Web", "DevFactoryZ.CharityCRM.UI.Web\DevFactoryZ.CharityCRM.UI.Web.csproj", "{4DC62384-C090-48D0-B641-F8140DA4C70E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B999B8A3-84BC-4CCD-991D-E658FC5613BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B999B8A3-84BC-4CCD-991D-E658FC5613BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B999B8A3-84BC-4CCD-991D-E658FC5613BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DC62384-C090-48D0-B641-F8140DA4C70E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DC62384-C090-48D0-B641-F8140DA4C70E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DC62384-C090-48D0-B641-F8140DA4C70E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DC62384-C090-48D0-B641-F8140DA4C70E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
