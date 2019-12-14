@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DevFactoryZ.CharityCRM.Persistence;
 
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
@@ -24,6 +25,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var helpCommand = new HelpCommand(Commands);
             Commands.Add(helpCommand);
             Commands.Add(new PermissionCreateCommand(unitOfWorkCreator));
+            Commands.Add(new PermissionListCommand(unitOfWorkCreator.CreateRepository<IPermissionRepository>()));
+            Commands.Add(new PermissionGetCommand(unitOfWorkCreator.CreateRepository<IPermissionRepository>()));
+            Commands.Add(new PermissionUpdateCommand(unitOfWorkCreator));
+            Commands.Add(new PermissionDeleteCommand(unitOfWorkCreator));
             string commandName = null;
 
             Console.WriteLine(
@@ -35,7 +40,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var text = Console.ReadLine(); // read admin command
 
                 var parts = text.Split(ParametersSeparator, StringSplitOptions.RemoveEmptyEntries);
-                commandName = parts[0].ToLower(); //parse command
+                commandName = parts.Length > 0 ? parts[0].ToLower() : null; //parse command
 
                 var commandToExecute = 
                     Commands.FirstOrDefault(command => command.Recognize(commandName));
@@ -51,7 +56,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                         WriteException(error);
                     }
                 }
-                else if (commandName != Exit)
+                else if (commandName != Exit && !string.IsNullOrWhiteSpace(commandName))
                 {
                     Console.WriteLine($"{commandName} is not recognized. {helpCommand.Help}");
                 }

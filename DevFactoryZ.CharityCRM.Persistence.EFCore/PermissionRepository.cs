@@ -20,12 +20,21 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public void Delete(int id)
         {
-            setOfPermissions.Find(id);
+            var entity = setOfPermissions.Find(id);
+            if (entity != null)
+            {
+                setOfPermissions.Remove(entity);
+            }
         }
 
         public IEnumerable<Permission> GetAll()
         {
             return setOfPermissions.ToArray();
+        }
+
+        public Permission GetById(int id)
+        {
+            return setOfPermissions.FirstOrDefault(p => p.Id == id);
         }
     }
 }
