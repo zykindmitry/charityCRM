@@ -24,7 +24,8 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public void Delete(int id)
         {
-            setOfPermissions.Find(id);
+            var permissionToDelete = setOfPermissions.Find(id);
+            setOfPermissions.Remove(permissionToDelete);
         }
 
         public IEnumerable<Permission> GetAll()

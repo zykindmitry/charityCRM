@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 {
-    public class UnitOfWorkCreator : ICreateUnitOfWork, IRepositoryFactory
+    public class UnitOfWorkCreator : ICreateUnitOfWork, IRepositoryFactory, IDisposable
     {
         #region .ctor
 
@@ -64,6 +64,15 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
             InitDbContextIfNeeded();
             return (TRepository)factories[typeof(TRepository)](dbContext);
+        }
+
+        #endregion
+
+        #region Реализация IDisposable
+
+        public void Dispose()
+        {
+            dbContext?.Dispose();
         }
 
         #endregion

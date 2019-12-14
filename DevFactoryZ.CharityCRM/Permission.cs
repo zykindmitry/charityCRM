@@ -50,10 +50,17 @@
 
         #region Описание разрешения
 
+        public static bool NameIsRequired = true;
+
+        public static int NameMaxLength = 100;
+
+        private readonly RealString name = 
+            new RealString(NameMaxLength, NameIsRequired, "наименование разрешения");
+
         /// <summary>
-        /// Возвращает имя разрешения
+        /// Возвращает или задает имя разрешения
         /// </summary>
-        public string Name { get; protected set; }
+        public string Name { get => name.Value; set => name.Value = value; }
 
         /// <summary>
         /// Возвращает или задает описание разрешения
