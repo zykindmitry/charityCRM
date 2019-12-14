@@ -22,7 +22,9 @@ namespace DevFactoryZ.CharityCRM.UI.Web
         {
             services.AddControllers();
             services.AddSingleton(Configuration);
-            services.WithDataAccessComponents("local");
+            services
+                .WithDataAccessComponents("local")
+                .WithDomainServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

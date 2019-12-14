@@ -10,7 +10,10 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
             permission.HasKey(x => x.Id);
             permission.Property(x => x.Id).ValueGeneratedOnAdd();
 
-            permission.Property(x => x.Name).HasMaxLength(100);
+            permission
+                .Property(x => x.Name)
+                    .HasMaxLength(Permission.NameMaxLength)
+                    .IsRequired(Permission.NameIsRequired);
         }
     }
 }

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevFactoryZ.CharityCRM.Persistence.EFCore\DevFactoryZ.CharityCRM.Persistence.EFCore.csproj" />
+    <ProjectReference Include="..\DevFactoryZ.CharityCRM.Services\DevFactoryZ.CharityCRM.Services.csproj" />
     <ProjectReference Include="..\DevFactoryZ.CharityCRM\DevFactoryZ.CharityCRM.csproj" />
   </ItemGroup>
 
