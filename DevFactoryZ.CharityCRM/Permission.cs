@@ -1,4 +1,6 @@
-﻿namespace DevFactoryZ.CharityCRM
+﻿using System;
+
+namespace DevFactoryZ.CharityCRM
 {
     /// <summary>
     /// Этот класс представляет разрешение, требуемое для выполнение определенной операции
@@ -18,7 +20,11 @@
         /// <param name="description">Описание разрешения</param>
         public Permission(string name, string description) : this()
         {
-            Name = name;
+            Name =
+                !string.IsNullOrWhiteSpace(name) 
+                ? name
+                : throw new ArgumentException("Имя разрешения не может быть пустым.", nameof(name));
+
             Description = description;
         }
 
@@ -32,7 +38,7 @@
         public int Id { get; protected set; }
 
         /// <summary>
-        /// Возвращает признак доступности цдаления разрешения из хранилища данных системы
+        /// Возвращает признак доступности удаления разрешения из хранилища данных системы
         /// </summary>
         public bool CanBeDeleted => true;
 
@@ -59,6 +65,18 @@
         /// Возвращает или задает описание разрешения
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Изменяет наименование разрешения.
+        /// </summary>
+        /// <param name="newName">Новое имя разрешения.</param>
+        public void ChangeNameTo(string newName)
+        {
+            Name = 
+                !string.IsNullOrWhiteSpace(newName) 
+                ? newName 
+                : throw new ArgumentNullException(nameof(newName), "Не задано новое имя разрешения.");
+        }
 
         public override string ToString()
         {

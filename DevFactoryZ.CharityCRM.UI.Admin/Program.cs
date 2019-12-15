@@ -24,6 +24,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var helpCommand = new HelpCommand(commands);
             commands.Add(helpCommand);
             commands.Add(new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new PermissionListCommand(services.GetService<IPermissionRepository>()));
+            commands.Add(new PermissionGetCommand(services.GetService<IPermissionRepository>()));
 
             string commandName = null;
 
@@ -36,7 +40,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var text = Console.ReadLine(); // read admin command
 
                 var parts = text.Split(ParametersSeparator, StringSplitOptions.RemoveEmptyEntries);
-                commandName = parts[0].ToLower(); //parse command
+                commandName = parts.Length > 0 ? parts[0].ToLower() : null; //parse command
 
                 var commandToExecute = 
                     commands.FirstOrDefault(command => command.Recognize(commandName));
@@ -52,7 +56,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                         WriteException(error);
                     }
                 }
-                else if (commandName != Exit)
+                else if (commandName != Exit && !string.IsNullOrWhiteSpace(commandName))
                 {
                     Console.WriteLine($"{commandName} is not recognized. {helpCommand.Help}");
                 }
