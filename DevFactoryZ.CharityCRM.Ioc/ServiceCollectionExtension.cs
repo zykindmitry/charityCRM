@@ -26,7 +26,8 @@ namespace DevFactoryZ.CharityCRM.Ioc
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .AddScoped<IRepositoryFactory>(
                     provider => provider.GetService<UnitOfWorkCreator>())
-                .WithRepository<IPermissionRepository>();
+                .WithRepository<IPermissionRepository>()
+                .WithRepository<IRoleRepository>();
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)
