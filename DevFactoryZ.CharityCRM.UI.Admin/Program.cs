@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DevFactoryZ.CharityCRM.Persistence;
 
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
@@ -25,11 +24,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var helpCommand = new HelpCommand(commands);
             commands.Add(helpCommand);
             commands.Add(new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()));
-            Commands.Add(new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()));
-            Commands.Add(new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()));
-
-            Commands.Add(new PermissionListCommand(services.GetService<ICreateUnitOfWork>().CreateRepository<IPermissionRepository>()));
-            Commands.Add(new PermissionGetCommand(services.GetService<ICreateUnitOfWork>().CreateRepository<IPermissionRepository>()));
+            commands.Add(new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new PermissionListCommand(services.GetService<IPermissionRepository>()));
+            commands.Add(new PermissionGetCommand(services.GetService<IPermissionRepository>()));
 
             string commandName = null;
 
