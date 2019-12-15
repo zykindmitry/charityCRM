@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -8,7 +7,7 @@ namespace DevFactoryZ.CharityCRM
     /// Представляет учетную запись пользователя.
     /// Содержит методы для регистрации, аутентификации и авторизации пользователя в системе.
     /// </summary>
-    public class Account
+    public class Account : IAmPersistent<int>
     {
         #region .ctor
 
@@ -62,6 +61,12 @@ namespace DevFactoryZ.CharityCRM
 
         #endregion
 
+        #region Данные учетной записи
+
+        /// <summary>
+        /// Возвращает уникальный идентификатор учетной записи
+        /// </summary>
+        public int Id { get; protected set; }
 
         /// <summary>
         /// Имя пользователя в системе.
@@ -77,7 +82,13 @@ namespace DevFactoryZ.CharityCRM
         /// Дата создания аккаунта в формате UTC.
         /// </summary>
         public DateTime? CreatedAt { get; }
+        
+        /// <summary>
+        /// Возвращает признак допустимости удаления учетной записи
+        /// </summary>
+        public bool CanBeDeleted => true;
 
+        #endregion
 
         #region Аутентификация, авторизация
 

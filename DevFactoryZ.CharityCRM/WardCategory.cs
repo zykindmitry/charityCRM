@@ -8,7 +8,6 @@ namespace DevFactoryZ.CharityCRM
     /// </summary>
     public class WardCategory
     {
-
         #region .ctor
 
         /// <summary>
@@ -115,14 +114,16 @@ namespace DevFactoryZ.CharityCRM
 
         public override bool Equals(object obj)
         {
-            if (!(obj is WardCategory))
-            {
-                return false;
-            }
-            return this == (WardCategory)obj;
+            var anotherCategory = obj as WardCategory;
+
+            return anotherCategory != null && anotherCategory.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
         }
 
         #endregion
-
     }
 }

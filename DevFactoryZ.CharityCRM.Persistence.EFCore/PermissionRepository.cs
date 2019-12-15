@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,9 +9,12 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
     {
         private readonly DbSet<Permission> setOfPermissions;
 
-        public PermissionRepository(DbSet<Permission> setOfPermissions)
+        private readonly Action save;
+
+        public PermissionRepository(DbSet<Permission> setOfPermissions, Action save)
         {
             this.setOfPermissions = setOfPermissions;
+            this.save = save;
         }
 
         public void Create(Permission permission)
@@ -32,6 +36,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         {
             return setOfPermissions.Find(id) 
                 ?? throw new EntityNotFoundException(id, typeof(Permission));
+        }
+
+        public void Save()
+        {
+            save();
         }
     }
 }

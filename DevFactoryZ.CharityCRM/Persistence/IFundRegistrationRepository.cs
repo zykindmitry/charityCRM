@@ -7,7 +7,6 @@ namespace DevFactoryZ.CharityCRM.Persistence
     /// </summary>
     public interface IFundRegistrationRepository : IRepository<FundRegistration, Guid>
     {
-
     }
 }
 

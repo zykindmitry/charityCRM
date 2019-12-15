@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore
@@ -9,9 +10,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         private readonly string connectionString;        
 
-        public UnitOfWorkCreator(string connectionString)
+        public UnitOfWorkCreator(IConfiguration config, string connectionName)
         {
-            this.connectionString = connectionString;
+            connectionString = config.GetConnectionString(connectionName);
         }
 
         #endregion
@@ -50,7 +51,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         private readonly Dictionary<Type, Func<CharityDbContext, object>> factories =
             new Dictionary<Type, Func<CharityDbContext, object>>
             {
-                { typeof(IPermissionRepository), db => new PermissionRepository(db.Set<Permission>()) }
+                { typeof(IPermissionRepository), db => new PermissionRepository(db.Set<Permission>(), db.Save) }
             };
 
         public TRepository CreateRepository<TRepository>()

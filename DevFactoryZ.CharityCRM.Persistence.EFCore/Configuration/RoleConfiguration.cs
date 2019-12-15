@@ -12,7 +12,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 
             role.Property(x => x.Name).HasMaxLength(25);
 
-            role.HasMany(x => x.Permissions);
+            role.HasMany(x => x.Permissions).WithOne().HasForeignKey("RoleId");
+
+            var permissionNavigation = role.Metadata.FindNavigation(nameof(Role.Permissions));
+            permissionNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+            permissionNavigation.SetField(Role.RolePermissionsFieldName);
         }
     }
 }

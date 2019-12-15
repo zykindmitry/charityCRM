@@ -7,7 +7,9 @@ namespace DevFactoryZ.CharityCRM
     /// </summary>
     public class Permission : IAmPersistent<int>
     {
-        protected Permission()
+        #region .ctor
+
+        protected Permission() // для ORM
         {
         }
 
@@ -26,6 +28,10 @@ namespace DevFactoryZ.CharityCRM
             Description = description;
         }
 
+        #endregion
+
+        #region Идентификация
+
         /// <summary>
         /// Возвращает идентифтикатор разрешения в хранилище данных
         /// </summary>
@@ -35,6 +41,20 @@ namespace DevFactoryZ.CharityCRM
         /// Возвращает признак доступности удаления разрешения из хранилища данных системы
         /// </summary>
         public bool CanBeDeleted => true;
+
+        public override bool Equals(object obj)
+        {
+            return (obj is Permission permission) && permission.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        #endregion
+
+        #region Описание разрешения
 
         /// <summary>
         /// Возвращает имя разрешения
@@ -57,5 +77,12 @@ namespace DevFactoryZ.CharityCRM
                 ? newName 
                 : throw new ArgumentNullException(nameof(newName), "Не задано новое имя разрешения.");
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        #endregion
     }
 }
