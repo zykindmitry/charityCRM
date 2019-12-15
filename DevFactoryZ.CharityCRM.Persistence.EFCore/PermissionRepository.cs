@@ -24,8 +24,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public void Delete(int id)
         {
-            var permissionToDelete = setOfPermissions.Find(id);
-            setOfPermissions.Remove(permissionToDelete);
+            setOfPermissions.Remove(GetById(id));
         }
 
         public IEnumerable<Permission> GetAll()
@@ -35,7 +34,8 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public Permission GetById(int id)
         {
-            return setOfPermissions.Find(id);
+            return setOfPermissions.Find(id) 
+                ?? throw new EntityNotFoundException(id, typeof(Permission));
         }
 
         public void Save()
