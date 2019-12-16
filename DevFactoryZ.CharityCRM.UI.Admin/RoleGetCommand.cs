@@ -65,7 +65,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             {
                 Console.WriteLine($"{"<empty>", 15}");
             }
-
         }
 
         public bool Recognize(string command)
