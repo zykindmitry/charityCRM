@@ -73,18 +73,6 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         public string Description { get; set; }
 
-        /// <summary>
-        /// Изменяет наименование разрешения.
-        /// </summary>
-        /// <param name="newName">Новое имя разрешения.</param>
-        public void ChangeNameTo(string newName)
-        {
-            Name = 
-                !string.IsNullOrWhiteSpace(newName) 
-                ? newName 
-                : throw new ArgumentNullException(nameof(newName), "Не задано новое имя разрешения.");
-        }
-
         public override string ToString()
         {
             return Name;

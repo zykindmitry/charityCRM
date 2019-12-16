@@ -6,27 +6,27 @@ using System.Linq;
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
     /// <summary>
-    /// Имплементация <see cref="ICommand"/> для удаления разрешения из хранилища.
+    /// Имплементация <see cref="ICommand"/> для удаления роли из хранилища.
     /// </summary>
-    class PermissionDeleteCommand : ICommand
+    class RoleDeleteCommand : ICommand
     {
         /// <summary>
-        /// Создвет экземпляр <see cref="PermissionDeleteCommand"/>.
+        /// Создвет экземпляр <see cref="RoleDeleteCommand"/>.
         /// </summary>
         /// <param name="unitOfWorkCreator">Экземпляр <see cref="ICreateUnitOfWork"/> для работы с хранилищем.</param>
-        public PermissionDeleteCommand(ICreateUnitOfWork unitOfWorkCreator)
+        public RoleDeleteCommand(ICreateUnitOfWork unitOfWorkCreator)
         {
             this.unitOfWorkCreator = unitOfWorkCreator;
         }
 
-        private static string CommandText = "delete-permission";
+        private static string CommandText = "delete-role";
 
-        private static string IdParameter = "Id разрешения";
+        private static string IdParameter = "Id роли";
 
         public string Help =>
-            (new StringBuilder($"Напишите '{CommandText} [{IdParameter}]', чтобы удалить разрешение. "))
+            (new StringBuilder($"Напишите '{CommandText} [{IdParameter}]', чтобы удалить роль. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-permissions'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-roles'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;
@@ -39,7 +39,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            if (!int.TryParse(parameters.First(), out int permissionId))
+            if (!int.TryParse(parameters.First(), out int roleId))
             {
                 Console.WriteLine($"Ошибка! Обязательный параметр '{IdParameter}' должен быть целым положительным числом.");
                 return;
@@ -47,13 +47,13 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
-                var permission = 
-                    unitOfWork.GetById<Permission, int>(permissionId);
+                var role = 
+                    unitOfWork.GetById<Role, int>(roleId);
 
-                unitOfWork.Remove(permission);
+                unitOfWork.Remove(role);
                 unitOfWork.Save();
 
-                Console.WriteLine($"Разрешение с идентификатором (ID = {permissionId}) удалено из хранилища.");
+                Console.WriteLine($"Роль с идентификатором (ID = {roleId}) удалена из хранилища.");
             }
         }
 

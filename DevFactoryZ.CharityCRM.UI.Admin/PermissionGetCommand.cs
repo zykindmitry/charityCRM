@@ -48,12 +48,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var permission =
                 permissionRepository.GetById(permissionId);
 
-            if (permission == null)
-            {
-                Console.WriteLine($"Ошибка! В хранилище отсутствует разрешение с идентификатором (ID = {permissionId}).");
-                return;
-            }
-
             Console.WriteLine($"{nameof(Permission.Name)}: {permission.Name}.");
             Console.WriteLine($"{nameof(Permission.Description)}: {(string.IsNullOrWhiteSpace(permission.Description) ? "<empty>" : permission.Description)}.");
         }

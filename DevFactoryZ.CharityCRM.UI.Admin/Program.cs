@@ -23,11 +23,21 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
             var helpCommand = new HelpCommand(commands);
             commands.Add(helpCommand);
+            
             commands.Add(new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()));
             commands.Add(new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()));
             commands.Add(new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()));
             commands.Add(new PermissionListCommand(services.GetService<IPermissionRepository>()));
             commands.Add(new PermissionGetCommand(services.GetService<IPermissionRepository>()));
+
+            commands.Add(new RoleCreateCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new RoleUpdateCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new RoleDeleteCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new RoleListCommand(services.GetService<IRoleRepository>()));
+            commands.Add(new RoleGetCommand(services.GetService<IRoleRepository>()));
+
+            commands.Add(new RoleAddPermissionCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(new RoleDeletePermissionCommand(services.GetService<ICreateUnitOfWork>()));
 
             string commandName = null;
 

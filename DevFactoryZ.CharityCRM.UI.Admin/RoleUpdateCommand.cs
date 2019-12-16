@@ -6,29 +6,29 @@ using System.Linq;
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
     /// <summary>
-    /// Имплементация <see cref="ICommand"/> для изменения наименования разрешения в хранилище.
+    /// Имплементация <see cref="ICommand"/> для изменения наименования роли в хранилище.
     /// </summary>
-    class PermissionUpdateCommand : ICommand
+    class RoleUpdateCommand : ICommand
     {
         /// <summary>
-        /// Создвет экземпляр <see cref="PermissionUpdateCommand"/>.
+        /// Создвет экземпляр <see cref="RoleUpdateCommand"/>.
         /// </summary>
         /// <param name="unitOfWorkCreator">Экземпляр <see cref="ICreateUnitOfWork"/> для работы с хранилищем.</param>
-        public PermissionUpdateCommand(ICreateUnitOfWork unitOfWorkCreator)
+        public RoleUpdateCommand(ICreateUnitOfWork unitOfWorkCreator)
         {
             this.unitOfWorkCreator = unitOfWorkCreator;
         }
 
-        private static string CommandText = "update-permission";
+        private static string CommandText = "update-role";
 
-        private static string IdParameter = "Id разрешения";
+        private static string IdParameter = "Id роли";
 
-        private static string NewNameParameter = "Новое имя разрешения";
+        private static string NewNameParameter = "Новое наименование роли";
 
         public string Help =>
-            (new StringBuilder($"Напишите '{CommandText} [{IdParameter}] [{NewNameParameter}]', чтобы изменить наименование разрешения. "))
+            (new StringBuilder($"Напишите '{CommandText} [{IdParameter}] [{NewNameParameter}]', чтобы изменить наименование роли. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-permissions'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-roles'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;
@@ -41,7 +41,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            if (!int.TryParse(parameters[0], out int permissionId))
+            if (!int.TryParse(parameters[0], out int roleId))
             {
                 Console.WriteLine($"Ошибка! Первый обязательный параметр '{IdParameter}' должен быть целым положительным числом.");
                 return;
@@ -55,15 +55,14 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
-                var permission = 
-                    unitOfWork.GetById<Permission, int>(permissionId); 
+                var role = 
+                    unitOfWork.GetById<Role, int>(roleId); 
 
-                permission.Name = parameters[1];
+                role.Name = parameters[1];
                 unitOfWork.Save();
 
-                Console.WriteLine($"Наименование разрешения с идентификатором (ID = {permission.Id}) изменено.");
+                Console.WriteLine($"Наименование роли с идентификатором (ID = {role.Id}) изменено.");
             }
-
         }
 
         public bool Recognize(string command)
