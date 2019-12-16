@@ -38,8 +38,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
                 .Include(nameof(Role.Permissions))
                 .Load();
 
-            return setOfRoles
-                .Find(id)                
+            return setOfRoles.Find(id)
                 ?? throw new EntityNotFoundException(id, typeof(Role));
         }
 

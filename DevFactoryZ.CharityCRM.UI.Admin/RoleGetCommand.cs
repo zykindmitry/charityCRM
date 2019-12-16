@@ -48,12 +48,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var role =
                 roleRepository.GetById(roleId);
 
-            if (role == null)
-            {
-                Console.WriteLine($"Ошибка! В хранилище отсутствует роль с идентификатором (ID = {roleId}).");
-                return;
-            }
-
             Console.WriteLine($"{nameof(Role.Name)}: {role.Name}.");
             Console.WriteLine($"{nameof(Role.Description)}: {(string.IsNullOrWhiteSpace(role.Description) ? "<empty>" : role.Description)}.");
             Console.WriteLine("Разрешения:");

@@ -50,12 +50,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var permission = 
                     unitOfWork.GetById<Permission, int>(permissionId);
 
-                if (permission == null)
-                {
-                    Console.WriteLine($"Ошибка! В хранилище отсутствует разрешение с идентификатором (ID = {permissionId}).");
-                    return;
-                }
-
                 unitOfWork.Remove(permission);
                 unitOfWork.Save();
 

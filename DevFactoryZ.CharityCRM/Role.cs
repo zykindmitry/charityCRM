@@ -25,9 +25,11 @@ namespace DevFactoryZ.CharityCRM
         {
             Name = 
                 !string.IsNullOrWhiteSpace(name) 
-                    ? name 
-                    : throw new ArgumentException("Имя роли не может быть пустым", nameof(name));
+                ? name 
+                : throw new ArgumentException("Имя роли не может быть пустым", nameof(name));
+
             Description = description;
+            
             permissions.Each(permission => Grant(permission));
         }
 
@@ -47,29 +49,24 @@ namespace DevFactoryZ.CharityCRM
 
         #endregion
 
-        #region Описание
+        #region Описание роли
+
+        public static bool NameIsRequired = true;
+
+        public static int NameMaxLength = 25;
+
+        private readonly RealString name =
+            new RealString(NameMaxLength, NameIsRequired, "наименование роли");
 
         /// <summary>
         /// Возвращает или задает имя роли
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get => name.Value; set => name.Value = value; }
 
         /// <summary>
         /// Возвращает или задает описание роли
         /// </summary>
         public string Description { get; set; }
-
-        /// <summary>
-        /// Изменяет наименование роли.
-        /// </summary>
-        /// <param name="newName">Новое наименование роли.</param>
-        public void ChangeNameTo(string newName)
-        {
-            Name =
-                !string.IsNullOrWhiteSpace(newName)
-                ? newName
-                : throw new ArgumentNullException(nameof(newName), "Не задано новое наименование роли.");
-        }
 
         public override string ToString()
         {

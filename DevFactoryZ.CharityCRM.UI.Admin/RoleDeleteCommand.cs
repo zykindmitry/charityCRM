@@ -50,12 +50,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var role = 
                     unitOfWork.GetById<Role, int>(roleId);
 
-                if (role == null)
-                {
-                    Console.WriteLine($"Ошибка! В хранилище отсутствует роль с идентификатором (ID = {roleId}).");
-                    return;
-                }
-
                 unitOfWork.Remove(role);
                 unitOfWork.Save();
 

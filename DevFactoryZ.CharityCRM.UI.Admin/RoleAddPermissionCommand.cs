@@ -59,20 +59,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var role = 
                     unitOfWork.GetById<Role, int>(roleId);
 
-                if (role == null)
-                {
-                    Console.WriteLine($"Ошибка! В хранилище отсутствует роль с идентификатором (ID = {roleId}).");
-                    return;
-                }
-
                 var permission =
                     unitOfWork.GetById<Permission, int>(permissionId);
-
-                if (permission == null)
-                {
-                    Console.WriteLine($"Ошибка! В хранилище отсутствует разрешение с идентификатором (ID = {roleId}).");
-                    return;
-                }
 
                 role.Grant(permission);
                 unitOfWork.Save();

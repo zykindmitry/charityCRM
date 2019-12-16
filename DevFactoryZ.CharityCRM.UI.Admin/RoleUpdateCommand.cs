@@ -58,18 +58,11 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var role = 
                     unitOfWork.GetById<Role, int>(roleId); 
 
-                if (role == null)
-                {
-                    Console.WriteLine($"Ошибка! В хранилище отсутствует роль с идентификатором (ID = {roleId}).");
-                    return;
-                }
-
-                role.ChangeNameTo(parameters[1]);
+                role.Name = parameters[1];
                 unitOfWork.Save();
 
                 Console.WriteLine($"Наименование роли с идентификатором (ID = {role.Id}) изменено.");
             }
-
         }
 
         public bool Recognize(string command)
