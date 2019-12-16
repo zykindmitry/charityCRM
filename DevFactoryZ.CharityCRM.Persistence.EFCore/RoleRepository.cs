@@ -34,11 +34,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public Role GetById(int id)
         {
-            setOfRoles
+            return setOfRoles
                 .Include(nameof(Role.Permissions))
-                .Load();
-
-            return setOfRoles.Find(id)
+                .FirstOrDefault(r => r.Id == id)
                 ?? throw new EntityNotFoundException(id, typeof(Role));
         }
 
