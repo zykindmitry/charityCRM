@@ -52,7 +52,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             new Dictionary<Type, Func<CharityDbContext, object>>
             {
                 { typeof(IPermissionRepository), db => new PermissionRepository(db.Set<Permission>(), db.Save) },
-                { typeof(IRoleRepository), db => new RoleRepository(db.Set<Role>(), db.Save) }
+                { typeof(IRoleRepository), db => new RoleRepository(db.Set<Role>(), db.Save) },
+                { typeof(ICashDonationRepository), db => new CashDonationRepository(db.Set<CashDonation>(), db.Save) },
+                { typeof(ICommodityDonationRepository), db => new CommodityDonationRepository(db.Set<CommodityDonation>(), db.Save) }
             };
 
         public TRepository CreateRepository<TRepository>()
