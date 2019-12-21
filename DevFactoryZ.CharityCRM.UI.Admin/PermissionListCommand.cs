@@ -10,13 +10,14 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
     /// </summary>
     class PermissionListCommand : ICommand
     {
+        private readonly ICreateRepository<IPermissionRepository> repositoryCreator;
         /// <summary>
         /// Создвет экземпляр <see cref="PermissionListCommand"/>.
         /// </summary>
         /// <param name="permissionRepository">Экземпляр <see cref="IPermissionRepository"/> для работы с хранилищем.</param>
-        public PermissionListCommand(IPermissionRepository permissionRepository)
+        public PermissionListCommand(ICreateRepository<IPermissionRepository> repositoryCreator)
         {
-            this.permissionRepository = permissionRepository;
+            this.repositoryCreator = repositoryCreator;
         }
 
         private static string CommandText = "list-permissions";
@@ -24,19 +25,23 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help => 
             $"Напишите '{CommandText}', чтобы получить список существующих разрешений.";
 
-        private readonly IPermissionRepository permissionRepository;
-
         public void Execute(string[] parameters)
         {
-            var permissions =
-                permissionRepository.GetAll();
+            var repository = repositoryCreator.Create();
+            var permissions = repository.GetAll();
 
+            WriteHeader();
+            permissions.Each(WriteBody);
+        }
+
+        private void WriteHeader()
+        {
             Console.WriteLine($"{nameof(Permission.Id),10} {nameof(Permission.Name)}");
+        }
 
-            foreach (var permission in permissions)
-            {
-                Console.WriteLine("{0,10:0} {1}", permission.Id, permission.Name);
-            }
+        private void WriteBody(Permission permission)
+        {
+            Console.WriteLine($"{permission.Id,10:0} {permission.Name}");
         }
 
         public bool Recognize(string command)

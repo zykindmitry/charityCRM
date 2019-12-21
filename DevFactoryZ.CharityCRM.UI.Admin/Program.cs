@@ -19,25 +19,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 .WithJsonConfig("appsettings.json")
                 .WithDataAccessComponents("local")
                 .BuildServiceProvider();
-            var commands = new List<ICommand>();
+            var commands = InitCommands(services);
 
             var helpCommand = new HelpCommand(commands);
-            commands.Add(helpCommand);
-            
-            commands.Add(new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new PermissionListCommand(services.GetService<IPermissionRepository>()));
-            commands.Add(new PermissionGetCommand(services.GetService<IPermissionRepository>()));
-
-            commands.Add(new RoleCreateCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new RoleUpdateCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new RoleDeleteCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new RoleListCommand(services.GetService<IRoleRepository>()));
-            commands.Add(new RoleGetCommand(services.GetService<IRoleRepository>()));
-
-            commands.Add(new RoleAddPermissionCommand(services.GetService<ICreateUnitOfWork>()));
-            commands.Add(new RoleDeletePermissionCommand(services.GetService<ICreateUnitOfWork>()));
+            commands.Add(helpCommand);           
 
             string commandName = null;
 
@@ -72,6 +57,27 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 }
             }
             while (commandName != Exit);
+        }
+
+        static List<ICommand> InitCommands(ServiceProvider services)
+        {
+            return new List<ICommand>
+            {
+                new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()),
+                new PermissionListCommand(
+                    services.GetService<ICreateRepository<IPermissionRepository>>()),
+                 new PermissionGetCommand(
+                    services.GetService<ICreateRepository<IPermissionRepository>>()),
+                 new RoleCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new RoleUpdateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new RoleDeleteCommand(services.GetService<ICreateUnitOfWork>()),
+                 new RoleListCommand(services.GetService<ICreateRepository<IRoleRepository>>()),
+                 new RoleGetCommand(services.GetService<ICreateRepository<IRoleRepository>>()),
+                 new RoleAddPermissionCommand(services.GetService<ICreateUnitOfWork>()),
+                 new RoleDeletePermissionCommand(services.GetService<ICreateUnitOfWork>())
+            };
         }
 
         static void WriteException(Exception error)

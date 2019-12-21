@@ -4,7 +4,11 @@ using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 {
-    public class UnitOfWorkCreator : ICreateUnitOfWork, IRepositoryFactory, IDisposable
+    public class UnitOfWorkCreator : 
+        ICreateUnitOfWork, 
+        IRepositoryFactory, 
+        IRepositoryCreatorFactory, 
+        IDisposable
     {
         #region .ctor
 
@@ -46,7 +50,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         #endregion
 
-        #region Implementation of IRepositoryFactory
+        #region Реализация IRepositoryFactory и IRepositoryCreatorFactory
 
         private readonly Dictionary<Type, Func<CharityDbContext, object>> factories =
             new Dictionary<Type, Func<CharityDbContext, object>>
@@ -57,14 +61,29 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public TRepository CreateRepository<TRepository>()
         {
-            if (!factories.ContainsKey(typeof(TRepository)))
-            {
-                throw new NotSupportedException(
-                    $"Репозиторий {typeof(TRepository)} не поддерживается сборкой {GetType().Assembly.FullName}");
-            }
-
+            var creator = GetCreatorIfExists<TRepository>();
             InitDbContextIfNeeded();
-            return (TRepository)factories[typeof(TRepository)](dbContext);
+
+            return (TRepository)creator(dbContext);
+        }
+
+        public ICreateRepository<TRepository> GetRepositoryCreator<TRepository>()
+        {
+            var creator = GetCreatorIfExists<TRepository>();
+
+            return new RepositoryCreator<TRepository>(
+                () => 
+                {
+                    InitDbContextIfNeeded();
+                    return (TRepository)creator(dbContext);
+                });
+        }
+
+        private Func<CharityDbContext, object> GetCreatorIfExists<T>()
+        {
+            return factories.GetValueOrDefault(typeof(T))
+                ?? throw new NotSupportedException(
+                    $"Репозиторий {typeof(T)} не поддерживается сборкой {GetType().Assembly.FullName}");
         }
 
         #endregion

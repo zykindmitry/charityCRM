@@ -1,7 +1,5 @@
 ﻿using DevFactoryZ.CharityCRM.Persistence;
 using System;
-using System.Text;
-using System.Linq;
 
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
@@ -13,10 +11,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         /// <summary>
         /// Создвет экземпляр <see cref="RoleListCommand"/>.
         /// </summary>
-        /// <param name="roleRepository">Экземпляр <see cref="IRoleRepository"/> для работы с хранилищем.</param>
-        public RoleListCommand(IRoleRepository roleRepository)
+        /// <param name="repositoryCreator">Экземпляр <see cref="IRoleRepository"/> для работы с хранилищем.</param>
+        public RoleListCommand(ICreateRepository<IRoleRepository> repositoryCreator)
         {
-            this.roleRepository = roleRepository;
+            this.repositoryCreator = repositoryCreator;
         }
 
         private static string CommandText = "list-roles";
@@ -24,12 +22,12 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help => 
             $"Напишите '{CommandText}', чтобы получить список существующих ролей.";
 
-        private readonly IRoleRepository roleRepository;
+        private readonly ICreateRepository<IRoleRepository> repositoryCreator;
 
         public void Execute(string[] parameters)
         {
-            var roles =
-                roleRepository.GetAll();
+            var repository = repositoryCreator.Create();
+            var roles = repository.GetAll();
 
             Console.WriteLine($"{nameof(Role.Id),10} {nameof(Role.Name)}");
 

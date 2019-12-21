@@ -27,20 +27,10 @@ namespace DevFactoryZ.CharityCRM.Ioc
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .AddScoped<IRepositoryFactory>(
                     provider => provider.GetService<UnitOfWorkCreator>())
+                .AddScoped<IRepositoryCreatorFactory>(
+                    provider => provider.GetService<UnitOfWorkCreator>())                    
                 .WithRepository<IPermissionRepository>()
                 .WithRepository<IRoleRepository>();
-        }
-
-        /// <summary>
-        /// Регистрирует доменные сервисы
-        /// </summary>
-        /// <param name="services">Коллекция сервисов</param>
-        /// <returns>Коллекция сервисов</returns>
-        public static IServiceCollection WithDomainServices(this IServiceCollection services)
-        {
-            return services
-                .AddTransient<IPermissionService>(
-                    provider => new PermissionService(provider.GetService<IPermissionRepository>()));
         }
 
         /// <summary>
@@ -70,11 +60,17 @@ namespace DevFactoryZ.CharityCRM.Ioc
         private static IServiceCollection WithRepository<TRepository>(this IServiceCollection services)
             where TRepository : class
         {
-            return services.AddTransient(
-               provider => 
-                provider
-                    .GetService<IRepositoryFactory>()
-                    .CreateRepository<TRepository>());
+            return services
+                .AddScoped(
+                    provider => 
+                        provider
+                            .GetService<IRepositoryFactory>()
+                            .CreateRepository<TRepository>())
+                .AddScoped(
+                    provider => 
+                        provider
+                            .GetService<IRepositoryCreatorFactory>()
+                            .GetRepositoryCreator<TRepository>());
         }
     }
 }

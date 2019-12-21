@@ -13,10 +13,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         /// <summary>
         /// Создвет экземпляр <see cref="RoleGetCommand"/>.
         /// </summary>
-        /// <param name="roleRepository">Экземпляр <see cref="IRoleRepository"/> для работы с хранилищем.</param>
-        public RoleGetCommand(IRoleRepository roleRepository)
+        /// <param name="repositoryCreator">Экземпляр <see cref="IRoleRepository"/> для работы с хранилищем.</param>
+        public RoleGetCommand(ICreateRepository<IRoleRepository> repositoryCreator)
         {
-            this.roleRepository = roleRepository;
+            this.repositoryCreator = repositoryCreator;
         }
 
         private static string CommandText = "get-role";
@@ -29,7 +29,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-roles'.")
             .ToString();
 
-        private readonly IRoleRepository roleRepository;
+        private readonly ICreateRepository<IRoleRepository> repositoryCreator;
 
         public void Execute(string[] parameters)
         {
@@ -45,8 +45,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            var role =
-                roleRepository.GetById(roleId);
+            var repository = repositoryCreator.Create();
+            var role = repository.GetById(roleId);
 
             Console.WriteLine($"{nameof(Role.Name)}: {role.Name}.");
             Console.WriteLine($"{nameof(Role.Description)}: {(string.IsNullOrWhiteSpace(role.Description) ? "<empty>" : role.Description)}.");

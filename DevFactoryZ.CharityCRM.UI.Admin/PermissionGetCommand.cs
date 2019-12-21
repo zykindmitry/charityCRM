@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Linq;
+using DevFactoryZ.CharityCRM.Services;
 
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
@@ -10,13 +11,14 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
     /// </summary>
     class PermissionGetCommand : ICommand
     {
+        private readonly ICreateRepository<IPermissionRepository> repositoryCreator;
         /// <summary>
         /// Создвет экземпляр <see cref="PermissionGetCommand"/>.
         /// </summary>
         /// <param name="permissionRepository">Экземпляр <see cref="IPermissionRepository"/> для работы с хранилищем.</param>
-        public PermissionGetCommand(IPermissionRepository permissionRepository)
+        public PermissionGetCommand(ICreateRepository<IPermissionRepository> repositoryCreator)
         {
-            this.permissionRepository = permissionRepository;
+            this.repositoryCreator = repositoryCreator;
         }
 
         private static string CommandText = "get-permission";
@@ -27,9 +29,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             (new StringBuilder($"Напишите '{CommandText} [{IdParameter}]', чтобы получить разрешение. "))
             .AppendLine()
             .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-permissions'.")
-            .ToString();
-
-        private readonly IPermissionRepository permissionRepository;
+            .ToString();        
 
         public void Execute(string[] parameters)
         {
@@ -45,8 +45,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            var permission =
-                permissionRepository.GetById(permissionId);
+            var service = new PermissionService(repositoryCreator.Create());
+            var permission = service.GetById(permissionId);
 
             Console.WriteLine($"{nameof(Permission.Name)}: {permission.Name}.");
             Console.WriteLine($"{nameof(Permission.Description)}: {(string.IsNullOrWhiteSpace(permission.Description) ? "<empty>" : permission.Description)}.");
