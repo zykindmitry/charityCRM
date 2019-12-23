@@ -17,14 +17,20 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Создает экземпляр типа DevFactoryZ.CharityCRM.Commodity.
         /// </summary>
+        /// <param name="commodityDonation">Пожертвование, в рамках которого передается предмет (группа предметов).</param>
         /// <param name="description">Описание пожертвованного предмета (группы предметов).</param>
         /// <param name="quantity">Количество пожертвованных предметов.</param>
         /// <param name="cost">Стоимость пожертвованных предметов (в рублях, необязательное поле).</param>
-        public Commodity(string description, uint quantity, Nullable<double> cost = null)
+        public Commodity(CommodityDonation commodityDonation,  string description, int quantity, decimal? cost = null)
             : this()
         {
+            CommodityDonation = commodityDonation ??
+                throw new ArgumentNullException(nameof(commodityDonation), "Не указано пожертвование, в рамках которого передается предмет (группа предметов).");
+            
+            Quantity = quantity > 0 ? quantity
+                : throw new ArgumentException("Количество передаваемых предметова должно быть больше 0.", nameof(quantity));
+
             Description = description;
-            Quantity = quantity;
             Cost = cost;
         }
 
@@ -38,14 +44,9 @@ namespace DevFactoryZ.CharityCRM
         public int Id { get; protected set; }
 
         /// <summary>
-        /// Внешний ключ 
+        /// Возвращает пожертвование, в рамках которого передается предмет (группа предметов).
         /// </summary>
-        public int CommodityDonationId { get; set; }
-
-        /// <summary>
-        /// Навигационное свойство
-        /// </summary>
-        public CommodityDonation CommodityDonation { get; set; }
+        public CommodityDonation CommodityDonation { get; }
 
         /// <summary>
         /// Возвращает признак доступности удаления предмета (группы предметов) из хранилища данных системы.
@@ -55,25 +56,17 @@ namespace DevFactoryZ.CharityCRM
         public override bool Equals(object obj)
         {
             return (obj is Commodity commodity) 
-                && (commodity.Id == Id && commodity.Quantity == Quantity && commodity.Cost == Cost);
+                && commodity.Id == Id;
         }
 
         public override int GetHashCode()
         {
-            int firstLittlePrimeNumber = 19;
-            int secondLittlePrimeNumber = 37;
-
-            var hash = firstLittlePrimeNumber;
-            hash = hash * secondLittlePrimeNumber + Id.GetHashCode();
-            hash = hash * secondLittlePrimeNumber + Quantity.GetHashCode();
-            hash = hash * secondLittlePrimeNumber + Cost.GetHashCode();
-
-            return hash;
+            return base.GetHashCode();
         }
 
         #endregion
 
-        #region Описание предмета (группы предметов)
+        #region Описание, количество, стоимость предмета (группы предметов)
 
         public static bool DescriptionIsRequired = true;
 
@@ -90,12 +83,12 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Возвращает количество пожертвованных предметов.
         /// </summary>
-        public uint Quantity { get; }
+        public int Quantity { get; }
 
         /// <summary>
         /// Возвращает стоимость пожертвованных предметов (в рублях, необязательное поле).
         /// </summary>
-        public Nullable<double> Cost { get; }
+        public decimal? Cost { get; }
 
         public override string ToString()
         {

@@ -11,6 +11,7 @@ namespace DevFactoryZ.CharityCRM
         #region .ctor
 
         protected CashDonation() // для ORM
+            : base()
         {
         }
 
@@ -18,43 +19,33 @@ namespace DevFactoryZ.CharityCRM
         /// Создает экземпляр типа DevFactoryZ.CharityCRM.CashDonation.
         /// </summary>
         /// <param name="amount">Сумма пожертвования (в рублях).</param>
-        public CashDonation(double amount, string description = null)
-            : this()
+        /// <param name="description">Описание пожертвования.</param>
+        public CashDonation(decimal amount, string description)
+            : base(description)
         {
             Amount = amount;
-            Description = description;
         }
 
         #endregion
 
         #region Хранение и идентификация
 
-        public override bool Equals(object obj)
-        {
-            return (obj is CashDonation cashDonation) 
-                && (cashDonation.Id == Id && cashDonation.Amount == Amount);
-        }
-
-        public override int GetHashCode()
-        {
-            int firstLittlePrimeNumber = 19;
-            int secondLittlePrimeNumber = 37;
-            
-            var hash = firstLittlePrimeNumber;
-            hash = hash * secondLittlePrimeNumber + Id.GetHashCode();
-            hash = hash * secondLittlePrimeNumber + Amount.GetHashCode();
-
-            return hash;
-        }
+        // Т.к. CommodityDonation и CashDonation хранятся в одной таблице, то не перегружаем Equals и GetHashCode
 
         #endregion
 
-        #region Описание денежного пожертвования
+        #region Сумма денежного пожертвования
 
         /// <summary>
         /// Возвращает сумму пожертвования (в рублях)
         /// </summary>
-        public double Amount { get; }
+        public decimal Amount { get; private set; } // Определяем сеттер, чтобы свойство Amount попало в таблицу Donations, 
+                                                    //созданную по шаблону Table Per Hierarchy с помощью IEntityTypeConfiguration
+
+        public override string ToString()
+        {
+            return Description;
+        }
 
         #endregion
     }

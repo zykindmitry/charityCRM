@@ -27,82 +27,55 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 oldNullable: true);
 
             migrationBuilder.CreateTable(
-                name: "CashDonation",
+                name: "Donations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(nullable: true),
-                    Amount = table.Column<double>(nullable: false)
+                    Description = table.Column<string>(nullable: false),
+                    DonationType = table.Column<string>(nullable: false),
+                    Amount = table.Column<decimal>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CashDonation", x => x.Id);
+                    table.PrimaryKey("PK_Donations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommodityDonation",
+                name: "Commodities",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CommodityDonation", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Commodity",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CommodityDonationId = table.Column<int>(nullable: false),
-                    CommodityDonationId1 = table.Column<int>(nullable: true),
                     Description = table.Column<string>(maxLength: 500, nullable: false),
-                    Quantity = table.Column<long>(nullable: false),
-                    Cost = table.Column<double>(nullable: true)
+                    Quantity = table.Column<int>(nullable: false),
+                    Cost = table.Column<decimal>(nullable: true),
+                    CommodityDonationId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Commodity", x => x.Id);
+                    table.PrimaryKey("PK_Commodities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Commodity_CommodityDonation_CommodityDonationId",
+                        name: "FK_Commodities_Donations_CommodityDonationId",
                         column: x => x.CommodityDonationId,
-                        principalTable: "CommodityDonation",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Commodity_CommodityDonation_CommodityDonationId1",
-                        column: x => x.CommodityDonationId1,
-                        principalTable: "CommodityDonation",
+                        principalTable: "Donations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Commodity_CommodityDonationId",
-                table: "Commodity",
+                name: "IX_Commodities_CommodityDonationId",
+                table: "Commodities",
                 column: "CommodityDonationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Commodity_CommodityDonationId1",
-                table: "Commodity",
-                column: "CommodityDonationId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CashDonation");
+                name: "Commodities");
 
             migrationBuilder.DropTable(
-                name: "Commodity");
-
-            migrationBuilder.DropTable(
-                name: "CommodityDonation");
+                name: "Donations");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",

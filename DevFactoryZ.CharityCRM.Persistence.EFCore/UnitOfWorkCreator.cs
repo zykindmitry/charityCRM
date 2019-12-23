@@ -53,8 +53,8 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             {
                 { typeof(IPermissionRepository), db => new PermissionRepository(db.Set<Permission>(), db.Save) },
                 { typeof(IRoleRepository), db => new RoleRepository(db.Set<Role>(), db.Save) },
-                { typeof(ICashDonationRepository), db => new CashDonationRepository(db.Set<CashDonation>(), db.Save) },
-                { typeof(ICommodityDonationRepository), db => new CommodityDonationRepository(db.Set<CommodityDonation>(), db.Save) }
+                { typeof(ICashDonationRepository), db => new DonationRepository<CashDonation, long>(db.Set<CashDonation>(), db.Save) },
+                { typeof(ICommodityDonationRepository), db => new DonationRepository<CommodityDonation, long>(db.Set<CommodityDonation>(), db.Save) }
             };
 
         public TRepository CreateRepository<TRepository>()

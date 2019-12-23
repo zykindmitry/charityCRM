@@ -19,24 +19,6 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("DevFactoryZ.CharityCRM.CashDonation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CashDonation");
-                });
-
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Commodity", b =>
                 {
                     b.Property<int>("Id")
@@ -44,45 +26,47 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CommodityDonationId")
-                        .HasColumnType("int");
+                    b.Property<long?>("CommodityDonationId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("CommodityDonationId1")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("Cost")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("Cost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
 
-                    b.Property<long>("Quantity")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CommodityDonationId");
 
-                    b.HasIndex("CommodityDonationId1");
-
-                    b.ToTable("Commodity");
+                    b.ToTable("Commodities");
                 });
 
-            modelBuilder.Entity("DevFactoryZ.CharityCRM.CommodityDonation", b =>
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Donation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DonationType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("CommodityDonation");
+                    b.ToTable("Donations");
+
+                    b.HasDiscriminator<string>("DonationType").HasValue("Donation");
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Permission", b =>
@@ -140,17 +124,28 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.ToTable("RolePermission");
                 });
 
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.CashDonation", b =>
+                {
+                    b.HasBaseType("DevFactoryZ.CharityCRM.Donation");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasDiscriminator().HasValue("CashDonation");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.CommodityDonation", b =>
+                {
+                    b.HasBaseType("DevFactoryZ.CharityCRM.Donation");
+
+                    b.HasDiscriminator().HasValue("CommodityDonation");
+                });
+
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Commodity", b =>
                 {
                     b.HasOne("DevFactoryZ.CharityCRM.CommodityDonation", null)
                         .WithMany("Commodities")
-                        .HasForeignKey("CommodityDonationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DevFactoryZ.CharityCRM.CommodityDonation", "CommodityDonation")
-                        .WithMany()
-                        .HasForeignKey("CommodityDonationId1");
+                        .HasForeignKey("CommodityDonationId");
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Role+RolePermission", b =>

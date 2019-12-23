@@ -11,6 +11,7 @@ namespace DevFactoryZ.CharityCRM
         #region .ctor
 
         protected CommodityDonation() // для ORM
+            : base()
         {
         }
 
@@ -18,8 +19,9 @@ namespace DevFactoryZ.CharityCRM
         /// Создает экземпляр типа DevFactoryZ.CharityCRM.CommodityDonation.
         /// </summary>
         /// <param name="commodities">Перечень пожертвованных предметов (групп предметов).</param>
-        public CommodityDonation(IEnumerable<Commodity> commodities)
-            : this()
+        /// <param name="description">Описание пожертвования.</param>
+        public CommodityDonation(IEnumerable<Commodity> commodities, string description)
+            : base(description)
         {
             commodities.Each(commodity => this.commodities.Add(commodity));
         }
@@ -28,21 +30,11 @@ namespace DevFactoryZ.CharityCRM
 
         #region Хранение и идентификация
 
-        public override bool Equals(object obj)
-        {
-            return (obj is CommodityDonation commodityDonation) && commodityDonation.Id == Id;
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        // Т.к. CommodityDonation и CashDonation хранятся в одной таблице, то не перегружаем Equals и GetHashCode
 
         #endregion
 
-        #region Описание пожертвования в виде предметов
-
-        public static string CommoditiesFieldName => nameof(commodities);
+        #region Перечень предметов, переданных в качестве пожертвования
 
         private readonly List<Commodity> commodities = new List<Commodity>();
 
@@ -50,6 +42,11 @@ namespace DevFactoryZ.CharityCRM
         /// Возвращает перечень пожертвованных предметов (групп предметов).
         /// </summary>
         public IEnumerable<Commodity> Commodities => commodities.AsReadOnly();
+
+        public override string ToString()
+        {
+            return Description;
+        }
 
         #endregion
     }
