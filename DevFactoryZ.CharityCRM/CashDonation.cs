@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-namespace DevFactoryZ.CharityCRM
+﻿namespace DevFactoryZ.CharityCRM
 {
     /// <summary>
     /// Представляет денежное пожертвование в пользу одного из подопечных благотворительного фонда.

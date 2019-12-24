@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 {
     internal class CommodityConfiguration : IEntityTypeConfiguration<Commodity>

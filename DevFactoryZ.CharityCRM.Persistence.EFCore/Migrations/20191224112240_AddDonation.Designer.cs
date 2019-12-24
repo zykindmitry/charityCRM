@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
     [DbContext(typeof(CharityDbContext))]
-    [Migration("20191223094322_AddDonation")]
+    [Migration("20191224112240_AddDonation")]
     partial class AddDonation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
