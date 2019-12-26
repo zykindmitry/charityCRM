@@ -77,13 +77,13 @@ namespace DevFactoryZ.CharityCRM
         /// Возвращает дату и время создания заявки на регистрацию БФ в системе в UTC
         /// Инициализируется в конструкторе текущей датой в UTC
         /// </summary>
-        DateTime CreatedAt { get; }
+        public DateTime CreatedAt { get; }
 
         /// <summary>
         /// Возвращает интервал времени доступности ссылки на регистрацию фонда
         /// Инициализируется в конструкторе. 
         /// </summary>
-        TimeSpan MaxLifeTime { get; }
+        public TimeSpan MaxLifeTime { get; }
 
         private bool TimedOut => DateTime.UtcNow.Subtract(CreatedAt) <= MaxLifeTime;
 
@@ -93,7 +93,7 @@ namespace DevFactoryZ.CharityCRM
         /// и еще не была использована (см. SucceededAt)
         /// </summary>
         /// <returns>Результат проверки валидности ссылки.</returns>
-        public bool CanBeSucceeded => !(TimedOut || Succeeded);
+        public bool CanBeSucceeded => !(!TimedOut || Succeeded);
 
         #endregion
 

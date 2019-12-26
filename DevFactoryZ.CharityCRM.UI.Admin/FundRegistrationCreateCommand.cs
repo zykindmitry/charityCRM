@@ -33,7 +33,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             using(var unitOfWork = unitOfWorkCreator.Create())
             {
                 var fundRegistration = 
-                    new FundRegistration(parameters.First(), parameters.Skip(1).First(), new TimeSpan(2,0,0));
+                    new FundRegistration(parameters.First(), parameters.Skip(1).First(), new TimeSpan(23,59,59));
 
                 unitOfWork.Add(fundRegistration);
                 unitOfWork.Save();

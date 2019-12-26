@@ -30,7 +30,8 @@ namespace DevFactoryZ.CharityCRM.Ioc
                 .AddScoped<IRepositoryCreatorFactory>(
                     provider => provider.GetService<UnitOfWorkCreator>())                    
                 .WithRepository<IPermissionRepository>()
-                .WithRepository<IRoleRepository>();
+                .WithRepository<IRoleRepository>()
+                .WithRepository<IFundRegistrationRepository>();
         }
 
         /// <summary>
