@@ -17,16 +17,12 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Создает экземпляр типа DevFactoryZ.CharityCRM.Commodity.
         /// </summary>
-        /// <param name="commodityDonation">Пожертвование, в рамках которого передается предмет (группа предметов).</param>
         /// <param name="description">Описание пожертвованного предмета (группы предметов).</param>
         /// <param name="quantity">Количество пожертвованных предметов.</param>
         /// <param name="cost">Стоимость пожертвованных предметов (в рублях, необязательное поле).</param>
-        public Commodity(CommodityDonation commodityDonation,  string description, int quantity, decimal? cost = null)
+        public Commodity(string description, int quantity, decimal? cost = null)
             : this()
         {
-            CommodityDonation = commodityDonation ??
-                throw new ArgumentNullException(nameof(commodityDonation), "Не указано пожертвование, в рамках которого передается предмет (группа предметов).");
-            
             Quantity = quantity > 0 ? quantity
                 : throw new ArgumentException("Количество передаваемых предметова должно быть больше 0.", nameof(quantity));
 
@@ -42,11 +38,6 @@ namespace DevFactoryZ.CharityCRM
         /// Возвращает идентификатор предмета (группы предметов), генерируемый на стороне хранилища.
         /// </summary>
         public int Id { get; protected set; }
-
-        /// <summary>
-        /// Возвращает пожертвование, в рамках которого передается предмет (группа предметов).
-        /// </summary>
-        public CommodityDonation CommodityDonation { get; }
 
         /// <summary>
         /// Возвращает признак доступности удаления предмета (группы предметов) из хранилища данных системы.

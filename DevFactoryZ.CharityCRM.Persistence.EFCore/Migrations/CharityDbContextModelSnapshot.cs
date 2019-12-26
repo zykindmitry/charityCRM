@@ -26,7 +26,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long?>("CommodityDonationId")
+                    b.Property<long>("CommodityDonationId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("Cost")
@@ -145,7 +145,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 {
                     b.HasOne("DevFactoryZ.CharityCRM.CommodityDonation", null)
                         .WithMany("Commodities")
-                        .HasForeignKey("CommodityDonationId");
+                        .HasForeignKey("CommodityDonationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Role+RolePermission", b =>

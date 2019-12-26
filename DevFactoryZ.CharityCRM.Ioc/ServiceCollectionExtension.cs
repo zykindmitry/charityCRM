@@ -29,8 +29,7 @@ namespace DevFactoryZ.CharityCRM.Ioc
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .WithRepository<IPermissionRepository>()
                 .WithRepository<IRoleRepository>()
-                .WithRepository<ICashDonationRepository>()
-                .WithRepository<ICommodityDonationRepository>();
+                .WithRepository<IDonationRepository>();
         }
 
         /// <summary>

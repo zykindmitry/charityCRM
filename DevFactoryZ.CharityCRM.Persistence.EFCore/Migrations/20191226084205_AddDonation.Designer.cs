@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
     [DbContext(typeof(CharityDbContext))]
-    [Migration("20191224112240_AddDonation")]
+    [Migration("20191226084205_AddDonation")]
     partial class AddDonation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long?>("CommodityDonationId")
+                    b.Property<long>("CommodityDonationId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("Cost")
@@ -147,7 +147,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 {
                     b.HasOne("DevFactoryZ.CharityCRM.CommodityDonation", null)
                         .WithMany("Commodities")
-                        .HasForeignKey("CommodityDonationId");
+                        .HasForeignKey("CommodityDonationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Role+RolePermission", b =>

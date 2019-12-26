@@ -14,106 +14,63 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public DonationRepository(DbSet<TEntity> setOfDonations, Action save)
         {
-            if (!(setOfDonations is DbSet<CashDonation>) && !(setOfDonations is DbSet<CommodityDonation>))
+            if (!(setOfDonations is DbSet<Donation>))
             {
-                throw new ArgumentException($"Тип '{typeof(TEntity).Name}' не поддерживается в текущей реализации.", nameof(setOfDonations));
+                throw new ArgumentException
+                    ($"Для инициаизации экземпляра '{typeof(DonationRepository<TEntity>).Name}' следует использовать тип '{typeof(Donation).Name}'.", nameof(setOfDonations));
             }
 
             this.setOfDonations = setOfDonations;
             this.save = save;
         }
 
-        #region Явная реализация ICashDonation
-
-        void IRepository<CashDonation, long>.Create(CashDonation repositoryType)
+        public void Create(Donation entity)
         {
-            if (repositoryType.Amount == 0)
-            {
-                throw new ArgumentException("Денежное пожертвование равно 0. Так не бывает", nameof(repositoryType.Amount));
-            }
-
-            Create(repositoryType as TEntity);
-        }
-
-        void IRepository<CashDonation, long>.Delete(long id)
-        {
-           Remove(id);
-        }
-
-        CashDonation IRepository<CashDonation, long>.GetById(long id)
-        {
-            return (setOfDonations.Find(id) as CashDonation)
-                ?? throw new EntityNotFoundException(id, typeof(TEntity));
-        }
-
-        IEnumerable<CashDonation> IRepository<CashDonation, long>.GetAll()
-        {
-            return setOfDonations.ToArray() as IEnumerable<CashDonation>;
-        }
-
-        void IRepository<CashDonation, long>.Save()
-        {
-            save();
-        }
-
-        #endregion
-
-        #region Явная реализация ICommodityDonation
-
-        void IRepository<CommodityDonation, long>.Create(CommodityDonation repositoryType)
-        {
-            if (repositoryType.Commodities.Count() == 0)
-            {
-                throw new ArgumentException("Пожертвование предметами (вещами) не содержит ни одного предмета (вещи).", nameof(repositoryType.Commodities));
-            }
-
-            Create(repositoryType as TEntity);
-        }
-
-        void IRepository<CommodityDonation, long>.Delete(long id)
-        {
-            Remove(id);
-        }
-        CommodityDonation IRepository<CommodityDonation, long>.GetById(long id)
-        {
-            return setOfDonations.Include(p => (p as CommodityDonation).Commodities)
-                .FirstOrDefault(p => p.Id == id) as CommodityDonation
-                ?? throw new EntityNotFoundException(id, typeof(TEntity));
-        }
-
-        IEnumerable<CommodityDonation> IRepository<CommodityDonation, long>.GetAll()
-        {
-            return setOfDonations.Include(p => (p as CommodityDonation).Commodities)
-                .ToArray() as IEnumerable<CommodityDonation>;
-        }
-
-        void IRepository<CommodityDonation, long>.Save()
-        {
-            save();
-        }
-
-        #endregion
-
-        #region Обобщенные методы
-
-
-        void Create(TEntity entity)
-        {
-            setOfDonations.Add(entity
+            setOfDonations.Add(entity as TEntity
                 ?? throw new ArgumentNullException(nameof(entity), $"Не задана сущность типа '{typeof(TEntity).Name}' для добавления в хранилище"));
         }
 
-        void Remove(long id)
+        public void Delete(long id)
         {
-            setOfDonations.Remove(GetById(id));
+            setOfDonations.Remove(GetById(id) as TEntity);
         }
 
-        TEntity GetById(long id)
+        public Donation GetById(long id)
         {
-            return setOfDonations.Find(id)
+            return setOfDonations.Find(id) as Donation
                 ?? throw new EntityNotFoundException(id, typeof(TEntity)); 
         }
 
-        #endregion
+        public IEnumerable<Donation> GetAll()
+        {
+            return setOfDonations.ToArray() as IEnumerable<Donation>;
+        }
+
+        public void Save()
+        {
+            save();
+        }
+
+        public IEnumerable<Entity> GetAll<Entity>()
+        {
+            IEnumerable<Entity> result;
+
+            if (typeof(Entity) == typeof(CommodityDonation))
+            {
+                var dbset = (new CharityDbContext()).Set<CommodityDonation>();
+                result = dbset.Include(p => p.Commodities).ToArray() as IEnumerable<Entity>;
+            }
+            else if (typeof(Entity) == typeof(CashDonation))
+            {
+                var dbset = (new CharityDbContext()).Set<CashDonation>();
+                result = dbset.ToArray() as IEnumerable<Entity>;
+            }
+            else
+            {
+                throw new ArgumentException($"Тип '{typeof(Entity).Name}' не поддерживается в текущей реализации.");
+            }
+            return result;
+        }
+
     }
 }

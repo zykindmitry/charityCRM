@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -19,17 +20,19 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Создает экземпляр типа DevFactoryZ.CharityCRM.CommodityDonation.
         /// </summary>
+        /// <param name="commodities">Перечень предметов (групп предметов), передаваемых в рамках текущего пожертвования.</param>
         /// <param name="description">Описание пожертвования.</param>
-        public CommodityDonation(string description)
+        public CommodityDonation(IEnumerable<Commodity> commodities, string description)
             : base(description)
         {
+            this.commodities = commodities?.ToList()
+                ?? throw new ArgumentNullException(nameof(commodities), "Не задан перечень предметов (групп предметов) для пожертвования.");
+
+            if (this.commodities.Count == 0)
+            {
+                throw new ArgumentException(nameof(commodities), "Количество предметов (групп предметов) для пожертвования не можеть быть равным 0.");
+            }
         }
-
-        #endregion
-
-        #region Хранение и идентификация
-
-        // Т.к. CommodityDonation и CashDonation хранятся в одной таблице, то не перегружаем Equals и GetHashCode
 
         #endregion
 

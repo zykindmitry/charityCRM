@@ -50,7 +50,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     Description = table.Column<string>(maxLength: 500, nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     Cost = table.Column<decimal>(nullable: true),
-                    CommodityDonationId = table.Column<long>(nullable: true)
+                    CommodityDonationId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -60,7 +60,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         column: x => x.CommodityDonationId,
                         principalTable: "Donations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

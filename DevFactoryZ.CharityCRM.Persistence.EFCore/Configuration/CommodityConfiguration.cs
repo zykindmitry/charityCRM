@@ -20,8 +20,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 
             commodity.Property(x => x.Quantity);
 
-            commodity.Property(x => x.Cost)
+            commodity.Property(x => x.Cost)                
                 .IsRequired(false);
+
+            //Для разрешения каскадного удаления связанных commodities при удалении CommodityDonation
+            commodity.Property(typeof(long), "CommodityDonationId");
         }
     }
 }

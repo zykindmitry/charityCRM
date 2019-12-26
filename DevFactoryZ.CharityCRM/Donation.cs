@@ -15,7 +15,7 @@
         /// Создает экземпляр типа DevFactoryZ.CharityCRM.Donation.
         /// </summary>
         /// <param name="description">Описание пожертвования.</param>
-        internal Donation(string description)
+        protected Donation(string description)
             : this()
         {
             Description = description;

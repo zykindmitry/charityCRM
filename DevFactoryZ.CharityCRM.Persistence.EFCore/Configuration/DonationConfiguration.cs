@@ -18,7 +18,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                 .ValueGeneratedOnAdd();
 
             donation.Property(d => d.Description)
-                .IsRequired(true);
+                .IsRequired(true);           
         }
     }
 }

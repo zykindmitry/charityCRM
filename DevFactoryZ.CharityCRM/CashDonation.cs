@@ -1,4 +1,6 @@
-﻿namespace DevFactoryZ.CharityCRM
+﻿using System;
+
+namespace DevFactoryZ.CharityCRM
 {
     /// <summary>
     /// Представляет денежное пожертвование в пользу одного из подопечных благотворительного фонда.
@@ -20,14 +22,9 @@
         public CashDonation(decimal amount, string description)
             : base(description)
         {
-            Amount = amount;
+            Amount = amount > 0 ? amount
+                : throw new ArgumentException("Денежное пожертвование не может быть меньше или равно 0.", nameof(amount));
         }
-
-        #endregion
-
-        #region Хранение и идентификация
-
-        // Т.к. CommodityDonation и CashDonation хранятся в одной таблице, то не перегружаем Equals и GetHashCode
 
         #endregion
 
