@@ -37,8 +37,17 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public Donation GetById(long id)
         {
-            return setOfDonations.Find(id) as Donation
-                ?? throw new EntityNotFoundException(id, typeof(TEntity)); 
+            var res = setOfDonations.Find(id)
+                ?? throw new EntityNotFoundException(id, typeof(TEntity));
+
+            if (res.GetType() == typeof(CommodityDonation))
+            {
+                var dbset = (new CharityDbContext()).Set<CommodityDonation>();
+
+                return dbset.Include(p => p.Commodities).FirstOrDefault(p => p.Id == id) as Donation;
+            }
+
+            return res as Donation; 
         }
 
         public IEnumerable<Donation> GetAll()
