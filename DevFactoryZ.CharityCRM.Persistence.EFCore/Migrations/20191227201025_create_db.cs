@@ -33,7 +33,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
-                    Description = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     MaxLifeTime = table.Column<TimeSpan>(nullable: false),
                     SucceededAt = table.Column<DateTime>(nullable: true)
