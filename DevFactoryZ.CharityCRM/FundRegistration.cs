@@ -47,7 +47,17 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Возврашает наименование БФ. 
         /// </summary>
-        public string Name { get; protected set; }
+        public static bool NameIsRequired = true;
+
+        public static int NameMaxLength = 100;
+
+        private readonly RealString name =
+            new RealString(NameMaxLength, NameIsRequired, "наименование БФ");
+
+        /// <summary>
+        /// Возвращает или задает имя БФ
+        /// </summary>
+        public string Name { get => name.Value; protected set => name.Value = value; }
 
         /// <summary>
         /// Возращает или задает описание/пояснение к заявке на регистрацию БФ. Может быть пустым или null 

@@ -23,12 +23,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private static string IdParameter = "Guid заявки";
 
-        private static string NewNameParameter = "Новое имя фонда";
-
         private static string NewDescriptionParameter = "Новое описание фонда";
 
         public string Help =>
-            (new StringBuilder($"Напишите '{CommandText} [{IdParameter}] [{NewNameParameter}] [{NewDescriptionParameter}]', чтобы изменить наименование и описание фонда. "))
+            (new StringBuilder($"Напишите '{CommandText} [{IdParameter}] [{NewDescriptionParameter}]', чтобы изменить описание фонда. "))
             .AppendLine()
             .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-fund_registration'.")
             .ToString();
@@ -39,7 +37,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         {
             if (parameters.Length < 2)
             {
-                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{IdParameter}', '{NewNameParameter}', '{NewDescriptionParameter}'");
+                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{IdParameter}', '{NewDescriptionParameter}'");
                 return;
             }
 
@@ -51,12 +49,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
             if (string.IsNullOrWhiteSpace(parameters[1]))
             {
-                Console.WriteLine($"Ошибка! Второй обязательный параметр '{NewNameParameter}' должен содержать хотя бы один символ.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(parameters[2]))
-            {
                 Console.WriteLine($"Ошибка! Третий обязательный параметр '{NewDescriptionParameter}' должен содержать хотя бы один символ.");
                 return;
             }
@@ -66,8 +58,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var fundRegistration = 
                     unitOfWork.GetById<FundRegistration, Guid>(fundRegistrationId);
 
-                //fundRegistration.Name = parameters[1]; //не удается присвоить имя, т.к. свойство Name класса FundRegistration недоступно вне класса.
-                fundRegistration.Description = parameters[2];
+                fundRegistration.Description = String.Join(' ', parameters.Skip(1).Select(x => x));
                 unitOfWork.Save();
 
                 Console.WriteLine($"Информация о регистрируемом фонде с идентификатором (ID = {fundRegistration.Id}) изменена.");
