@@ -30,7 +30,7 @@ namespace DevFactoryZ.CharityCRM
 
         #endregion
 
-        #region Идентификация
+        #region Хранение и идентификация
 
         /// <summary>
         /// Возвращает идентифтикатор разрешения в хранилище данных
