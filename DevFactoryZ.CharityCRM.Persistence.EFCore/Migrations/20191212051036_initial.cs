@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
@@ -6,6 +7,20 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "FundRegistration",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Description = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FundRegistration", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Permission",
                 columns: table => new
@@ -66,6 +81,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "FundRegistration");
+
             migrationBuilder.DropTable(
                 name: "RolePermission");
 

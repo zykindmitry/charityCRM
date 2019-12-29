@@ -31,7 +31,20 @@ namespace DevFactoryZ.CharityCRM.Ioc
                     provider => provider.GetService<UnitOfWorkCreator>())                    
                 .WithRepository<IPermissionRepository>()
                 .WithRepository<IRoleRepository>()
-                .WithRepository<IDonationRepository>();
+                .WithRepository<IDonationRepository>()
+                .WithRepository<IFundRegistrationRepository>();
+        }
+
+        /// <summary>
+        /// Регистрирует доменные сервисы
+        /// </summary>
+        /// <param name="services">Коллекция сервисов</param>
+        /// <returns>Коллекция сервисов</returns>
+        public static IServiceCollection WithDomainServices(this IServiceCollection services)
+        {
+            return services
+                .AddTransient<IPermissionService>(
+                    provider => new PermissionService(provider.GetService<IPermissionRepository>()));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)

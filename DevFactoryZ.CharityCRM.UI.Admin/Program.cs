@@ -76,7 +76,11 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new RoleListCommand(services.GetService<ICreateRepository<IRoleRepository>>()),
                  new RoleGetCommand(services.GetService<ICreateRepository<IRoleRepository>>()),
                  new RoleAddPermissionCommand(services.GetService<ICreateUnitOfWork>()),
-                 new RoleDeletePermissionCommand(services.GetService<ICreateUnitOfWork>())
+                 new RoleDeletePermissionCommand(services.GetService<ICreateUnitOfWork>()),
+                 new FundRegistrationCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new FundRegistrationDeleteCommand(services.GetService<ICreateUnitOfWork>()),
+                 new FundRegistrationListCommand(services.GetService<ICreateRepository<IFundRegistrationRepository>>()),
+                 new FundRegistrationUpdateCommand(services.GetService<ICreateUnitOfWork>())
             };
         }
 
