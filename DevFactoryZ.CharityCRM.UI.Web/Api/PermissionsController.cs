@@ -1,5 +1,6 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
-using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
+using DevFactoryZ.CharityCRM.UI.Web.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -14,21 +15,24 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
         }
 
         [HttpGet]
-        public ActionResult<PermissionListViewModel[]> Get()
+        [Authorize]
+        public ActionResult<PermissionListModel[]> Get()
         {
             return GetResultWithErrorHandling(
-               service => service.GetAll().Select(model => new PermissionListViewModel(model)).ToArray());
+               service => service.GetAll().Select(model => new PermissionListModel(model)).ToArray());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<PermissionListViewModel> Get(int id)
+        [Authorize]
+        public ActionResult<PermissionListModel> Get(int id)
         {
             return GetResultWithErrorHandling(
-                service => new PermissionListViewModel(service.GetById(id)));
+                service => new PermissionListModel(service.GetById(id)));
         }
 
         [HttpPost]
-        public ActionResult<PermissionListViewModel> Post([FromBody]PermissionViewModel viewModel)
+        [Authorize]
+        public ActionResult<PermissionListModel> Post([FromBody]PermissionModel viewModel)
         {
             if (viewModel == null)
             {
@@ -39,12 +43,13 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
                 service =>
                 {
                     var model = service.Create(viewModel.ToDto());
-                    return new PermissionListViewModel(model);
+                    return new PermissionListModel(model);
                 });
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]PermissionViewModel viewModel)
+        [Authorize]
+        public IActionResult Put(int id, [FromBody]PermissionModel viewModel)
         {
             if (viewModel == null)
             {
@@ -56,6 +61,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete(int id)
         {
             return ExecuteWithErrorHandling(service => service.Delete(id));

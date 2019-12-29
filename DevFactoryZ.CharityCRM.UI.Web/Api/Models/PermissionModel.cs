@@ -1,10 +1,10 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
 
-namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
+namespace DevFactoryZ.CharityCRM.UI.Web.Api.Models
 {
-    public class PermissionViewModel
+    public class PermissionModel
     {
-        public PermissionViewModel()
+        public PermissionModel()
         {
         }
 

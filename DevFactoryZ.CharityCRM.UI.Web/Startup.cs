@@ -1,4 +1,6 @@
 using DevFactoryZ.CharityCRM.Ioc;
+using DevFactoryZ.CharityCRM.UI.Web.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,11 +38,14 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             }
 
             app.UseRouting();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }
