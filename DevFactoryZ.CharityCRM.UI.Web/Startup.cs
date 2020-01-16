@@ -1,8 +1,10 @@
 using DevFactoryZ.CharityCRM.Ioc;
-using DevFactoryZ.CharityCRM.UI.Web.Authentication;
+//using DevFactoryZ.CharityCRM.UI.Web.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -42,6 +44,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
 
             app.UseEndpoints(endpoints =>
             {
+                //endpoints.MapGet("/", async context => await context.Response.WriteAsync("Hello World!"));
                 endpoints.MapControllers();
             });
 
