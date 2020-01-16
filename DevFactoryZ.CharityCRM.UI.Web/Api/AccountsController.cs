@@ -50,7 +50,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             return GetResultWithErrorHandling(
                 service =>
                 {
-                    var model = service.Create(viewModel.ToDto());
+                    var model = service.Create(viewModel.ToDtoForCreate());
                     return new AccountListModel(model);
                 });
         }
@@ -66,7 +66,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             }
 
             return ExecuteWithErrorHandling(
-                service => service.Update(id, viewModel.ToDto())
+                service => service.Update(id, viewModel.ToDtoForUpdate())
                 );
         }
 

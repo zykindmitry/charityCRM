@@ -14,12 +14,21 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api.Models
 
         public IPasswordConfig PasswordConfig { get; set; }
 
-        public AccountData ToDto()
+        public AccountData ToDtoForUpdate()
         {
             return new AccountData
             {
                 Login = Login,
                 Password = new Password(PasswordConfig, PasswordClearText)
+            };
+        }
+
+        public AccountData ToDtoForCreate()
+        {
+            return new AccountData
+            {
+                Login = Login,
+                Password = new Password(PasswordConfig)
             };
         }
     }
