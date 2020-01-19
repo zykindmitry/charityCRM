@@ -42,7 +42,9 @@ namespace DevFactoryZ.CharityCRM.Ioc
         {
             return services
                 .AddTransient<IPermissionService>(
-                    provider => new PermissionService(provider.GetService<IPermissionRepository>()));
+                    provider => new PermissionService(provider.GetService<IPermissionRepository>()))
+                .AddTransient<IRoleService>(
+                    provider => new RoleService(provider.GetService<IRoleRepository>()));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)
