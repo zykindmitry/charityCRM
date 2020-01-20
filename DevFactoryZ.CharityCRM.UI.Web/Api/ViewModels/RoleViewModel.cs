@@ -7,10 +7,6 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
 {
     public class RoleViewModel
     {
-        public RoleViewModel()
-        {
-        }
-
         public string Name { get; set; }
         public string Description { get; set; }
         public IEnumerable<RolePermission> RolePermissions { get; set; }
