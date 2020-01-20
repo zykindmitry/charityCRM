@@ -40,11 +40,9 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             }
 
             app.UseRouting();
-            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapGet("/", async context => await context.Response.WriteAsync("Hello World!"));
                 endpoints.MapControllers();
             });
 

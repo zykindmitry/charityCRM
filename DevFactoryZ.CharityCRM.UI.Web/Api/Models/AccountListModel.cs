@@ -10,7 +10,6 @@
         {
             Id = account.Id;
             Login = account.Login;
-            //Password = account.Password;
         }
 
         public int Id { get; set; }

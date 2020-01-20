@@ -15,7 +15,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public ActionResult<PermissionListModel[]> Get()
         {
             return GetResultWithErrorHandling(

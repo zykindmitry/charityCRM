@@ -13,8 +13,8 @@ namespace DevFactoryZ.CharityCRM.Services
         public IPasswordConfig PasswordConfig { get; set; }
 
         public Password Password { get; set; }
-
     }
+
     public interface IAccountService
     {
         IEnumerable<Account> GetAll();
