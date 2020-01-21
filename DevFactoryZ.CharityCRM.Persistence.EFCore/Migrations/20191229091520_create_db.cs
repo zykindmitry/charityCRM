@@ -2,17 +2,32 @@
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
-    public partial class initial : Migration
+    public partial class create_db : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Donation",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(nullable: false),
+                    DonationType = table.Column<string>(nullable: false),
+                    Amount = table.Column<decimal>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Donation", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Permission",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -26,12 +41,34 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 25, nullable: true),
+                    Name = table.Column<string>(maxLength: 25, nullable: false),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Role", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Commodity",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(maxLength: 500, nullable: false),
+                    Quantity = table.Column<int>(nullable: false),
+                    Cost = table.Column<decimal>(nullable: true),
+                    DonationId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Commodity", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Commodity_Donation_DonationId",
+                        column: x => x.DonationId,
+                        principalTable: "Donation",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,6 +96,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Commodity_DonationId",
+                table: "Commodity",
+                column: "DonationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RolePermission_PermissionId",
                 table: "RolePermission",
                 column: "PermissionId");
@@ -67,7 +109,13 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Commodity");
+
+            migrationBuilder.DropTable(
                 name: "RolePermission");
+
+            migrationBuilder.DropTable(
+                name: "Donation");
 
             migrationBuilder.DropTable(
                 name: "Permission");
