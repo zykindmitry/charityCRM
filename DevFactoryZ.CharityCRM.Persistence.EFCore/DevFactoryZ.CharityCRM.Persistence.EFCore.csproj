@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20191226211348_create_db.cs" />
+    <Compile Remove="Migrations\20191226211348_create_db.Designer.cs" />
+    <Compile Remove="Migrations\20191226222319_create_db.cs" />
+    <Compile Remove="Migrations\20191226222319_create_db.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
