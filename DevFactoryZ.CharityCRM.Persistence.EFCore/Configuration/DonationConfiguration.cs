@@ -7,8 +7,8 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
     {
         public void Configure(EntityTypeBuilder<Donation> donation)
         {            
-            donation.ToTable("Donations")
-                .HasDiscriminator<string>("DonationType")
+            donation.ToTable(nameof(Donation))
+                .HasDiscriminator<string>($"{nameof(Donation)}Type")
                 .HasValue<CashDonation>(nameof(CashDonation))
                 .HasValue<CommodityDonation>(nameof(CommodityDonation));
 
