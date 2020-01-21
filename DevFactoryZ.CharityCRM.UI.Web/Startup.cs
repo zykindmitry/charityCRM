@@ -37,8 +37,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
             app.UseRouting();
-            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
