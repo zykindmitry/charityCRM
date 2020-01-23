@@ -1,11 +1,15 @@
 using DevFactoryZ.CharityCRM.Ioc;
+using JavaScriptEngineSwitcher.ChakraCore;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using React.AspNet;
 
 namespace DevFactoryZ.CharityCRM.UI.Web
 {
@@ -27,6 +31,11 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             services
                 .WithDataAccessComponents("local")
                 .WithDomainServices();
+
+            services.AddMemoryCache();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddReact();
+            services.AddJsEngineSwitcher(options => options.DefaultEngineName = ChakraCoreJsEngine.EngineName).AddChakraCore();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,8 +46,9 @@ namespace DevFactoryZ.CharityCRM.UI.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseReact(config => { });
             app.UseStaticFiles();
-            app.UseRouting();
+            app.UseRouting();            
 
             app.UseEndpoints(endpoints =>
             {
