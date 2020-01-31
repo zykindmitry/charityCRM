@@ -63,10 +63,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         {
             return new List<ICommand>
             {
-                new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()),
-                new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()),
-                new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()),
-                new PermissionListCommand(
+                 new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()),
+                 new PermissionListCommand(
                     services.GetService<ICreateRepository<IPermissionRepository>>()),
                  new PermissionGetCommand(
                     services.GetService<ICreateRepository<IPermissionRepository>>()),
@@ -80,7 +80,12 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new FundRegistrationCreateCommand(services.GetService<ICreateUnitOfWork>()),
                  new FundRegistrationDeleteCommand(services.GetService<ICreateUnitOfWork>()),
                  new FundRegistrationListCommand(services.GetService<ICreateRepository<IFundRegistrationRepository>>()),
-                 new FundRegistrationUpdateCommand(services.GetService<ICreateUnitOfWork>())
+                 new FundRegistrationUpdateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new PasswordConfigCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new PasswordConfigListCommand(
+                    services.GetService<ICreateRepository<IPasswordConfigRepository>>()),
+                 new PasswordConfigGetCommand(
+                    services.GetService<ICreateRepository<IPasswordConfigRepository>>())
             };
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -20,9 +19,16 @@ namespace DevFactoryZ.CharityCRM
         /// Конфигурация параметров сложности пароля.
         /// </summary>
         /// <value><see cref="IPasswordConfig"/></value>
-        public IPasswordConfig Config { get; }
+        public PasswordConfig PasswordConfig { get; }
 
         #region .ctor
+
+        /// <summary>
+        /// Для создания миграции.
+        /// </summary>
+        protected Password()
+        {
+        }
 
         /// <summary>
         ///  ИСПОЛЬЗУЕТСЯ ДЛЯ РЕГИСТРАЦИИ НОВОГО ПОЛЬЗОВАТЕЛЯ. Создает экземпляр <see cref="Password"/> со сгенерированным случайным временным паролем.
@@ -60,19 +66,20 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="clearText">Текст пароля.</param>
         /// <param name="salt">Соль" (синхропосылка).</param>
         public Password(IPasswordConfig config, char[] clearText, byte[] salt)
+            : this()
         {
-            Config = config
+            PasswordConfig = (PasswordConfig)config
                 ?? throw new ArgumentNullException(
                     nameof(config),
                     "Не инициализирована конфигурация параметров сложности пароля.");
             
-            if (clearText != null && !Password.Validate(clearText, Config, out List<string> errortext))
+            if (clearText != null && !Password.Validate(clearText, PasswordConfig, out List<string> errortext))
             {
                 throw new ArgumentException(string.Join(" ", errortext), nameof(clearText));
             }
 
             TemporaryPassword = null;
-            RawSalt = salt.Length == 0 ? GenerateRandom(Config.SaltLength) : salt;
+            RawSalt = salt.Length == 0 ? GenerateRandom(PasswordConfig.SaltLength) : salt;
             RawHash = HashPassword(clearText ?? Array.Empty<char>());
         }
 
@@ -147,7 +154,7 @@ namespace DevFactoryZ.CharityCRM
             get
             {
                 return ChangedAt.HasValue   
-                    && DateTime.UtcNow.Subtract((DateTime)ChangedAt) <= Config.MaxLifeTime;
+                    && DateTime.UtcNow.Subtract((DateTime)ChangedAt) <= PasswordConfig.MaxLifeTime;
             }
         }
 
@@ -214,7 +221,7 @@ namespace DevFactoryZ.CharityCRM
         /// <returns>Сгенерированный случайный пароль.</returns>
         char[] Generate()
         {
-            if (Config.MinLength == 0)
+            if (PasswordConfig.MinLength == 0)
             {
                 return Array.Empty<char>();
             }
@@ -223,11 +230,11 @@ namespace DevFactoryZ.CharityCRM
             var uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
             var digits = "1234567890".ToCharArray();
 
-            var allChars = lowers.Concat(uppers).Concat(digits).Concat(Config.SpecialSymbols).ToArray();
+            var allChars = lowers.Concat(uppers).Concat(digits).Concat(PasswordConfig.SpecialSymbols).ToArray();
 
-            var data = GenerateRandom(Config.MinLength);
+            var data = GenerateRandom(PasswordConfig.MinLength);
 
-            var result = new StringBuilder(Config.MinLength);
+            var result = new StringBuilder(PasswordConfig.MinLength);
 
             foreach (byte b in data)
             {
@@ -236,22 +243,22 @@ namespace DevFactoryZ.CharityCRM
 
             if (result.Length >= MinPasswordLength)
             {
-                if (Config.UseDigits && result.ToString().Where(s => char.IsDigit(s)).Count() == 0)
+                if (PasswordConfig.UseDigits && result.ToString().Where(s => char.IsDigit(s)).Count() == 0)
                 {
                     result.Remove(result.Length - 1, 1);
                     result.Append(digits[data[0] % digits.Length]);
                 }
 
-                if (Config.UseUpperCase && result.ToString().Where(s => char.IsUpper(s)).Count() == 0)
+                if (PasswordConfig.UseUpperCase && result.ToString().Where(s => char.IsUpper(s)).Count() == 0)
                 {
                     result.Remove(result.Length - 2, 1);
                     result.Insert(result.Length - 1, uppers[data[1] % uppers.Length]);
                 }
 
-                if (Config.UseSpecialSymbols && !result.ToString().Any(s => Config.SpecialSymbols.Contains(s)))
+                if (PasswordConfig.UseSpecialSymbols && !result.ToString().Any(s => PasswordConfig.SpecialSymbols.Contains(s)))
                 {
                     result.Remove(result.Length - 3, 1);
-                    result.Insert(result.Length - 2, Config.SpecialSymbols[data[2] % Config.SpecialSymbols.Length]);
+                    result.Insert(result.Length - 2, PasswordConfig.SpecialSymbols[data[2] % PasswordConfig.SpecialSymbols.Length]);
                 }
             }
 
@@ -291,7 +298,7 @@ namespace DevFactoryZ.CharityCRM
             // создаем рабочий массив достаточного размера, чтобы вместить пароль, соль и локальный параметр
             var data = new byte[utf8.GetMaxByteCount(clearText.Length)
                 + RawSalt.Length
-                + Config.LocalSalt.Length];
+                + PasswordConfig.LocalSalt.Length];
 
             try
             {
@@ -302,7 +309,7 @@ namespace DevFactoryZ.CharityCRM
                 Array.Copy(RawSalt, 0, data, byteCount, RawSalt.Length);
 
                 // копируем локальный параматр в рабочий массив
-                Array.Copy(Config.LocalSalt, 0, data, byteCount + RawSalt.Length, Config.LocalSalt.Length);
+                Array.Copy(PasswordConfig.LocalSalt, 0, data, byteCount + RawSalt.Length, PasswordConfig.LocalSalt.Length);
 
                 // хэшируем данные массива
                 using (var hashAlgorithm = new SHA512Managed())
@@ -326,7 +333,7 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="newPasswordClearText">Текстовое представление нового пароляю</param>
         public void ChangeTo(char[] newPasswordClearText)
         {
-            if (!Validate(newPasswordClearText ?? Array.Empty<char>(), Config, out List<string> errors))
+            if (!Validate(newPasswordClearText ?? Array.Empty<char>(), PasswordConfig, out List<string> errors))
             {
                 throw new ArgumentException(string.Join(" ", errors), nameof(newPasswordClearText));
             }
@@ -337,7 +344,7 @@ namespace DevFactoryZ.CharityCRM
             // Если хеш нового пароля не равен старому хешу, то новый пароль отличается от старого. Создаем новый хеш.
             if (!Equals(newRawHash))
             {
-                RawSalt = GenerateRandom(Config.SaltLength);
+                RawSalt = GenerateRandom(PasswordConfig.SaltLength);
                 RawHash = HashPassword(newPasswordClearText);
                 ChangedAt = DateTime.UtcNow;
             }
@@ -351,7 +358,7 @@ namespace DevFactoryZ.CharityCRM
         {
             ChangedAt = null;
             TemporaryPassword = Generate();
-            RawSalt = GenerateRandom(Config.SaltLength);
+            RawSalt = GenerateRandom(PasswordConfig.SaltLength);
             RawHash = HashPassword(TemporaryPassword);
         }
 
@@ -383,6 +390,15 @@ namespace DevFactoryZ.CharityCRM
         {
             return base.GetHashCode();
         }
+
+        #endregion
+
+        #region Миграции
+
+        /// <summary>
+        /// Навигационное свойство для использования в EF Core.
+        /// </summary>
+        public virtual Account Account { get; set; }
 
         #endregion
     }

@@ -21,18 +21,21 @@ namespace DevFactoryZ.CharityCRM.Ioc
             // Register UnitOfWorkCreator single per lifetime
             return services
                 .AddScoped(
-                    provider => 
+                    provider =>
                         new UnitOfWorkCreator(provider.GetService<IConfiguration>(), connectionName))
                 .AddScoped<ICreateUnitOfWork>(
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .AddScoped<IRepositoryFactory>(
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .AddScoped<IRepositoryCreatorFactory>(
-                    provider => provider.GetService<UnitOfWorkCreator>())                    
+                    provider => provider.GetService<UnitOfWorkCreator>())
                 .WithRepository<IPermissionRepository>()
                 .WithRepository<IRoleRepository>()
                 .WithRepository<IDonationRepository>()
-                .WithRepository<IFundRegistrationRepository>();
+                .WithRepository<IFundRegistrationRepository>()
+                .WithRepository<IAccountRepository>()
+                .WithRepository<IAccountSessionRepository>()
+                .WithRepository<IPasswordConfigRepository>();
         }
 
         /// <summary>
@@ -46,7 +49,11 @@ namespace DevFactoryZ.CharityCRM.Ioc
                 .AddTransient<IPermissionService>(
                     provider => new PermissionService(provider.GetService<IPermissionRepository>()))
                 .AddTransient<IRoleService>(
-                    provider => new RoleService(provider.GetService<IRoleRepository>()));
+                    provider => new RoleService(provider.GetService<IRoleRepository>()))
+                .AddTransient<IAccountService>(
+                    provider => new AccountService(provider.GetService<IAccountRepository>()))
+                .AddTransient<IAccountSessionService>(
+                    provider => new AccountSessionService(provider.GetService<IAccountSessionRepository>()));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)

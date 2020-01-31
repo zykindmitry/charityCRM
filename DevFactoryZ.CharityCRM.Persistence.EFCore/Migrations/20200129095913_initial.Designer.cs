@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
     [DbContext(typeof(CharityDbContext))]
-    [Migration("20191227201025_create_db")]
-    partial class create_db
+    [Migration("20200129095913_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,56 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Commodity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("CommodityDonationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal?>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommodityDonationId");
+
+                    b.ToTable("Commodities");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Donation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DonationType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Donations");
+
+                    b.HasDiscriminator<string>("DonationType").HasValue("Donation");
+                });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.FundRegistration", b =>
                 {
@@ -102,6 +152,32 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("RolePermission");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.CashDonation", b =>
+                {
+                    b.HasBaseType("DevFactoryZ.CharityCRM.Donation");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasDiscriminator().HasValue("CashDonation");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.CommodityDonation", b =>
+                {
+                    b.HasBaseType("DevFactoryZ.CharityCRM.Donation");
+
+                    b.HasDiscriminator().HasValue("CommodityDonation");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Commodity", b =>
+                {
+                    b.HasOne("DevFactoryZ.CharityCRM.CommodityDonation", null)
+                        .WithMany("Commodities")
+                        .HasForeignKey("CommodityDonationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Role+RolePermission", b =>

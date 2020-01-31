@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
@@ -8,13 +8,30 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Donations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(nullable: false),
+                    DonationType = table.Column<string>(nullable: false),
+                    Amount = table.Column<decimal>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Donations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FundRegistration",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
-                    Description = table.Column<string>(nullable: false)
+                    Description = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    MaxLifeTime = table.Column<TimeSpan>(nullable: false),
+                    SucceededAt = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,7 +44,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -41,12 +58,34 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 25, nullable: true),
+                    Name = table.Column<string>(maxLength: 25, nullable: false),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Role", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Commodities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(maxLength: 500, nullable: false),
+                    Quantity = table.Column<int>(nullable: false),
+                    Cost = table.Column<decimal>(nullable: true),
+                    CommodityDonationId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Commodities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Commodities_Donations_CommodityDonationId",
+                        column: x => x.CommodityDonationId,
+                        principalTable: "Donations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,6 +113,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Commodities_CommodityDonationId",
+                table: "Commodities",
+                column: "CommodityDonationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RolePermission_PermissionId",
                 table: "RolePermission",
                 column: "PermissionId");
@@ -82,10 +126,16 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Commodities");
+
+            migrationBuilder.DropTable(
                 name: "FundRegistration");
 
             migrationBuilder.DropTable(
                 name: "RolePermission");
+
+            migrationBuilder.DropTable(
+                name: "Donations");
 
             migrationBuilder.DropTable(
                 name: "Permission");

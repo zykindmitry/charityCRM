@@ -1,5 +1,8 @@
 ﻿namespace DevFactoryZ.CharityCRM.Persistence
 {
+    /// <summary>
+    /// Описывает шаблон репозитория для <see cref="Account"/>.
+    /// </summary>
     public interface IAccountRepository : IRepository<Account, int>
     {
         /// <summary>

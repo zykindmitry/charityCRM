@@ -1,39 +1,32 @@
-﻿using DevFactoryZ.CharityCRM.UI.Web.Api.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : ControllerBase
     {
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult> Post([FromBody]LoginModel model)
+        public async Task<ActionResult> Post()
         {
-            var claims = new List<Claim>
+            try
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, model.Login),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, "Admin"),
-                new Claim("Permission", "Add-Permission")
-            };
+                var accountSession = HttpContext.Session.TryGetValue(nameof(AccountSession), out byte[] value)
+                    ? value.FromJson<AccountSession>()
+                    : throw new ValidationException("Время жизни сессии пользователя истекло.");
+            }
+            catch (Exception ex)
+            {
+                await HttpContext.Response.WriteAsync($"{ex.GetExceptionMessage()}");
+                HttpContext.Response.StatusCode = 400;
+            }
 
-            var identity = new ClaimsIdentity(
-                claims, 
-                "ApplicationCookie", 
-                ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity));
-
-            return Ok();
+            return new StatusCodeResult(HttpContext.Response.StatusCode);
         }
     }
 }
