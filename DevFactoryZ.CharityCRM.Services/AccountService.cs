@@ -12,6 +12,15 @@ namespace DevFactoryZ.CharityCRM.Services
         {
             this.repository = repository;
         }
+
+        public void AddRole(int id, Role role)
+        {
+            var account = repository.GetById(id);
+            account.AddRole(role);
+
+            repository.Save();
+        }
+
         public Account Create(AccountData data)
         {
             var account = new Account(data.Login, data.PasswordConfig);

@@ -13,6 +13,8 @@ namespace DevFactoryZ.CharityCRM.Services
         public IPasswordConfig PasswordConfig { get; set; }
 
         public Password Password { get; set; }
+
+        public IEnumerable<Role> Roles { get; set; }
     }
 
     public interface IAccountService
@@ -26,5 +28,7 @@ namespace DevFactoryZ.CharityCRM.Services
         void Update(int id, AccountData data);
 
         void Delete(int id);
+
+        void AddRole(int id, Role role);
     }
 }

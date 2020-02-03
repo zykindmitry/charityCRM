@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -132,6 +134,31 @@ namespace DevFactoryZ.CharityCRM
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region Роли учетной записи
+
+        private readonly List<Role> roles = new List<Role>();
+
+        public IEnumerable<Role> Roles => roles.AsReadOnly();
+
+        public void AddRole(Role role)
+        {
+            if (roles
+                .Any(x => x.Equals(RoleOrNullException(role))))
+            {
+                throw new InvalidOperationException(
+                    $"Аккаунту {this} уже присвоена роль {role}.");
+            }
+
+            roles.Add(role);
+        }
+
+        private Role RoleOrNullException(Role role)
+        {
+            return role ?? throw new ArgumentNullException(nameof(role));
         }
 
         #endregion
