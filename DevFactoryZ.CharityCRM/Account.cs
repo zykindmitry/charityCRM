@@ -146,11 +146,10 @@ namespace DevFactoryZ.CharityCRM
 
         public void AddRole(Role role)
         {
-            if (roles
-                .Any(x => x.Equals(RoleOrNullException(role))))
+            if (roles.Any(x => x.Equals(RoleOrNullException(role))))
             {
                 throw new InvalidOperationException(
-                    $"Аккаунту {this} уже присвоена роль {role}.");
+                    $"Аккаунту {this.Login} уже присвоена роль {role.Name}.");
             }
 
             roles.Add(role);
