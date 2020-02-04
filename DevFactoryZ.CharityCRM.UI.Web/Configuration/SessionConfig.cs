@@ -8,6 +8,10 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Configuration
     /// </summary>
     internal class SessionConfig : ISessionConfig
     {
-        public TimeSpan IdleTimeout { get; set; }
+        public TimeSpan ServerSessionIdleTimeout { get; set; }
+
+        public TimeSpan AccountSessionIdleTimeout { get; set; }
+        
+        public TimeSpan AccountSessionExpiration { get; set; }
     }
 }

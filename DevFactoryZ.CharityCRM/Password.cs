@@ -19,7 +19,7 @@ namespace DevFactoryZ.CharityCRM
         /// Конфигурация параметров сложности пароля.
         /// </summary>
         /// <value><see cref="IPasswordConfig"/></value>
-        public PasswordConfig PasswordConfig { get; }
+        public PasswordConfig PasswordConfig { get; private set; }
 
         #region .ctor
 
@@ -327,13 +327,20 @@ namespace DevFactoryZ.CharityCRM
         }
 
         /// <summary>
-        /// Изменение пароля.
+        /// Изменение пароля. При изменении используется актуальная конфигурация сложности пароля.
         /// При равенстве нового и старого паролей поле <see cref="ChangedAt"/> не обновляется.
         /// </summary>
-        /// <param name="newPasswordClearText">Текстовое представление нового пароляю</param>
-        public void ChangeTo(char[] newPasswordClearText)
+        /// <param name="newPasswordClearText">Текстовое представление нового пароля.</param>
+        /// <param name="actualPasswordConfig">Актуальная конфигурация сложности пароля для создания нового пароля.</param>
+        public void ChangeTo(char[] newPasswordClearText, IPasswordConfig actualPasswordConfig)
         {
-            if (!Validate(newPasswordClearText ?? Array.Empty<char>(), PasswordConfig, out List<string> errors))
+            if (actualPasswordConfig == null)
+            {
+                throw new ArgumentNullException(nameof(actualPasswordConfig));
+            }
+
+            // Проверяем новый пароль на соотвествие актуальной конфигурации сложности
+            if (!Validate(newPasswordClearText ?? Array.Empty<char>(), actualPasswordConfig, out List<string> errors))
             {
                 throw new ArgumentException(string.Join(" ", errors), nameof(newPasswordClearText));
             }
@@ -344,22 +351,31 @@ namespace DevFactoryZ.CharityCRM
             // Если хеш нового пароля не равен старому хешу, то новый пароль отличается от старого. Создаем новый хеш.
             if (!Equals(newRawHash))
             {
+                PasswordConfig = (PasswordConfig)actualPasswordConfig;
                 RawSalt = GenerateRandom(PasswordConfig.SaltLength);
                 RawHash = HashPassword(newPasswordClearText);
                 ChangedAt = DateTime.UtcNow;
             }
         }
 
-        /// <summary>
-        /// Сброс пароля. 
-        /// Генерирует случайный временный пароль c новой "солью", сбрасывает дату последнего изменения пароля.
-        /// </summary>
-        public void Reset()
+        private void Reset()
         {
             ChangedAt = null;
             TemporaryPassword = Generate();
             RawSalt = GenerateRandom(PasswordConfig.SaltLength);
             RawHash = HashPassword(TemporaryPassword);
+        }
+
+        /// <summary>
+        /// Сброс пароля. При сбросе используется актуальная конфигурация сложности пароля.
+        /// Генерирует случайный временный пароль c новой "солью", сбрасывает дату последнего изменения пароля.
+        /// </summary>
+        public void Reset(IPasswordConfig actualPasswordConfig)
+        {
+            PasswordConfig = (PasswordConfig)actualPasswordConfig 
+                ?? throw new ArgumentNullException(nameof(actualPasswordConfig));
+            
+            Reset();
         }
 
         #endregion
@@ -390,15 +406,6 @@ namespace DevFactoryZ.CharityCRM
         {
             return base.GetHashCode();
         }
-
-        #endregion
-
-        #region Миграции
-
-        /// <summary>
-        /// Навигационное свойство для использования в EF Core.
-        /// </summary>
-        public virtual Account Account { get; set; }
 
         #endregion
     }

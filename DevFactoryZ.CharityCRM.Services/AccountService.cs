@@ -48,10 +48,10 @@ namespace DevFactoryZ.CharityCRM.Services
             return repository.GetByLogin(login);
         }
 
-        public void Update(string login, char[] newPassword)
+        public void Update(string login, char[] newPassword, IPasswordConfig actualPasswordConfig)
         {
             var account = GetByLogin(login);
-            account.Password.ChangeTo(newPassword);
+            account.Password.ChangeTo(newPassword, actualPasswordConfig);
             
             repository.Save();
         }

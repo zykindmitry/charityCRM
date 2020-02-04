@@ -46,7 +46,8 @@ namespace DevFactoryZ.CharityCRM.Services
         /// <exception cref="EntityNotFoundException"></exception>
         /// <param name="login">Логин пользователя, мененяющего пароль.</param>
         /// <param name="newPassword">Новый пароль.</param>
-        void Update(string login, char[] newPassword);
+        /// <param name="actualPasswordConfig">Актуальная конфигурация сложности пароля.</param>
+        void Update(string login, char[] newPassword, IPasswordConfig actualPasswordConfig);
 
         /// <summary>
         /// Удаление объекта <see cref="Account"/> из хранилища.

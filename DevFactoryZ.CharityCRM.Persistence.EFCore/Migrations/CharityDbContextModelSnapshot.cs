@@ -284,7 +284,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 
                             b1.ToTable("Account");
 
-                            b1.WithOwner("Account")
+                            b1.WithOwner()
                                 .HasForeignKey("AccountId");
 
                             b1.HasOne("DevFactoryZ.CharityCRM.PasswordConfig", "PasswordConfig")

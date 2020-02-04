@@ -1,6 +1,6 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
 
-namespace DevFactoryZ.CharityCRM.UI.Web.Api.Models
+namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
 {
     public class PermissionModel
     {

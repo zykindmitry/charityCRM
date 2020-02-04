@@ -12,14 +12,13 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Проверяет подлинность HTTP-запроса путем сравнения IP-адреса клиента и User-Agent из HTTP-запроса со значениями, 
         /// хранящимися в <see cref="AccountSession"/> на сервере.
-        /// <para>При любом несовпадении генерирует <see cref="ValidationException"/>.</para>
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ValidationException"></exception>
         /// <param name="accountSession"><see cref="AccountSession"/> на сервере, содержащая правильные значения IP-адреса клиента и User-Agent.</param>
         /// <param name="context">Текущий <see cref="HttpContext"/>.</param>
         /// <returns>Результат проверки.</returns>
-        public static bool IsNoFake(this AccountSession accountSession
+        public static bool IsReliable(
+            this AccountSession accountSession
             , HttpContext context)
         {
             var userAgent = context?.GetUserAgent()
@@ -28,9 +27,7 @@ namespace DevFactoryZ.CharityCRM
             var ipAddress = context.GetIpAddress();
 
             return accountSession.UserAgent.Equals(userAgent, StringComparison.InvariantCulture)
-                && accountSession.IPAddress.Equals(ipAddress, StringComparison.InvariantCulture)
-                ? true
-                : throw new ValidationException("'User-Agent' или IP-адрес запроса не совпадает с 'User-Agent' или IP-адресом пользовательской сессии.");
+                && accountSession.IPAddress.Equals(ipAddress, StringComparison.InvariantCulture);
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         /// <param name="accountSession">Текущая <see cref="AccountSession"/> на сервере.</param>
         /// <returns>Результат проверки.</returns>
-        public static bool IsNoExpired(this AccountSession accountSession)
+        public static bool IsAlive(this AccountSession accountSession)
         {
             return accountSession.ExpiredAt >= DateTime.UtcNow;
         }
@@ -51,13 +48,11 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="accountSession">Текущая <see cref="AccountSession"/> на сервере.</param>
         /// <param name="password">Пароль, переданный на сервер в HTTP-запросе.</param>
         /// <returns>Результат аутентификации.</returns>
-        public static bool IsAuthenticated(this AccountSession accountSession
+        public static bool IsAuthenticated(
+            this AccountSession accountSession
             , string password)
         {
-
-            return accountSession.Account.Authenticate(password?.ToCharArray())
-                ? true
-                : throw new ValidationException("Неверное имя пользоателя или пароль.");           
+            return accountSession.Account.Authenticate(password?.ToCharArray());           
         }
 
         /// <summary>
@@ -66,7 +61,8 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="accountSession">Текущая <see cref="AccountSession"/> на сервере.</param>
         /// <param name="repositoryCreatorFactory">Фабрика создателей репозиториев <see cref="IRepositoryCreatorFactory"/>.</param>
         /// <returns>Текущая <see cref="AccountSession"/> на сервере.</returns>
-        public static AccountSession UpdateRepository(this AccountSession accountSession
+        public static AccountSession UpdateRepository(
+            this AccountSession accountSession
             , IRepositoryCreatorFactory repositoryCreatorFactory)
         {
             var accountSessionRepository = repositoryCreatorFactory?

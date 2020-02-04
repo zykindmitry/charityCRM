@@ -24,8 +24,11 @@ namespace DevFactoryZ.CharityCRM
         /// <exception cref="ArgumentNullException"></exception>
         /// <param name="login">Имя пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(string login, IPasswordConfig passwordConfig)
-            : this(login
+        public Account(
+            string login
+            , IPasswordConfig passwordConfig)
+            : this(
+                  login
                   , new Password(passwordConfig)
                   , DateTime.UtcNow)
         {
@@ -40,8 +43,12 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="login">Имя пользователя.</param>
         /// <param name="password">Текстовое представление пароля пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(string login, char[] password, IPasswordConfig passwordConfig)
-            : this(login
+        public Account(
+            string login
+            , char[] password
+            , IPasswordConfig passwordConfig)
+            : this(
+                  login
                   , new Password(passwordConfig, password ?? Array.Empty<char>())
                   , null)
         {
@@ -55,7 +62,10 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="Login">Имя пользователя.</param>
         /// <param name="password">Экземпляр Password.</param>
         /// <param name="createdAt">Время создания аккаунта.</param>
-        public Account(string login, Password password, DateTime? createdAt)
+        public Account(
+            string login
+            , Password password
+            , DateTime? createdAt)
             : this()
         {
             Login = !string.IsNullOrWhiteSpace(login)
@@ -113,28 +123,22 @@ namespace DevFactoryZ.CharityCRM
         /// Аутентификация пользователя. 
         /// </summary>
         /// <param name="passwordClearText">Пароль, введенный пользователем.</param>
-        /// <param name="errorText">string.Empty, если аутентификация успешна, текст ошибки - в ином случае.</param>
         /// <returns>Результат проверки: true, если аутентификация успешна, false - в ином случае.</returns>
         public bool Authenticate(char[] passwordClearText)
         {
             var password = new Password(Password.PasswordConfig, passwordClearText, Password.RawSalt);
 
-            return Password.Equals(password)
-                ? true
-                : throw new ValidationException("Неверный пароль.");
+            return Password?.Equals(password) ?? throw new ValidationException("Отсутствует информация о пароле.");
         }
 
         /// <summary>
         /// Авторизация пользователя в системе.
         /// В текущей имплементации проверяется срок действия пароля.
         /// </summary>
-        /// <param name="errorText">string.Empty, если авторизация успешна, текст ошибки - в ином случае.</param>
         /// <returns>Результат проверки: true, если авторизация успешна, false - в ином случае.</returns>
         public bool Authorize()
         {
-            return Password.IsAlive
-                ? true
-                : throw new ValidationException("Срок действия пароля истек.");
+            return Password?.IsAlive ?? throw new ValidationException("Отсутствует информация о пароле.");
         }
 
         #endregion

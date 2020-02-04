@@ -5,7 +5,6 @@ namespace DevFactoryZ.CharityCRM
     /// <summary>
     /// Содержит данные о пользовательской сессии.
     /// </summary>
-    [Serializable]
     public class AccountSession : IAmPersistent<Guid>
     {
         #region .ctor
@@ -25,7 +24,11 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="userAgent">User-Agent из запроса.</param>
         /// <param name="ipAddress">IP-адрес, с которого происходит обращение к приложению.</param>
         /// <param name="expiredAt">Дата/время, после которого пользовательская сессия становится невалидной.</param>
-        public AccountSession(Account account, string userAgent, string ipAddress, DateTime expiredAt)
+        public AccountSession(
+            Account account
+            , string userAgent
+            , string ipAddress
+            , DateTime expiredAt)
             : this()
         {
             Account = account;
@@ -64,7 +67,7 @@ namespace DevFactoryZ.CharityCRM
         public string IPAddress { get; }
 
         /// <summary>
-        /// Ыремя окончания срока жизни пользовательской сессии в формате UTC.
+        /// Время окончания срока жизни пользовательской сессии в формате UTC.
         /// </summary>
         public DateTime ExpiredAt { get; private set; }
 

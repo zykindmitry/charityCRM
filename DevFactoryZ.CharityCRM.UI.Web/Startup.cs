@@ -43,7 +43,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
                 .AddDistributedMemoryCache()
                 .AddSession(options =>
                 {
-                    options.IdleTimeout = sessionConfig.IdleTimeout;
+                    options.IdleTimeout = sessionConfig.ServerSessionIdleTimeout;
                 });
                 
         }

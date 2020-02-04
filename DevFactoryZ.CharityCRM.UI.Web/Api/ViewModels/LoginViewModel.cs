@@ -1,4 +1,4 @@
-﻿namespace DevFactoryZ.CharityCRM.UI.Web.Api.Models
+﻿namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
 {
     /// <summary>
     /// ViewModel для LoginController.

@@ -12,8 +12,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 
             passwordConfig.HasKey(p => p.Id);
 
-            passwordConfig.Property(p => p.Id)
-                .ValueGeneratedOnAdd();
+            passwordConfig.Property(p => p.Id).ValueGeneratedOnAdd();
 
             passwordConfig.Property(p => p.MaxLifeTime)
                 .HasConversion(
@@ -21,20 +20,15 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                     v => TimeSpan.FromDays(v))
                 .IsRequired();
 
-            passwordConfig.Property(p => p.MinLength)
-                .IsRequired();
+            passwordConfig.Property(p => p.MinLength).IsRequired();
             
-            passwordConfig.Property(p => p.SaltLength)
-                .IsRequired();
+            passwordConfig.Property(p => p.SaltLength).IsRequired();
             
-            passwordConfig.Property(p => p.UseDigits)
-                .IsRequired();
+            passwordConfig.Property(p => p.UseDigits).IsRequired();
             
-            passwordConfig.Property(p => p.UseUpperCase)
-                .IsRequired();
+            passwordConfig.Property(p => p.UseUpperCase).IsRequired();
             
-            passwordConfig.Property(p => p.UseSpecialSymbols)
-                .IsRequired();
+            passwordConfig.Property(p => p.UseSpecialSymbols).IsRequired();
             
             passwordConfig.Property(p => p.SpecialSymbols)
                 .HasConversion(
@@ -42,8 +36,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                     v => v.ToCharArray())
                 .IsRequired();
                 
-            passwordConfig.Property(p => p.CreatedAt)
-                .IsRequired();
+            passwordConfig.Property(p => p.CreatedAt).IsRequired();
         }
     }
 }

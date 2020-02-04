@@ -11,14 +11,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 
             accountSession.Property(x => x.Id);
 
-            accountSession.Property(x => x.UserAgent)
-                .IsRequired();
+            accountSession.Property(x => x.UserAgent).IsRequired();
 
-            accountSession.Property(x => x.IPAddress)
-                .IsRequired();
+            accountSession.Property(x => x.IPAddress).IsRequired();
 
-            accountSession.Property(x => x.ExpiredAt)
-                .IsRequired();
+            accountSession.Property(x => x.ExpiredAt).IsRequired();
         }
     }
 }

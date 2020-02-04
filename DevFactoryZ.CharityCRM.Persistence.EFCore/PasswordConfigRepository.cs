@@ -23,11 +23,6 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             setOfPasswordConfigs.Add(repositoryType);
         }
 
-        public void Delete(int id)
-        {
-            throw new NotImplementedException("Удаление конфигураций сложности пароля запрещено.");
-        }
-
         public IEnumerable<PasswordConfig> GetAll()
         {
             return setOfPasswordConfigs.ToArray();
@@ -40,7 +35,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
                 ?? throw new EntityNotFoundException(id, typeof(PasswordConfig));
         }
 
-        public IPasswordConfig GetCurrent()
+        public PasswordConfig GetCurrent()
         {
             return setOfPasswordConfigs
                 .OrderByDescending(g => g.CreatedAt)                

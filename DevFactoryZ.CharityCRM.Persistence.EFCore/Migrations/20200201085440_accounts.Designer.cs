@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
     [DbContext(typeof(CharityDbContext))]
-    [Migration("20200130101454_accounts")]
+    [Migration("20200201085440_accounts")]
     partial class accounts
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -286,7 +286,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 
                             b1.ToTable("Account");
 
-                            b1.WithOwner("Account")
+                            b1.WithOwner()
                                 .HasForeignKey("AccountId");
 
                             b1.HasOne("DevFactoryZ.CharityCRM.PasswordConfig", "PasswordConfig")

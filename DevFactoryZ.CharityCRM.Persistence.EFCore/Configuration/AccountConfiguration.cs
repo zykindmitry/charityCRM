@@ -11,15 +11,13 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 
             account.HasKey(x => x.Id);
 
-            account.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+            account.Property(x => x.Id).ValueGeneratedOnAdd();
 
             account.Property(x => x.Login)                
                 .HasMaxLength(Account.LoginMaxLength)
                 .IsRequired(Account.LoginIsRequired);
 
-            account.Property(x => x.CreatedAt)
-                .IsRequired();
+            account.Property(x => x.CreatedAt).IsRequired();
 
             #region Конфигурация связи с AccountSession
             
@@ -34,7 +32,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 
             account.OwnsOne(a => a.Password, password =>
                 {
-                    password.WithOwner(p => p.Account);
+                    password.WithOwner();
                     password.Ignore(p => p.PasswordConfig);
                     password.Ignore(p => p.TemporaryPassword);
                     password.Ignore(p => p.Salt);
@@ -49,10 +47,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                         .OnDelete(DeleteBehavior.Restrict);                    
 
 
-                    password.Property(p => p.RawHash)
-                        .IsRequired();
-                    password.Property(p => p.RawSalt)
-                        .IsRequired();
+                    password.Property(p => p.RawHash).IsRequired();
+
+                    password.Property(p => p.RawSalt).IsRequired();
 
                     password.ToTable(nameof(Account));
                 });

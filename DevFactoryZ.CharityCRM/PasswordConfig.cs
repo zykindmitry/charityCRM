@@ -16,7 +16,6 @@ namespace DevFactoryZ.CharityCRM
         public PasswordConfig()
         {
             LocalSalt = GenerateRandom(SaltLength);
-            CreatedAt = DateTime.UtcNow;
         }
 
         /// <summary>
@@ -29,7 +28,8 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="useUpperCase">Флаг использования букв в верхнем регистре для усложнения пароля.</param>
         /// <param name="useSpecialSymbols">Флаг использования дополнительных (специальных) символов для усложнения пароля.</param>
         /// <param name="specialSymbols">Массив дополнительных (специальных) символов, которые могут использоваться для усложнения пароля.</param>
-        public PasswordConfig(TimeSpan maxLifeTime
+        public PasswordConfig(
+            TimeSpan maxLifeTime
             , int minLength
             , int saltLength
             , bool useDigits

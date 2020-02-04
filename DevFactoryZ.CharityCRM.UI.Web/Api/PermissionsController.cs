@@ -1,5 +1,5 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
-using DevFactoryZ.CharityCRM.UI.Web.Api.Models;
+using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;

@@ -19,7 +19,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
         /// <param name="sessionConfig">Параметры конфигурации объекта <see cref="Microsoft.AspNetCore.Http.ISession"/>.</param>
         /// <param name="cookieConfig">Параметры конфигурации Cookies.</param>
         /// <returns></returns>
-        internal static IApplicationBuilder UseCharityAuthentication(this IApplicationBuilder builder
+        internal static IApplicationBuilder UseCharityAuthentication(
+            this IApplicationBuilder builder
             , IRepositoryCreatorFactory repositoryCreatorFactory
             , ISessionConfig sessionConfig
             , ICookieConfig cookieConfig)
@@ -37,7 +38,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
         /// <param name="sessionConfig">Параметры конфигурации объекта <see cref="Microsoft.AspNetCore.Http.ISession"/>.</param>
         /// <param name="cookieConfig">Параметры конфигурации Cookies.</param>
         /// <returns></returns>
-        internal static IApplicationBuilder UseCharityAuthentication(this IApplicationBuilder builder
+        internal static IApplicationBuilder UseCharityAuthentication(
+            this IApplicationBuilder builder
             , IAccountService accountService
             , IAccountSessionService accountSessionService
             , ISessionConfig sessionConfig
