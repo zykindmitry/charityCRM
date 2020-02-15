@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
 using System;
-using DevFactoryZ.CharityCRM.Persistence;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.UI.Web.Configuration;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
@@ -16,92 +15,57 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
     public class LoginController : ControllerBase
     {
         private readonly IAccountService accountService;
-        private readonly IAccountSessionService accountSessionService;
-        private readonly ISessionConfig sessionConfig;
         private readonly ICookieConfig cookieConfig;
        
         public LoginController(
             IAccountService accountService
-            , IAccountSessionService accountSessionService
             , IConfiguration configuration)
         {
-            this.accountService = accountService;
-            this.accountSessionService = accountSessionService;
-            sessionConfig = configuration.GetSection(nameof(SessionConfig)).Get<SessionConfig>();
-            cookieConfig = configuration.GetSection(nameof(CookieConfig)).Get<CookieConfig>();
+            this.accountService = accountService ?? throw new ArgumentNullException(nameof(accountService));
+
+            cookieConfig = configuration?.GetSection(nameof(CookieConfig))?.Get<CookieConfig>() 
+                ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult> Post([FromBody] LoginViewModel LoginViewModel)
+        public async Task<ActionResult> Post([FromBody] LoginViewModel loginViewModel)
         {
+            if (loginViewModel == null || string.IsNullOrWhiteSpace(loginViewModel.Login))
+            {
+                return BadRequest("Требуется логин.");
+            }
+
             try
             {
-                var account = GetAccount(LoginViewModel?.Login ?? string.Empty, accountService);
+                AccountSession accountSession;
 
-                if (!account.Authenticate(LoginViewModel?.Password?.ToCharArray() ?? Array.Empty<char>()))
+                if (HttpContext.Session.TryGetValue(nameof(AccountSession), out byte[] value))
                 {
-                    throw new InvalidOperationException($"Пользователь '{LoginViewModel?.Login ?? string.Empty}' не прошел аутентификацию.");
+                    accountSession = await value.FromJsonAsync<AccountSession>();
+                }
+                else
+                {
+                    accountSession = accountService.Login(loginViewModel.Login, loginViewModel.Password, HttpContext.GetUserAgent(), HttpContext.GetIpAddress());
+
+                    HttpContext.Session.Set(nameof(AccountSession), accountSession.ToJson());
                 }
 
-                AddAccountSessionToContext(account);
+                HttpContext.Response.Cookies.Append(cookieConfig.Name
+                    , accountSession.Id.ToString()
+                    , new CookieOptions()
+                    {
+                        HttpOnly = cookieConfig.HttpOnly
+                        , IsEssential = cookieConfig.IsEssential
+                        , Expires = DateTime.UtcNow.Add(cookieConfig.Expiration ?? new TimeSpan())
+                    });
 
-                HttpContext.Response.StatusCode = 200;
-
-                await HttpContext.Response.WriteAsync($"Пользователь '{LoginViewModel.Login}' аутентифицирован.");
+                return Ok("Пользователь аутентифицирован.");
             }
             catch (Exception ex)
             {
-                HttpContext.Response.StatusCode = 400;
-
-                await HttpContext.Response.WriteAsync($"{ex.GetExceptionMessage()}");
+                return BadRequest(ex.Message);
             }
-
-            return new StatusCodeResult(HttpContext.Response.StatusCode);
-        }
-
-        private void AddAccountSessionToContext(Account account)
-        {
-            var accountSession = CreateNewAccountSession(
-                account
-                , HttpContext.GetUserAgent()
-                , HttpContext.GetIpAddress()
-                , accountSessionService);
-
-            HttpContext.Session.Set(nameof(AccountSession), accountSession.ToJson());
-
-            HttpContext.Response.Cookies.Append(cookieConfig.Name
-                , accountSession.Id.ToString()
-                , new CookieOptions()
-                {
-                    HttpOnly = cookieConfig.HttpOnly
-                    , IsEssential = cookieConfig.IsEssential
-                    , Expires = DateTime.UtcNow.Add(cookieConfig.Expiration ?? new TimeSpan())
-                });
-        }
-
-        private Account GetAccount(
-            string login
-            , IAccountService service)
-        {
-            return service?.GetByLogin(login) ?? 
-                throw new ArgumentNullException(nameof(service), $"Сервис '{nameof(IAccountService)}' не инициализирован.");
-        }
-
-        private AccountSession CreateNewAccountSession(
-            Account account
-            , string userAgent
-            , string ipAddress
-            , IAccountSessionService sessionService)
-        {
-            var newAccountSession = new AccountSession(
-                account
-                , userAgent
-                , ipAddress
-                , DateTime.UtcNow.Add(sessionConfig.AccountSessionIdleTimeout));
-
-            return sessionService?.Create(newAccountSession) 
-                ?? throw new ArgumentNullException(nameof(sessionService), $"Сервис '{nameof(IAccountSessionService)}' не инициализирован.");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace DevFactoryZ.CharityCRM.Services
         /// используемая сервисом <see cref="AccountSessionService"/> для работы с хранилищем.</param>
         public AccountSessionService(IAccountSessionRepository repository)
         {
-            this.repository = repository;
+            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         public AccountSession Create(AccountSession newAccountSession)

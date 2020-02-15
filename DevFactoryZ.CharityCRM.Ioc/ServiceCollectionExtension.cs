@@ -50,10 +50,13 @@ namespace DevFactoryZ.CharityCRM.Ioc
                     provider => new PermissionService(provider.GetService<IPermissionRepository>()))
                 .AddTransient<IRoleService>(
                     provider => new RoleService(provider.GetService<IRoleRepository>()))
-                .AddTransient<IAccountService>(
-                    provider => new AccountService(provider.GetService<IAccountRepository>()))
                 .AddTransient<IAccountSessionService>(
-                    provider => new AccountSessionService(provider.GetService<IAccountSessionRepository>()));
+                    provider => new AccountSessionService(provider.GetService<IAccountSessionRepository>()))
+                .AddTransient<IAccountService>(
+                    provider => new AccountService(
+                        provider.GetService<IAccountRepository>()
+                        , provider.GetService<IAccountSessionService>()
+                        , WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)
@@ -82,6 +85,13 @@ namespace DevFactoryZ.CharityCRM.Ioc
                         provider
                             .GetService<IRepositoryCreatorFactory>()
                             .GetRepositoryCreator<TRepository>());
+        }
+
+        private static T WithConfig<T>(IConfiguration configuration)
+        {
+            var sect = configuration.GetSection(typeof(T).Name);
+            var res = sect.Get<T>();
+            return res;
         }
     }
 }

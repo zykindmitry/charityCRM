@@ -34,6 +34,20 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private const string SpecialSymbolsParameter = "Массив дополнительных символов, которые могут использоваться для усложнения пароля";
 
+        private const int MaxLifeTime = 0;
+        
+        private const int MinLength = 1;
+        
+        private const int SaltLength = 2;
+
+        private const int UseDigits = 3;
+
+        private const int UseUpperCase = 4;
+
+        private const int UseSpecialSymbols = 5;
+
+        private const int SpecialSymbols = 6;
+
         public string Help => ComposeHelpString();
 
         private readonly ICreateUnitOfWork unitOfWorkCreator;
@@ -44,22 +58,22 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             {
                 var passwordConfig = parameters.Length == 0
                     ? new PasswordConfig()
-                    : (bool.TryParse(parameters[5], out bool result) && result == true
+                    : (bool.TryParse(parameters[UseSpecialSymbols], out bool result) && result == true
                         ? (parameters.Length == 7
-                            ? (new PasswordConfig(TimeSpan.FromDays(double.Parse(parameters[0]))
-                                , int.Parse(parameters[1])
-                                , int.Parse(parameters[2])
-                                , bool.Parse(parameters[3])
-                                , bool.Parse(parameters[4])
+                            ? (new PasswordConfig(TimeSpan.FromDays(double.Parse(parameters[MaxLifeTime]))
+                                , int.Parse(parameters[MinLength])
+                                , int.Parse(parameters[SaltLength])
+                                , bool.Parse(parameters[UseDigits])
+                                , bool.Parse(parameters[UseUpperCase])
                                 , result
-                                , parameters[6].ToCharArray()))
+                                , parameters[SpecialSymbols].ToCharArray()))
                             : throw new ArgumentException($"Требуется параметр '{SpecialSymbolsParameter}'."
-                                , $"{nameof(parameters)}[6]"))
-                        : (new PasswordConfig(TimeSpan.FromDays(double.Parse(parameters[0]))
-                                , int.Parse(parameters[1])
-                                , int.Parse(parameters[2])
-                                , bool.Parse(parameters[3])
-                                , bool.Parse(parameters[4])
+                                , $"{nameof(parameters)}[{SpecialSymbols}]"))
+                        : (new PasswordConfig(TimeSpan.FromDays(double.Parse(parameters[MaxLifeTime]))
+                                , int.Parse(parameters[MinLength])
+                                , int.Parse(parameters[SaltLength])
+                                , bool.Parse(parameters[UseDigits])
+                                , bool.Parse(parameters[UseUpperCase])
                                 , false
                                 , Array.Empty<char>())));
 

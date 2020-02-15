@@ -18,13 +18,13 @@ namespace DevFactoryZ.CharityCRM.UI.Web
         {
             Configuration = configuration;
 
-            sessionConfig = configuration.GetSection(nameof(SessionConfig)).Get<SessionConfig>();
+            sessionConfig = configuration.GetSection(nameof(ServerSessionConfig)).Get<ServerSessionConfig>();
             cookieConfig = configuration.GetSection(nameof(CookieConfig)).Get<CookieConfig>();
         }
 
         public IConfiguration Configuration { get; }
         
-        ISessionConfig sessionConfig;
+        IServerSessionConfig sessionConfig;
         ICookieConfig cookieConfig;
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -34,7 +34,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             services.AddControllers();
 
             services.AddSingleton(Configuration);
-            
+                        
             services
                 .WithDataAccessComponents("local")
                 .WithDomainServices();
@@ -62,7 +62,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             
             app.UseSession();
             
-            app.UseCharityAuthentication(repositoryCreatorFactory, sessionConfig, cookieConfig);
+            app.UseCharityAuthentication(repositoryCreatorFactory, cookieConfig);
  
             app.UseEndpoints(endpoints =>
             {

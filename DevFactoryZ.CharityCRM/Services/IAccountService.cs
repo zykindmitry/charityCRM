@@ -24,7 +24,7 @@ namespace DevFactoryZ.CharityCRM.Services
         Account GetById(int id);
 
         /// <summary>
-        /// Возвращает объект типа <see cref="Account"/> из хранилища по заданному <see cref="Account.Login"/>.
+        /// Получение из хранилища объекта <see cref="Account"/> по заданному <see cref="Account.Login"/>.
         /// Генерирует <see cref="EntityNotFoundException"/>, если объект не найден.
         /// </summary>
         /// <exception cref="EntityNotFoundException"></exception>
@@ -54,5 +54,15 @@ namespace DevFactoryZ.CharityCRM.Services
         /// </summary>
         /// <param name="id">Идентификатор аккаунта для удаления.</param>
         void Delete(int id);
+
+        /// <summary>
+        /// Сохранение нового объекта <see cref="AccountSession"/> в хранилище.  
+        /// </summary>
+        /// <param name="login">Логин пользователя из Http-запроса на аутентификацию, для которого создается <see cref="AccountSession"/>.</param>
+        /// <param name="password">Пароль пользователя из Http-запроса на аутентификацию, для которого создается <see cref="AccountSession"/>.</param>
+        /// <param name="userAgent">User-Agent из Http-запроса на аутентификацию, для которого создается <see cref="AccountSession"/>.</param>
+        /// <param name="ipAddress">IP-адрес из Http-запроса на аутентификацию, для которого создается <see cref="AccountSession"/>.</param>
+        /// <returns>Экзампляр <see cref="AccountSession"/> для пользователя, прошедшего аутентификацию по логину и паролю.</returns>
+        AccountSession Login(string login, string password, string userAgent, string ipAddress);
     }
 }

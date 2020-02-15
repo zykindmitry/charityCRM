@@ -27,34 +27,6 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                 .IsRequired();
 
             #endregion
-
-            #region Для связи с Password и PasswordConfig
-
-            account.OwnsOne(a => a.Password, password =>
-                {
-                    password.WithOwner();
-                    password.Ignore(p => p.PasswordConfig);
-                    password.Ignore(p => p.TemporaryPassword);
-                    password.Ignore(p => p.Salt);
-                    password.Ignore(p => p.Hash);
-                    password.Ignore(p => p.IsAlive);
-                   
-
-                    password.HasOne(p => p.PasswordConfig)
-                        .WithMany()
-                        .IsRequired()
-                        .HasForeignKey("PasswordConfigId")                        
-                        .OnDelete(DeleteBehavior.Restrict);                    
-
-
-                    password.Property(p => p.RawHash).IsRequired();
-
-                    password.Property(p => p.RawSalt).IsRequired();
-
-                    password.ToTable(nameof(Account));
-                });
-
-            #endregion
         }
     }
 }

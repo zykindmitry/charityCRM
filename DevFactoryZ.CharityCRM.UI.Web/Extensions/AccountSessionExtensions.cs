@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
 using DevFactoryZ.CharityCRM.Persistence;
 
 namespace DevFactoryZ.CharityCRM
@@ -10,67 +9,19 @@ namespace DevFactoryZ.CharityCRM
     public static class AccountSessionExtensions
     {
         /// <summary>
-        /// Проверяет подлинность HTTP-запроса путем сравнения IP-адреса клиента и User-Agent из HTTP-запроса со значениями, 
-        /// хранящимися в <see cref="AccountSession"/> на сервере.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <param name="accountSession"><see cref="AccountSession"/> на сервере, содержащая правильные значения IP-адреса клиента и User-Agent.</param>
-        /// <param name="context">Текущий <see cref="HttpContext"/>.</param>
-        /// <returns>Результат проверки.</returns>
-        public static bool IsReliable(
-            this AccountSession accountSession
-            , HttpContext context)
-        {
-            var userAgent = context?.GetUserAgent()
-                ?? throw new ArgumentNullException(nameof(context), $"{nameof(HttpContext)} is null."); 
-
-            var ipAddress = context.GetIpAddress();
-
-            return accountSession.UserAgent.Equals(userAgent, StringComparison.InvariantCulture)
-                && accountSession.IPAddress.Equals(ipAddress, StringComparison.InvariantCulture);
-        }
-
-        /// <summary>
-        /// Проверяет актуальность пользовательской сессии путем сравнения времени окончания срока жизни, хранящегося в текущем <see cref="AccountSession"/>, 
-        /// с текущим временем на сервере.
-        /// </summary>
-        /// <param name="accountSession">Текущая <see cref="AccountSession"/> на сервере.</param>
-        /// <returns>Результат проверки.</returns>
-        public static bool IsAlive(this AccountSession accountSession)
-        {
-            return accountSession.ExpiredAt >= DateTime.UtcNow;
-        }
-
-        /// <summary>
-        /// Аутентификация пользователя по паролю с использованием метода <see cref="Account.Authenticate(char[])"/>.
-        /// </summary>
-        /// <exception cref="ValidationException"></exception>
-        /// <param name="accountSession">Текущая <see cref="AccountSession"/> на сервере.</param>
-        /// <param name="password">Пароль, переданный на сервер в HTTP-запросе.</param>
-        /// <returns>Результат аутентификации.</returns>
-        public static bool IsAuthenticated(
-            this AccountSession accountSession
-            , string password)
-        {
-            return accountSession.Account.Authenticate(password?.ToCharArray());           
-        }
-
-        /// <summary>
         /// Сохранение изменений текущей пользовательской сессии в хранилище данных.
         /// </summary>
-        /// <param name="accountSession">Текущая <see cref="AccountSession"/> на сервере.</param>
+        /// <param name="accountSession">Текущая <see cref="AccountSession"/>.</param>
         /// <param name="repositoryCreatorFactory">Фабрика создателей репозиториев <see cref="IRepositoryCreatorFactory"/>.</param>
-        /// <returns>Текущая <see cref="AccountSession"/> на сервере.</returns>
+        /// <returns>Текущая <see cref="AccountSession"/>.</returns>
         public static AccountSession UpdateRepository(
             this AccountSession accountSession
             , IRepositoryCreatorFactory repositoryCreatorFactory)
         {
             var accountSessionRepository = repositoryCreatorFactory?
-                .GetRepositoryCreator<IAccountSessionRepository>()?
+                .GetRepositoryCreator<IAccountSessionRepository>()
                 .Create() 
-                ?? throw new ArgumentException(
-                    $"Фабрика создателей репозиториев '{nameof(repositoryCreatorFactory)}' не инициализирована или не содержит '{nameof(IAccountSessionRepository)}'."
-                    , nameof(repositoryCreatorFactory));
+                ?? throw new ArgumentNullException(nameof(repositoryCreatorFactory));
 
             accountSession = accountSessionRepository.Update(accountSession);
             accountSessionRepository.Save();

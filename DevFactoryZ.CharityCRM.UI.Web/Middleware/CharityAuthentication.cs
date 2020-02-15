@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System;
+using System.Net;
+using System.Net.Http;
 using DevFactoryZ.CharityCRM.UI.Web.Configuration;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.Persistence;
-using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
 {
@@ -16,71 +17,64 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
         private readonly RequestDelegate next;
         private readonly IRepositoryCreatorFactory repositoryCreatorFactory;
         private readonly IAccountSessionService accountSessionService;
-        private readonly ISessionConfig sessionConfig;
         private readonly ICookieConfig cookieConfig;
 
         #region .ctor
 
-        protected CharityAuthentication(RequestDelegate next
-            , ISessionConfig sessionConfig
+        protected CharityAuthentication(
+            RequestDelegate next
             , ICookieConfig cookieConfig)
         {
             this.next = next;
-            this.sessionConfig = sessionConfig;
-            this.cookieConfig = cookieConfig;
+            this.cookieConfig = cookieConfig ?? throw new ArgumentNullException(nameof(cookieConfig));
         }
 
-        public CharityAuthentication(RequestDelegate next
+        public CharityAuthentication(
+            RequestDelegate next
             , IRepositoryCreatorFactory repositoryCreatorFactory
-            , ISessionConfig sessionConfig
             , ICookieConfig cookieConfig)
-            : this(next, sessionConfig, cookieConfig)
+            : this(next, cookieConfig)
         {
-            this.repositoryCreatorFactory = repositoryCreatorFactory;
+            this.repositoryCreatorFactory = repositoryCreatorFactory ?? throw new ArgumentNullException(nameof(repositoryCreatorFactory));
         }
 
-        public CharityAuthentication(RequestDelegate next
+        public CharityAuthentication(
+            RequestDelegate next
             , IAccountSessionService accountSessionService
-            , ISessionConfig sessionConfig
             , ICookieConfig cookieConfig)
-            : this(next, sessionConfig, cookieConfig)
+            : this(next, cookieConfig)
         {
-            this.accountSessionService = accountSessionService;
+            this.accountSessionService = accountSessionService ?? throw new ArgumentNullException(nameof(accountSessionService));
         }
 
         #endregion
 
         public async Task InvokeAsync(HttpContext context)
         {
-            #region Определение AccountSessionId из HTTP-запроса
-
-            var accountSessionId = context.Request.Cookies.TryGetValue(cookieConfig.Name, out string value)
-                ? (Guid.TryParse(value, out Guid guid)
-                    ? guid
-                    : throw new ValidationException("Неверный формат идентификатора пользовательской сессии.")) // Позже заменится на установку нужного StatusCode
-                : Guid.Empty;
-
-            #endregion
-
-            #region Аутентификация
+            var accountSessionId = GetAccountSessionId(context);
 
             if (accountSessionId != Guid.Empty)
             {
                 await Authenticate(context, accountSessionId);
             }
 
-            #endregion
-
             await next.Invoke(context);
         }
         
+        private Guid GetAccountSessionId(HttpContext context)
+        {
+            return context.Request.Cookies.TryGetValue(cookieConfig.Name, out string value)
+                ? (Guid.TryParse(value, out Guid guid)
+                    ? guid
+                    : throw new HttpRequestException("Неверный формат идентификатора пользовательской сессии."))
+                : Guid.Empty;
+        }
+
         private async Task Authenticate(HttpContext context, Guid sessionId)
         {
-            var isAccountSessionFromContext = context.Session.TryGetValue(nameof(AccountSession), out byte[] value);
-
             AccountSession accountSession;
 
-            if (isAccountSessionFromContext)
+            if (context.Session.TryGetValue(nameof(AccountSession), out byte[] value))
             {
                 accountSession = await value.FromJsonAsync<AccountSession>();
             }
@@ -91,7 +85,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
             }
 
             if (!accountSession.IsAlive()
-                || !accountSession.IsReliable(context))
+                || !accountSession.IsReliable(context.GetUserAgent(), context.GetIpAddress()))
             {
                 context.Session.Remove(nameof(AccountSession));
 
@@ -104,7 +98,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
                         , IsEssential = cookieConfig.IsEssential
                     });
 
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             }
         }
 
@@ -112,23 +106,17 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
             Guid id
             , IRepositoryCreatorFactory repositoryCreator)
         {
-            return repositoryCreator?
-                .GetRepositoryCreator<IAccountSessionRepository>()?
-                .Create()?
-                .GetById(id) ??
-                throw new ArgumentException(
-                    $"Фабрика создателей репозиториев '{nameof(IRepositoryCreatorFactory)}' не инициализирована или не содержит '{nameof(IAccountSessionRepository)}'."
-                    , nameof(repositoryCreator));
+            return repositoryCreator
+                .GetRepositoryCreator<IAccountSessionRepository>()
+                .Create()
+                .GetById(id);
         }
 
         private AccountSession GetAccountSessionBy(
             Guid id
             , IAccountSessionService sessionService)
         {
-            return sessionService?.GetById(id) ??
-                throw new ArgumentNullException(
-                    nameof(sessionService)
-                    , $"Сервис '{nameof(IAccountSessionService)}' не инициализирован.");
+            return sessionService.GetById(id);
         }
     }
 }
