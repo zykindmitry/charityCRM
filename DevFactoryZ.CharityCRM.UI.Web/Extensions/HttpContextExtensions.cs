@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace DevFactoryZ.CharityCRM
+namespace DevFactoryZ.CharityCRM.UI.Web
 {
     /// <summary>
     /// Содержит методы расширений для работы с <see cref="HttpContext"/>.
