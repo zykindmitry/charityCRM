@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using React.AspNet;
 using DevFactoryZ.CharityCRM.UI.Web.Configuration;
 using DevFactoryZ.CharityCRM.UI.Web.Middleware;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.Persistence;
-using React.AspNet;
 
 namespace DevFactoryZ.CharityCRM.UI.Web
 {
@@ -68,15 +68,10 @@ namespace DevFactoryZ.CharityCRM.UI.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
-            
-            app.UseSession();
-            
-            app.UseCharityAuthentication(repositoryCreatorFactory, cookieConfig);
- 
             app.UseReact(config => { });
             app.UseStaticFiles();
-            app.UseRouting();            
+            app.UseRouting();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
