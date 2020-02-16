@@ -71,7 +71,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             app.UseReact(config => { });
             app.UseStaticFiles();
             app.UseRouting();
-            //app.UseAuthorization();
+            app.UseSession();
+            app.UseCharityAuthentication(repositoryCreatorFactory, cookieConfig);
 
             app.UseEndpoints(endpoints =>
             {
