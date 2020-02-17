@@ -15,7 +15,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         /// <summary>
         /// Создвет экземпляр <see cref="PermissionGetCommand"/>.
         /// </summary>
-        /// <param name="permissionRepository">Экземпляр <see cref="IPermissionRepository"/> для работы с хранилищем.</param>
+        /// <param name="repositoryCreator">Экземпляр <see cref="ICreateRepository"/> типа <see cref="IPermissionRepository"/> для работы с хранилищем.</param>
         public PermissionGetCommand(ICreateRepository<IPermissionRepository> repositoryCreator)
         {
             this.repositoryCreator = repositoryCreator;

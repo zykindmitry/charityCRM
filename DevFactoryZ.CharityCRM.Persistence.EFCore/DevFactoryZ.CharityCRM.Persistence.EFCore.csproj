@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20191226211348_create_db.Designer.cs" />
     <Compile Remove="Migrations\20191226222319_create_db.cs" />
     <Compile Remove="Migrations\20191226222319_create_db.Designer.cs" />
+    <Compile Remove="Migrations\20200122053457_AddAccounts.cs" />
+    <Compile Remove="Migrations\20200122053457_AddAccounts.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,10 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevFactoryZ.CharityCRM\DevFactoryZ.CharityCRM.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

@@ -1,39 +1,71 @@
-﻿using DevFactoryZ.CharityCRM.UI.Web.Api.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
+using System;
+using DevFactoryZ.CharityCRM.Services;
+using DevFactoryZ.CharityCRM.UI.Web.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : ControllerBase
     {
+        private readonly IAccountService accountService;
+        private readonly ICookieConfig cookieConfig;
+       
+        public LoginController(
+            IAccountService accountService
+            , IConfiguration configuration)
+        {
+            this.accountService = accountService ?? throw new ArgumentNullException(nameof(accountService));
+
+            cookieConfig = configuration?.GetSection(nameof(CookieConfig))?.Get<CookieConfig>() 
+                ?? throw new ArgumentNullException(nameof(configuration));
+        }
+
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult> Post([FromBody]LoginModel model)
+        public async Task<ActionResult> Post([FromBody] LoginViewModel loginViewModel)
         {
-            var claims = new List<Claim>
+            if (loginViewModel == null || string.IsNullOrWhiteSpace(loginViewModel.Login))
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, model.Login),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, "Admin"),
-                new Claim("Permission", "Add-Permission")
-            };
+                return BadRequest("Требуется логин.");
+            }
 
-            var identity = new ClaimsIdentity(
-                claims, 
-                "ApplicationCookie", 
-                ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
+            try
+            {
+                AccountSession accountSession;
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity));
+                if (HttpContext.Session.TryGetValue(nameof(AccountSession), out byte[] value))
+                {
+                    accountSession = await value.FromJsonAsync<AccountSession>();
+                }
+                else
+                {
+                    accountSession = accountService.Login(loginViewModel.Login, loginViewModel.Password, HttpContext.GetUserAgent(), HttpContext.GetIpAddress());
 
-            return Ok();
+                    HttpContext.Session.Set(nameof(AccountSession), accountSession.ToJson());
+                }
+
+                HttpContext.Response.Cookies.Append(cookieConfig.Name
+                    , accountSession.Id.ToString()
+                    , new CookieOptions()
+                    {
+                        HttpOnly = cookieConfig.HttpOnly
+                        , IsEssential = cookieConfig.IsEssential
+                        , Expires = DateTime.UtcNow.Add(cookieConfig.Expiration ?? new TimeSpan())
+                    });
+
+                return Ok("Пользователь аутентифицирован.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

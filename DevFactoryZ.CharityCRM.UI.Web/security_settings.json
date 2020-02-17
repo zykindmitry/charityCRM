@@ -1,0 +1,15 @@
+{
+  "ServerSessionConfig": {
+    "ServerSessionIdleTimeout": "00:01:00"
+  },
+  "AccountSessionConfig": {
+    "AccountSessionIdleTimeout": "00:02:00",
+    "AccountSessionExpiration": "00:03:00"
+  },
+  "CookieConfig": {
+    "Name": "AccountSessionId",
+    "HttpOnly": true,
+    "Expiration": "90.00:00:00",
+    "IsEssential": true
+  }
+}

@@ -21,18 +21,21 @@ namespace DevFactoryZ.CharityCRM.Ioc
             // Register UnitOfWorkCreator single per lifetime
             return services
                 .AddScoped(
-                    provider => 
+                    provider =>
                         new UnitOfWorkCreator(provider.GetService<IConfiguration>(), connectionName))
                 .AddScoped<ICreateUnitOfWork>(
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .AddScoped<IRepositoryFactory>(
                     provider => provider.GetService<UnitOfWorkCreator>())
                 .AddScoped<IRepositoryCreatorFactory>(
-                    provider => provider.GetService<UnitOfWorkCreator>())                    
+                    provider => provider.GetService<UnitOfWorkCreator>())
                 .WithRepository<IPermissionRepository>()
                 .WithRepository<IRoleRepository>()
                 .WithRepository<IDonationRepository>()
-                .WithRepository<IFundRegistrationRepository>();
+                .WithRepository<IFundRegistrationRepository>()
+                .WithRepository<IAccountRepository>()
+                .WithRepository<IAccountSessionRepository>()
+                .WithRepository<IPasswordConfigRepository>();
         }
 
         /// <summary>
@@ -46,7 +49,14 @@ namespace DevFactoryZ.CharityCRM.Ioc
                 .AddTransient<IPermissionService>(
                     provider => new PermissionService(provider.GetService<IPermissionRepository>()))
                 .AddTransient<IRoleService>(
-                    provider => new RoleService(provider.GetService<IRoleRepository>()));
+                    provider => new RoleService(provider.GetService<IRoleRepository>()))
+                .AddTransient<IAccountSessionService>(
+                    provider => new AccountSessionService(provider.GetService<IAccountSessionRepository>()))
+                .AddTransient<IAccountService>(
+                    provider => new AccountService(
+                        provider.GetService<IAccountRepository>()
+                        , provider.GetService<IAccountSessionService>()
+                        , WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)
@@ -75,6 +85,13 @@ namespace DevFactoryZ.CharityCRM.Ioc
                         provider
                             .GetService<IRepositoryCreatorFactory>()
                             .GetRepositoryCreator<TRepository>());
+        }
+
+        private static T WithConfig<T>(IConfiguration configuration)
+        {
+            var sect = configuration.GetSection(typeof(T).Name);
+            var res = sect.Get<T>();
+            return res;
         }
     }
 }

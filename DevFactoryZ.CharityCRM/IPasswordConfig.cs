@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -10,7 +8,7 @@ namespace DevFactoryZ.CharityCRM
     /// при генерации случайного пароля, соответствующего заданной конфигурации,
     /// при хешировании введенного пользователем пароля.
     /// </summary>
-    public interface IPasswordConfig
+    public interface IPasswordConfig : IAmPersistent<int>
     {
         /// <summary>
         /// Срок действия пароля.
@@ -18,7 +16,7 @@ namespace DevFactoryZ.CharityCRM
         TimeSpan MaxLifeTime { get; }
         
         /// <summary>
-        /// Мигнимальная длина пароля.
+        /// Минимальная длина пароля.
         /// </summary>
         int MinLength { get; }
         
@@ -53,5 +51,10 @@ namespace DevFactoryZ.CharityCRM
         /// Флаг обязательного использования букв в верхнем регистре для усложнения пароля.
         /// </summary>
         bool UseUpperCase { get; }
+
+        /// <summary>
+        /// Дата/время в формате UTC создания конфигурации сложности пароля.
+        /// </summary>
+        DateTime CreatedAt { get; }
     }
 }
