@@ -2,9 +2,7 @@
 using DevFactoryZ.CharityCRM.UI.Web.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -50,7 +48,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             return GetResultWithErrorHandling(
                 service =>
                 {
-                    var model = service.Create(viewModel.ToDtoForCreate());
+                    var model = service.Create(viewModel.ToDomain());
                     return new AccountListModel(model);
                 });
         }
@@ -66,8 +64,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             }
 
             return ExecuteWithErrorHandling(
-                service => service.Update(id, viewModel.ToDtoForUpdate())
-                );
+                service => service.Update(viewModel.Login, viewModel.PasswordClearText, viewModel.PasswordConfig));
         }
 
         // DELETE api/<controller>/5

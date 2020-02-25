@@ -24,15 +24,9 @@ namespace DevFactoryZ.CharityCRM
         /// <exception cref="ArgumentNullException"></exception>
         /// <param name="login">Имя пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(
-            string login
-            , IPasswordConfig passwordConfig)
-            : this(
-                  login
-                  , new Password(passwordConfig)
-                  , DateTime.UtcNow)
+        public Account(string login, IPasswordConfig passwordConfig)
+            : this(login, new Password(passwordConfig), DateTime.UtcNow)
         {
-
         }
 
         /// <summary>
@@ -43,14 +37,8 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="login">Имя пользователя.</param>
         /// <param name="password">Текстовое представление пароля пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(
-            string login
-            , char[] password
-            , IPasswordConfig passwordConfig)
-            : this(
-                  login
-                  , new Password(passwordConfig, password ?? Array.Empty<char>())
-                  , null)
+        public Account(string login, char[] password, IPasswordConfig passwordConfig)
+            : this(login, new Password(passwordConfig, password ?? Array.Empty<char>()), null)
         {
 
         }
@@ -62,11 +50,7 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="Login">Имя пользователя.</param>
         /// <param name="password">Экземпляр Password.</param>
         /// <param name="createdAt">Время создания аккаунта.</param>
-        public Account(
-            string login
-            , Password password
-            , DateTime? createdAt)
-            : this()
+        public Account(string login, Password password, DateTime? createdAt) : this()
         {
             Login = !string.IsNullOrWhiteSpace(login)
                 ? login
