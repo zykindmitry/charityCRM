@@ -19,11 +19,10 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
         /// <param name="cookieConfig">Параметры конфигурации Cookies.</param>
         /// <returns></returns>
         internal static IApplicationBuilder UseCharityAuthentication(
-            this IApplicationBuilder builder
-            , IRepositoryCreatorFactory repositoryCreatorFactory
-            , ICookieConfig cookieConfig)
+            this IApplicationBuilder builder, 
+            ICookieConfig cookieConfig)
         {
-            return builder.UseMiddleware<CharityAuthentication>(repositoryCreatorFactory, cookieConfig);
+            return builder.UseMiddleware<CharityAuthentication>(cookieConfig);
         }
 
         /// <summary>

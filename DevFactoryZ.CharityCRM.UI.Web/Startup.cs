@@ -59,9 +59,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app
-            , IWebHostEnvironment env
-            , IRepositoryCreatorFactory repositoryCreatorFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -72,7 +70,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
-            app.UseCharityAuthentication(repositoryCreatorFactory, cookieConfig);
+            app.UseCharityAuthentication(cookieConfig);
 
             app.UseEndpoints(endpoints =>
             {
