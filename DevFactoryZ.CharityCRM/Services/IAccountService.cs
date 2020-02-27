@@ -40,6 +40,13 @@ namespace DevFactoryZ.CharityCRM.Services
         Account Create(Account newAccount);
 
         /// <summary>
+        /// Сохранение нового объекта <see cref="Account"/> в хранилище.
+        /// </summary>
+        /// <param name="accountData">Данные  для сохранения.</param>
+        /// <returns>Сохраненный <see cref="Account"/>.</returns>
+        Account Create(AccountData accountData);
+
+        /// <summary>
         /// Изменение пароля для существующего объекта <see cref="Account"/> в хранилище.
         /// Генерирует <see cref="EntityNotFoundException"/>, если объект не найден.
         /// </summary>
@@ -48,6 +55,15 @@ namespace DevFactoryZ.CharityCRM.Services
         /// <param name="newPassword">Новый пароль.</param>
         /// <param name="actualPasswordConfig">Актуальная конфигурация сложности пароля.</param>
         void Update(string login, char[] newPassword, IPasswordConfig actualPasswordConfig);
+
+        /// <summary>
+        /// Изменение пароля для существующего объекта <see cref="Account"/> в хранилище.
+        /// Генерирует <see cref="EntityNotFoundException"/>, если объект не найден.
+        /// </summary>
+        /// <exception cref="EntityNotFoundException"></exception>
+        /// <param name="id">Идентификатор объекта <see cref="Account"/> в хранилище.</param>
+        /// <param name="accountData">Данные для изменения пароля.</param>
+        void Update(int id, AccountData accountData);
 
         /// <summary>
         /// Удаление объекта <see cref="Account"/> из хранилища.
