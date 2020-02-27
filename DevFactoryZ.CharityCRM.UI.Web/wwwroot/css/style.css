@@ -1,7 +1,13 @@
 ﻿@charset "UTF-8";
 
 body {
+    font-family: 'Circular Std Book';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: #71748d;
     background-color: #efeff6;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* -----------------------
@@ -402,7 +408,7 @@ Splash Container / Wrapper
     text-align: center;
     display: block;
     line-height: 15px;
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-top: 5px;
     padding-bottom: 5px
 }
