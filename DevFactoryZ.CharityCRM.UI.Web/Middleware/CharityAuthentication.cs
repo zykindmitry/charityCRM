@@ -20,9 +20,9 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
 
         #region .ctor
 
-        protected CharityAuthentication(
-            RequestDelegate next, 
-            ICookieConfig cookieConfig)
+        public CharityAuthentication(
+            RequestDelegate next
+            , ICookieConfig cookieConfig)
         {
             this.next = next;
             this.cookieConfig = cookieConfig ?? throw new ArgumentNullException(nameof(cookieConfig));
@@ -30,14 +30,13 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
 
         #endregion
 
-        public async Task InvokeAsync(HttpContext context, IAccountSessionService service)
+        public async Task InvokeAsync(HttpContext context, IAccountSessionService accountSessionService)
         {
-            this.service = service;
             var accountSessionId = GetAccountSessionId(context);
 
             if (accountSessionId != Guid.Empty)
             {
-                await Authenticate(context, accountSessionId);
+                await Authenticate(context, accountSessionService, accountSessionId);
             }
 
             await next.Invoke(context);
@@ -52,7 +51,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
                 : Guid.Empty;
         }
 
-        private async Task Authenticate(HttpContext context, Guid sessionId)
+        private async Task Authenticate(HttpContext context, IAccountSessionService accountSessionService, Guid sessionId)
         {
             AccountSession accountSession;
 
@@ -62,7 +61,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
             }
             else
             {
-                accountSession = GetAccountSessionBy(sessionId);
+                accountSession = accountSessionService.GetById(sessionId);
                 context.Session.Set(nameof(AccountSession), accountSession.ToJson());
             }
 
@@ -82,11 +81,6 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
 
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             }
-        }
-
-        private AccountSession GetAccountSessionBy(Guid id)
-        {
-            return service.GetById(id);
         }
     }
 }
