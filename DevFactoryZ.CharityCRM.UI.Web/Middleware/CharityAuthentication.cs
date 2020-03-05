@@ -15,13 +15,11 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
     public class CharityAuthentication
     {
         private readonly RequestDelegate next;
-        private readonly IRepositoryCreatorFactory repositoryCreatorFactory;
-        private readonly IAccountSessionService accountSessionService;
         private readonly ICookieConfig cookieConfig;
 
         #region .ctor
 
-        protected CharityAuthentication(
+        public CharityAuthentication(
             RequestDelegate next
             , ICookieConfig cookieConfig)
         {
@@ -29,33 +27,15 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
             this.cookieConfig = cookieConfig ?? throw new ArgumentNullException(nameof(cookieConfig));
         }
 
-        public CharityAuthentication(
-            RequestDelegate next
-            , IRepositoryCreatorFactory repositoryCreatorFactory
-            , ICookieConfig cookieConfig)
-            : this(next, cookieConfig)
-        {
-            this.repositoryCreatorFactory = repositoryCreatorFactory ?? throw new ArgumentNullException(nameof(repositoryCreatorFactory));
-        }
-
-        public CharityAuthentication(
-            RequestDelegate next
-            , IAccountSessionService accountSessionService
-            , ICookieConfig cookieConfig)
-            : this(next, cookieConfig)
-        {
-            this.accountSessionService = accountSessionService ?? throw new ArgumentNullException(nameof(accountSessionService));
-        }
-
         #endregion
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, IAccountSessionService accountSessionService)
         {
             var accountSessionId = GetAccountSessionId(context);
 
             if (accountSessionId != Guid.Empty)
             {
-                await Authenticate(context, accountSessionId);
+                await Authenticate(context, accountSessionService, accountSessionId);
             }
 
             await next.Invoke(context);
@@ -70,7 +50,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
                 : Guid.Empty;
         }
 
-        private async Task Authenticate(HttpContext context, Guid sessionId)
+        private async Task Authenticate(HttpContext context, IAccountSessionService accountSessionService, Guid sessionId)
         {
             AccountSession accountSession;
 
@@ -80,7 +60,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
             }
             else
             {
-                accountSession = GetAccountSessionBy(sessionId, repositoryCreatorFactory);
+                accountSession = accountSessionService.GetById(sessionId);
                 context.Session.Set(nameof(AccountSession), accountSession.ToJson());
             }
 
@@ -100,23 +80,6 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
 
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             }
-        }
-
-        private AccountSession GetAccountSessionBy(
-            Guid id
-            , IRepositoryCreatorFactory repositoryCreator)
-        {
-            return repositoryCreator
-                .GetRepositoryCreator<IAccountSessionRepository>()
-                .Create()
-                .GetById(id);
-        }
-
-        private AccountSession GetAccountSessionBy(
-            Guid id
-            , IAccountSessionService sessionService)
-        {
-            return sessionService.GetById(id);
         }
     }
 }
