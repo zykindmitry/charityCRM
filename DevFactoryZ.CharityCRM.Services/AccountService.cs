@@ -39,16 +39,6 @@ namespace DevFactoryZ.CharityCRM.Services
             return newAccount;
         }
 
-        public Account Create(AccountData accountData)
-        {
-            var newAcount = new Account(accountData.Login, accountData.PasswordConfig);
-            
-            repository.Create(newAcount);
-            repository.Save();
-
-            return newAcount;
-        }
-
         public void Delete(int id)
         {
             repository.Delete(id);
@@ -94,14 +84,6 @@ namespace DevFactoryZ.CharityCRM.Services
             var account = GetByLogin(login);
             account.Password.ChangeTo(newPassword, actualPasswordConfig);
             
-            repository.Save();
-        }
-
-        public void Update(int id, AccountData accountData)
-        {
-            var account = GetById(id);
-            account.Password.ChangeTo(accountData.PasswordClearText, accountData.PasswordConfig);
-
             repository.Save();
         }
     }

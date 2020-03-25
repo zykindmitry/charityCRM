@@ -15,7 +15,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
     {
         private readonly RequestDelegate next;
         private readonly ICookieConfig cookieConfig;
-        
+
         #region .ctor
 
         public CharityAuthentication(
