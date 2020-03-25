@@ -81,6 +81,7 @@ namespace DevFactoryZ.CharityCRM.Services
 
             var newAccountSession = new AccountSession(
                 account
+                , Guid.NewGuid()
                 , userAgent
                 , ipAddress
                 , DateTime.UtcNow.Add(accountSessionConfig.AccountSessionIdleTimeout));

@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using DevFactoryZ.CharityCRM.UI.Web.Configuration;
 using DevFactoryZ.CharityCRM.Services;
-using DevFactoryZ.CharityCRM.Persistence;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
 {
@@ -16,8 +15,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Middleware
     {
         private readonly RequestDelegate next;
         private readonly ICookieConfig cookieConfig;
-        private IAccountSessionService service;
-
+        
         #region .ctor
 
         public CharityAuthentication(
