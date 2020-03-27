@@ -33,17 +33,23 @@ function httpPostRequest(url, data) {
 
     var request = new XMLHttpRequest();
     
-    request.open(httpPost, url, false);
+    request.open(httpPost, url, true);
 
     request.onreadystatechange = function () {
-        if (this.readyState == this.DONE) {
-            alert(`${this.status}: ${this.statusText}. ${this.responseText}`);
-        }
-        else {
-            alert('Запрос не выполнен.');
-        }
-    }
-    
+        switch (this.readyState) {
+            case this.DONE:
+                alert(`${this.status}: ${this.statusText}. ${this.responseText}`);
+                break;
+            case this.HEADERS_RECEIVED:
+            case this.LOADING:
+            case this.OPENED:
+            case this.UNSENT:
+                break;
+            default:
+                alert(`Неизвестный статус запроса: '${this.readyState} ${this.statusText}'. Обратитесь в службу поддержки.`);
+        };
+    };
+
     request.setRequestHeader('Content-Type', "application/json");
 
     request.send(JSON.stringify(data));
