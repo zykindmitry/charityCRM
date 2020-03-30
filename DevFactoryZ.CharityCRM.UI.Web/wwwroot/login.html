@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/fonts/circular-std/style.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/login.css">
+
+    <script src="js/login.js"></script>
 </head>
 
 <body>    
@@ -28,14 +30,14 @@
                         <input class="form-control form-control-lg" id="username" type="text" placeholder="Имя пользователя (логин)" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <input class="form-control form-control-lg" id="password" type="password" placeholder="Пароль">
+                        <input class="form-control form-control-lg" id="password" type="password" autocomplete="off" placeholder="Пароль">
                     </div>
                     <div class="form-group">
                         <label class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox"><span class="custom-control-label">Запомнить меня</span>
                         </label>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">Войти</button>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" onclick="login(); return false;">Войти</button>
                 </form>
             </div>
             <div class="card-footer bg-white p-0  ">

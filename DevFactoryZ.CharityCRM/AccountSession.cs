@@ -14,24 +14,26 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         protected AccountSession()
         {
-            Id = Guid.NewGuid();
         }
 
         /// <summary>
         /// Создает экземпляр пользовательской сессии.
         /// </summary>
         /// <param name="account">Аккаунт пользователя, инициирующего новую сессию.</param>
+        /// <param name="id">Идентификатор сессии.</param>
         /// <param name="userAgent">User-Agent из запроса.</param>
         /// <param name="ipAddress">IP-адрес, с которого происходит обращение к приложению.</param>
         /// <param name="expiredAt">Дата/время, после которого пользовательская сессия становится невалидной.</param>
         public AccountSession(
             Account account
+            , Guid id
             , string userAgent
             , string ipAddress
             , DateTime expiredAt)
             : this()
         {
             Account = account;
+            Id = id == Guid.Empty ? Guid.NewGuid() : id;
             UserAgent = userAgent;
             IPAddress = ipAddress;
             ExpiredAt = expiredAt;
