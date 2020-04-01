@@ -17,7 +17,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             this.save = save;
         }
 
-        public void Create(AccountSession repositoryType)
+        public void Add(AccountSession repositoryType)
         {
             setOfAccountSessions.Add(repositoryType);
         }

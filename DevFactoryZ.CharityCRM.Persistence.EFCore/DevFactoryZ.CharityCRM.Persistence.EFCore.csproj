@@ -31,4 +31,8 @@
     <ProjectReference Include="..\DevFactoryZ.CharityCRM\DevFactoryZ.CharityCRM.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

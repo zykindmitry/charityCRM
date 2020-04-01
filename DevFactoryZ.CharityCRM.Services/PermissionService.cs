@@ -15,7 +15,7 @@ namespace DevFactoryZ.CharityCRM.Services
         public Permission Create(PermissionData data)
         {
             var permission = new Permission(data.Name, data.Description);
-            repository.Create(permission);
+            repository.Add(permission);
             repository.Save();
 
             return permission;

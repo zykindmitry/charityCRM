@@ -17,7 +17,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             this.save = save;
         }
 
-        public void Create(FundRegistration fundRegistration)
+        public void Add(FundRegistration fundRegistration)
         {
             setOfFundRegistration.Add(fundRegistration);
         }

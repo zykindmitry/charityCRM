@@ -17,7 +17,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             this.save = save;
         }
 
-        public void Create(Permission permission)
+        public void Add(Permission permission)
         {
             setOfPermissions.Add(permission);
         }

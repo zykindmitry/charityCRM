@@ -24,7 +24,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             this.save = save;
         }
 
-        public void Create(Donation entity)
+        public void Add(Donation entity)
         {
             setOfDonations.Add(entity as TEntity
                 ?? throw new ArgumentNullException(nameof(entity), $"Не задана сущность типа '{typeof(TEntity).Name}' для добавления в хранилище"));

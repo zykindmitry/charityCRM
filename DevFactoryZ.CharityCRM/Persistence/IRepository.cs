@@ -24,7 +24,7 @@ namespace DevFactoryZ.CharityCRM.Persistence
         /// см. Save
         /// </summary>
         /// <param name="repositoryType"></param>
-        void Create(TEntity repositoryType);
+        void Add(TEntity repositoryType);
 
         /// <summary>
         /// Возвращает экземпляр класса TEntity, если он найден по его id

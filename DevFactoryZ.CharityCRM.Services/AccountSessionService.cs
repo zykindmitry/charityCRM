@@ -22,14 +22,6 @@ namespace DevFactoryZ.CharityCRM.Services
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public AccountSession Create(AccountSession newAccountSession)
-        {
-            repository.Create(newAccountSession);
-            repository.Save();
-
-            return newAccountSession;
-        }
-
         public void Delete(Guid id)
         {
             repository.Delete(id);

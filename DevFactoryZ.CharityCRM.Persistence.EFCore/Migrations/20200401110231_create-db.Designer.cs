@@ -10,16 +10,65 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 {
     [DbContext(typeof(CharityDbContext))]
-    [Migration("20200129095913_initial")]
-    partial class initial
+    [Migration("20200401110231_create-db")]
+    partial class createdb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("ProductVersion", "3.1.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Account");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.AccountSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IPAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserAgent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("AccountSession");
+                });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Commodity", b =>
                 {
@@ -27,9 +76,6 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long>("CommodityDonationId")
-                        .HasColumnType("bigint");
 
                     b.Property<decimal?>("Cost")
                         .HasColumnType("decimal(18,2)");
@@ -39,14 +85,18 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
 
+                    b.Property<long?>("DonationId")
+                        .IsRequired()
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommodityDonationId");
+                    b.HasIndex("DonationId");
 
-                    b.ToTable("Commodities");
+                    b.ToTable("Commodity");
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Donation", b =>
@@ -66,7 +116,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Donations");
+                    b.ToTable("Donation");
 
                     b.HasDiscriminator<string>("DonationType").HasValue("Donation");
                 });
@@ -97,6 +147,43 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FundRegistration");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.PasswordConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MaxLifeTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinLength")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SaltLength")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SpecialSymbols")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("UseDigits")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("UseSpecialSymbols")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("UseUpperCase")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PasswordConfig");
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Permission", b =>
@@ -171,11 +258,60 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.HasDiscriminator().HasValue("CommodityDonation");
                 });
 
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Account", b =>
+                {
+                    b.OwnsOne("DevFactoryZ.CharityCRM.Password", "Password", b1 =>
+                        {
+                            b1.Property<int>("AccountId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<DateTime?>("ChangedAt")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("PasswordConfigId")
+                                .HasColumnType("int");
+
+                            b1.Property<byte[]>("RawHash")
+                                .IsRequired()
+                                .HasColumnType("varbinary(max)");
+
+                            b1.Property<byte[]>("RawSalt")
+                                .IsRequired()
+                                .HasColumnType("varbinary(max)");
+
+                            b1.HasKey("AccountId");
+
+                            b1.HasIndex("PasswordConfigId");
+
+                            b1.ToTable("Account");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AccountId");
+
+                            b1.HasOne("DevFactoryZ.CharityCRM.PasswordConfig", "PasswordConfig")
+                                .WithMany()
+                                .HasForeignKey("PasswordConfigId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
+                        });
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.AccountSession", b =>
+                {
+                    b.HasOne("DevFactoryZ.CharityCRM.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DevFactoryZ.CharityCRM.Commodity", b =>
                 {
                     b.HasOne("DevFactoryZ.CharityCRM.CommodityDonation", null)
                         .WithMany("Commodities")
-                        .HasForeignKey("CommodityDonationId")
+                        .HasForeignKey("DonationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

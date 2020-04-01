@@ -54,9 +54,10 @@ namespace DevFactoryZ.CharityCRM.Ioc
                     provider => new AccountSessionService(provider.GetService<IAccountSessionRepository>()))
                 .AddTransient<IAccountService>(
                     provider => new AccountService(
-                        provider.GetService<IAccountRepository>()
-                        , provider.GetService<IAccountSessionService>()
-                        , WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())));
+                        provider.GetService<IAccountRepository>(), 
+                        provider.GetService<IPasswordConfigRepository>(),
+                        provider.GetService<IAccountSessionRepository>(), 
+                        WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)

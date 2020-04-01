@@ -17,7 +17,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             this.save = save;
         }
 
-        public void Create(Role role)
+        public void Add(Role role)
         {
             setOfRoles.Add(role);
         }

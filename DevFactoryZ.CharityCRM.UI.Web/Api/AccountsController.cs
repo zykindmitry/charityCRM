@@ -1,5 +1,5 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
-using DevFactoryZ.CharityCRM.UI.Web.Api.Models;
+using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -20,25 +20,23 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
 
         // GET: api/<controller>
         [HttpGet]
-        [Authorize]
-        public ActionResult<AccountListModel[]> Get()
+        public ActionResult<AccountModel[]> Get()
         {
             return GetResultWithErrorHandling(
-                service => service.GetAll().Select(model => new AccountListModel(model)).ToArray());
+                service => service.GetAll().Select(model => new AccountModel(model)).ToArray());
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        [Authorize]
-        public ActionResult<AccountListModel> Get(int id)
+        public ActionResult<AccountModel> Get(int id)
         {
             return GetResultWithErrorHandling(
-                service => new AccountListModel(service.GetById(id)));
+                service => new AccountModel(service.GetById(id)));
         }
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult<AccountListModel> Post([FromBody]AccountModel viewModel)
+        public ActionResult<AccountModel> Post([FromBody]AccountData viewModel)
         {
             if (viewModel == null)
             {
@@ -48,15 +46,15 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             return GetResultWithErrorHandling(
                 service =>
                 {
-                    var model = service.Create(viewModel.ToDomain());
-                    return new AccountListModel(model);
+                    var model = service.Create(viewModel);
+                    return new AccountModel(model);
                 });
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
         [Authorize]
-        public IActionResult Put(int id, [FromBody]AccountModel viewModel)
+        public IActionResult Put(int id, [FromBody]AccountData viewModel)
         {
             if (viewModel == null)
             {
@@ -64,7 +62,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             }
 
             return ExecuteWithErrorHandling(
-                service => service.Update(viewModel.Login, viewModel.PasswordClearText, viewModel.PasswordConfig));
+                service => service.Update(viewModel.Login, viewModel.PasswordClearText));
         }
 
         // DELETE api/<controller>/5

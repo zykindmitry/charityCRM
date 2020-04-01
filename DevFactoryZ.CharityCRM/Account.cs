@@ -18,18 +18,6 @@ namespace DevFactoryZ.CharityCRM
         }
 
         /// <summary>
-        /// <para>ВНИМАНИЕ!!! ИСПОЛЬЗУЕТСЯ ДЛЯ РЕГИСТРАЦИИ НОВОГО ПОЛЬЗОВАТЕЛЯ.</para>
-        /// Создает экземпляр Account с временным случайным паролем, сгенерированным в экземпляре <see cref="Password"/>.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <param name="login">Имя пользователя.</param>
-        /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
-        public Account(string login, IPasswordConfig passwordConfig)
-            : this(login, new Password(passwordConfig), DateTime.UtcNow)
-        {
-        }
-
-        /// <summary>
         /// <para>ВНИМАНИЕ!!! Используется при первом входе пользоателя в систему или смене пароля.</para>
         /// Создает экземпляр Account c именем и паролем, введенными пользователем в экранной форме.
         /// </summary>
@@ -38,7 +26,7 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="password">Текстовое представление пароля пользователя.</param>
         /// <param name="passwordConfig">Конфигурация параметров сложности пароля.</param>
         public Account(string login, char[] password, IPasswordConfig passwordConfig)
-            : this(login, new Password(passwordConfig, password ?? Array.Empty<char>()), null)
+            : this(login, new Password(passwordConfig, password ?? Array.Empty<char>()), DateTime.UtcNow)
         {
 
         }
@@ -50,7 +38,7 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="Login">Имя пользователя.</param>
         /// <param name="password">Экземпляр Password.</param>
         /// <param name="createdAt">Время создания аккаунта.</param>
-        public Account(string login, Password password, DateTime? createdAt) : this()
+        private Account(string login, Password password, DateTime createdAt) : this()
         {
             Login = !string.IsNullOrWhiteSpace(login)
                 ? login

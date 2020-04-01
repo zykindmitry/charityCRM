@@ -80,7 +80,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 unitOfWork.Add(passwordConfig);
                 unitOfWork.Save();
 
-                Console.WriteLine($"Конфигурвция сложности пароля создана с идентификатором (ID = {passwordConfig.Id})");
+                Console.WriteLine($"Конфигурация сложности пароля создана с идентификатором (ID = {passwordConfig.Id})");
             }
         }
 

@@ -25,13 +25,6 @@ namespace DevFactoryZ.CharityCRM.Services
         AccountSession GetById(Guid id);
 
         /// <summary>
-        /// Сохранение нового объекта <see cref="AccountSession"/> в хранилище.
-        /// </summary>
-        /// <param name="newAccountSession">Данные  для сохранения.</param>
-        /// <returns>Сохраненный <see cref="AccountSession"/>.</returns>
-        AccountSession Create(AccountSession newAccountSession);
-
-        /// <summary>
         /// Удаление объекта <see cref="AccountSession"/> из хранилища.
         /// </summary>
         /// <param name="id">Идентификатор объекта <see cref="AccountSession"/> для удаления.</param>

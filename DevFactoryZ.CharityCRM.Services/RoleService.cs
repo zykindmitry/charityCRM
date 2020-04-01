@@ -15,7 +15,7 @@ namespace DevFactoryZ.CharityCRM.Services
         public Role Create(RoleData data)
         {
             var role = new Role(data.Name, data.Description, data.Permissions);
-            repository.Create(role);
+            repository.Add(role);
             repository.Save();
 
             return role;
