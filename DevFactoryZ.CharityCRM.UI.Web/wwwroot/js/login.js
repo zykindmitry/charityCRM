@@ -7,6 +7,8 @@ let user = {
 
 let loginURL = "/api/login";
 let httpPost = "POST";
+const headerContentTypeName = 'Content-Type';
+const headerContentTypeValue = 'application/json';
 
 function login() {
 
@@ -14,7 +16,8 @@ function login() {
     user.password = document.getElementById("password").value;
 
     if (validateUser(user)) {
-        httpPostRequest(loginURL, user);
+        //httpPostByXMLHttpRequest(loginURL, user);
+        httpPostByFetch(loginURL, user);
     }
     else {
         alert("Не указано имя пользователя или пароль.");
@@ -29,7 +32,7 @@ function validateUser(user){
     return validateLength(user.login) && validateLength(user.password);
 }
 
-function httpPostRequest(url, data) {
+function httpPostByXMLHttpRequest(url, data) {
 
     var request = new XMLHttpRequest();
     
@@ -50,8 +53,27 @@ function httpPostRequest(url, data) {
         };
     };
 
-    request.setRequestHeader('Content-Type', "application/json");
+    request.setRequestHeader(headerContentTypeName, headerContentTypeName);
 
     request.send(JSON.stringify(data));
+}
+
+async function httpPostByFetch(url, data) {
+    try {
+        let response = await fetch(url, {
+            method: httpPost,
+            headers: {
+                "Content-Type": headerContentTypeValue
+            },
+            body: JSON.stringify(data)
+        });
+
+        let result = await response.text();
+
+        alert(`${response.status}: ${response.statusText}. ${result}.`);
+    }
+    catch (e) {
+        alert(`Запрос завершился с ошибкой: [${e.name}]${e.message}.`)
+    }
 }
 
