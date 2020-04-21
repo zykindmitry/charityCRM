@@ -154,7 +154,7 @@ namespace DevFactoryZ.CharityCRM
             get
             {
                 return ChangedAt.HasValue   
-                    && DateTime.UtcNow.Subtract((DateTime)ChangedAt) <= PasswordConfig.MaxLifeTime;
+                    && DateTime.UtcNow.Subtract((DateTime)ChangedAt) <= PasswordConfig?.MaxLifeTime;
             }
         }
 

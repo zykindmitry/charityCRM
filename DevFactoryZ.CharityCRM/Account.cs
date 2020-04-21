@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -76,6 +78,11 @@ namespace DevFactoryZ.CharityCRM
         /// Пароль пользователя.
         /// </summary>
         public Password Password { get; }
+
+        /// <summary>
+        /// Роль пользователя.
+        /// </summary>
+        public Role Role { get; set; }
 
         /// <summary>
         /// Дата создания аккаунта в формате UTC.

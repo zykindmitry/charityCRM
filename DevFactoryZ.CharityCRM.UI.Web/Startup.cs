@@ -14,6 +14,10 @@ using DevFactoryZ.CharityCRM.UI.Web.Configuration;
 using DevFactoryZ.CharityCRM.UI.Web.Middleware;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.Persistence;
+using Microsoft.AspNetCore.Authorization;
+using DevFactoryZ.CharityCRM.UI.Web.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System;
 
 namespace DevFactoryZ.CharityCRM.UI.Web
 {
@@ -50,13 +54,23 @@ namespace DevFactoryZ.CharityCRM.UI.Web
                 {
                     options.IdleTimeout = sessionConfig.ServerSessionIdleTimeout;
                 });
-                
 
+            services.AddAuthentication();
+
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Permission", policyBuilder =>
+                {
+                    policyBuilder.Requirements.Add(new PermissionAuthorizationRequirement());
+                });
+            });
             services.AddMemoryCache();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddReact();
             services.AddJsEngineSwitcher(options => options.DefaultEngineName = ChakraCoreJsEngine.EngineName).AddChakraCore();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app
@@ -72,6 +86,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             app.UseRouting();
             app.UseSession();
             app.UseCharityAuthentication(cookieConfig);
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

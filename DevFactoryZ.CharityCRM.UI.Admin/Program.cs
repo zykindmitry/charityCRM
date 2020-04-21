@@ -85,7 +85,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new PasswordConfigListCommand(
                     services.GetService<ICreateRepository<IPasswordConfigRepository>>()),
                  new PasswordConfigGetCommand(
-                    services.GetService<ICreateRepository<IPasswordConfigRepository>>())
+                    services.GetService<ICreateRepository<IPasswordConfigRepository>>()),
+                 new AccountAddRoleCommand(services.GetService<ICreateUnitOfWork>())
             };
         }
 

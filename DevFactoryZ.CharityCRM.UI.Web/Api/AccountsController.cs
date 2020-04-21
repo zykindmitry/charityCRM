@@ -1,5 +1,6 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
+using DevFactoryZ.CharityCRM.UI.Web.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
 
         // GET: api/<controller>
         [HttpGet]
+        [Authorize]
+        [Permission("select")]
         public ActionResult<AccountModel[]> Get()
         {
             return GetResultWithErrorHandling(
