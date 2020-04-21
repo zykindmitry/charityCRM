@@ -14,7 +14,7 @@ export function login() {
     user.password = document.getElementById("password").value;
 
     if (validateUser(user)) {
-        httpPost(loginURL, user, contentTypeValue);
+       httpPost(loginURL, user, contentTypeValue).then(result => alert(result));
     }
     else {
         alert("Не указано имя пользователя или пароль.");
