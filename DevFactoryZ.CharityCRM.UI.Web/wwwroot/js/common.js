@@ -1,4 +1,6 @@
-﻿export async function httpPost(url, data, contentTypeValue) {
+﻿const contentTypeValue = 'application/json';
+
+export async function httpPost(url, data) {
     return fetch(url, {
         method: 'POST',
         headers: {

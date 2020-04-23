@@ -1,6 +1,6 @@
-﻿import { LoginForm } from './components/loginForm.jsx';
+﻿import { FormLogin } from './components/formLogin.jsx';
 
 ReactDOM.render(
-    <LoginForm />,
+    <FormLogin />,
     document.getElementById('root')
 );
