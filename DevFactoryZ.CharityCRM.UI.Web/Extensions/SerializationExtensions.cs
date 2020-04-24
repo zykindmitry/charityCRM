@@ -62,6 +62,18 @@ namespace DevFactoryZ.CharityCRM
         }
 
         /// <summary>
+        /// Сериализует объект типа <typeparamref name="T"/> в JSON-объект
+        /// и возвращает его в виде строки <see cref="string"/>.
+        /// </summary>
+        /// <typeparam name="T">Тип сериализуемого объекта.</typeparam>
+        /// <param name="obj">Сериализуемый объект.</param>
+        /// <returns>Сериализованный в JSON объект в виде строки <see cref="string"/>.</returns>
+        public static string ToJsonString<T>(this T obj)
+        {
+            return JsonConvert.SerializeObject(obj, typeof(T), null);
+        }
+
+        /// <summary>
         /// Преобразует массив <see cref="Byte"/>[] в <see cref="Stream"/>.
         /// </summary>
         /// <param name="obj">Исходный массив <see cref="Byte"/>[].</param>

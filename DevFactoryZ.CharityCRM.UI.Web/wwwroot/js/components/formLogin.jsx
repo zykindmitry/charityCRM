@@ -37,7 +37,7 @@ export class FormLogin extends React.Component {
 
     render() {
         return e(
-            Login,
+            Body,
             {
                 loginScript: this.login
             }
@@ -45,29 +45,7 @@ export class FormLogin extends React.Component {
     }
 }
 
-function Login(props) {
-    return (
-        <div className="card">
-            <div className="card-header text-center">
-                <a href="#">
-                    <img className="logo-img" src="images/charity-logo-100-transp.png" alt="logo" />
-                </a>
-                <span className="splash-description">Авторизация</span>
-            </div>
-            <LoginBody loginScript={props.loginScript} />
-            <div className="card-footer bg-white p-0">
-                <div className="card-footer-item card-footer-item-bordered">
-                    <a href="#" className="footer-link">Создать аккаунт</a>
-                </div>
-                <div className="card-footer-item card-footer-item-bordered">
-                    <a href="#" className="footer-link">Забыл пароль</a>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-function LoginBody(props){
+function Body(props){
     return (
         <div className="card-body">
             <FormInput id="username" type="text" placeholder="Имя пользователя (логин)" autoComplete="off" />
