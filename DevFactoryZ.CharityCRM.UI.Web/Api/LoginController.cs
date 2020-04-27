@@ -12,17 +12,16 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController : ApiController<IAccountService>
     {
         private readonly IAccountService accountService;
         private readonly ICookieConfig cookieConfig;
        
         public LoginController(
             IAccountService accountService
-            , IConfiguration configuration)
+            , IConfiguration configuration) : base(accountService)
         {
-            this.accountService = accountService ?? throw new ArgumentNullException(nameof(accountService));
-
+            this.accountService = accountService;
             cookieConfig = configuration?.GetSection(nameof(CookieConfig))?.Get<CookieConfig>() 
                 ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -64,7 +63,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return Ok(ex.Message);
             }
         }
     }
