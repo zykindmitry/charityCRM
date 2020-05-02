@@ -6,9 +6,14 @@ namespace DevFactoryZ.CharityCRM
     /// <summary>
     /// Категория подопечного благотворительного фонда
     /// </summary>
-    public class WardCategory
+    public class WardCategory : IAmPersistent<int>
     {
         #region .ctor
+
+        public WardCategory() // For ORM
+        {
+
+        }
 
         /// <summary>
         /// Создает экземпляр класса WardCategory
@@ -16,42 +21,26 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="name">Имя категории БФ</param>
         public WardCategory(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(
-                        nameof(name),
-                        "Название категории подопечного не может быть пустым.");
-            }
-
-            this.name = name;
+            Name = !string.IsNullOrWhiteSpace(name)
+                ? name
+                : throw new ArgumentNullException( nameof(name), "Название категории подопечного не может быть пустым.");
         }
 
         #endregion
 
         #region Поля и свойства класса
 
-        private string name;
+        public static bool NameIsRequired = true;
+
+        public static int NameMaxLength = 30;
+
+        private readonly RealString name =
+            new RealString(NameMaxLength, NameIsRequired, "наименование категории подопечного");
 
         /// <summary>
-        /// Свойство возвращает и записывает имя категории подопечного БФ.
+        /// Возвращает или задает имя роли
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-            private set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException(
-                        nameof(value), 
-                        "Название категории подопечного не может быть пустым.");
-                }
-                name = value;
-            }
-        }
+        public string Name { get => name.Value; set => name.Value = value; }
 
         /// <summary>
         /// Возвращает/присваивает идентификатор гатегории БФ.
@@ -61,7 +50,9 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Возвращает перечень дочерних категорий БФ.
         /// </summary>
-        List<WardCategory> SubCategories { get; set; }
+        public List<WardCategory> SubCategories { get; set; }
+
+        public bool CanBeDeleted => true;
 
         #endregion
 
@@ -78,10 +69,10 @@ namespace DevFactoryZ.CharityCRM
             {
                 if (item.Equals(wardCategory))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -122,6 +113,11 @@ namespace DevFactoryZ.CharityCRM
         public override int GetHashCode()
         {
             return Id;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         #endregion

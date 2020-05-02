@@ -24,11 +24,11 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         public void Execute(string[] parameters)
         {
-            if (!parameters.Any())
-            {
-                Console.WriteLine($"Ошибка! Отсутствует обязательный параметр '{NameParameter}'");
-                return;
-            }
+                if (!parameters.Any())
+                {
+                    Console.WriteLine($"Ошибка! Отсутствует обязательный параметр '{NameParameter}'");
+                    return;
+                }
 
             using(var unitOfWork = unitOfWorkCreator.Create())
             {
