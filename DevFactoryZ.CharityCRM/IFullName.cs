@@ -7,13 +7,8 @@ namespace DevFactoryZ.CharityCRM
     /// <summary>
     /// Интерфейс определяет компоненты имени подопечного БФ.
     /// </summary>
-    public interface IFIO
-    {
-        /// <summary>
-        /// Полное имя подопечного.
-        /// </summary>
-        string FullName { get; }
-        
+    public interface IFullName
+    {      
         /// <summary>
         /// Имя.
         /// </summary>
@@ -22,11 +17,13 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Отчество.
         /// </summary>
-        string MidName { get; }
+        string MiddleName { get; }
         
         /// <summary>
         /// Фамилия.
         /// </summary>
-        string LastName { get; }
+        string SurName { get; }
+
+        void Update(IFullName newFullName);
     }
 }

@@ -14,7 +14,7 @@ namespace DevFactoryZ.CharityCRM.Services
 
         public Ward Create(WardData data)
         {
-            var ward = new Ward(data.FIO, data.Address, data.BirthDate, data.Phone, data.ThisWardCategories);
+            var ward = new Ward(data.FullName, data.Address, data.BirthDate, data.Phone, data.WardCategories);
             repository.Add(ward);
             repository.Save();
 
@@ -56,8 +56,8 @@ namespace DevFactoryZ.CharityCRM.Services
         public void Update(int id, WardData data)
         {
             var ward = repository.GetById(id);
-            ward.FIO = data.FIO;
-            ward.Address = data.Address;
+            ward.FullName.Update( data.FullName);
+            ward.Address.Update( data.Address);
             ward.BirthDate = data.BirthDate;
             ward.Phone = data.Phone;
             

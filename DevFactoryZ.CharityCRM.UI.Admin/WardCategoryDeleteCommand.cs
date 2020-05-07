@@ -28,7 +28,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help =>
             (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}]', чтобы удалить категорию подопечного. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-ward-categories'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-ward-categories' или 'lwc'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;

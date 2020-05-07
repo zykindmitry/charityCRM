@@ -23,16 +23,14 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                 .IsRequired(true);
 
             ward
-                .Property(x => x.Phone);
+                .Property(x => x.Phone)
+                    .HasMaxLength(Ward.PhoneMaxLength)
+                    .IsRequired(Ward.PhoneIsRequired);
 
             ward
                 .HasMany(x => x.WardCategories)
                 .WithOne()
-                .HasForeignKey("WardId");
-            
-            var wardCategoryNavigation = ward.Metadata.FindNavigation(nameof(Ward.WardCategories));
-            wardCategoryNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
-            wardCategoryNavigation.SetField(Ward.ThisWardCategoriesFieldName);
+                .HasForeignKey("WardId");            
         }
     }
 }

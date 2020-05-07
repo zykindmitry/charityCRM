@@ -8,31 +8,31 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
     /// <summary>
     /// Имплементация <see cref="ICommand"/> для изменения ФИО подопечного БФ в хранилище.
     /// </summary>
-    class WardUpdateFIOCommand : ICommand
+    class WardUpdateFullNameCommand : ICommand
     {
         private const char valueSeparator = ',';
 
         /// <summary>
-        /// Создвет экземпляр <see cref="WardUpdateFIOCommand "/>.
+        /// Создвет экземпляр <see cref="WardUpdateFullNameCommand "/>.
         /// </summary>
         /// <param name="unitOfWorkCreator">Экземпляр <see cref="ICreateUnitOfWork"/> для работы с хранилищем.</param>
-        public WardUpdateFIOCommand(ICreateUnitOfWork unitOfWorkCreator)
+        public WardUpdateFullNameCommand(ICreateUnitOfWork unitOfWorkCreator)
         {
             this.unitOfWorkCreator = unitOfWorkCreator;
         }
 
-        private static string CommandText = "update-ward-fio";
+        private static string CommandText = "update-ward-fullname";
 
-        private static string Alias = "uwf";
+        private static string Alias = "uwfn";
 
         private static string IdParameter = "Id подопечного";
 
-        private static string NewFIOParameter = $"Фамилия,Имя,Отчество - заключить в кавычки, разделять знаком '{valueSeparator}'.";
+        private static string NewFullNameParameter = $"Фамилия,Имя,Отчество - без пробелов, компоненты разделять знаком '{valueSeparator}'.";
 
         public string Help =>
-            (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}] [{NewFIOParameter}]', чтобы изменить ФИО подопечного. "))
+            (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}] [{NewFullNameParameter}]', чтобы изменить ФИО подопечного. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards' или 'lw'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;
@@ -41,7 +41,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         {
             if (parameters.Length < 2)
             {
-                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{IdParameter}', '{NewFIOParameter}'");
+                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{IdParameter}', '{NewFullNameParameter}'");
                 return;
             }
 
@@ -53,22 +53,22 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
             if (string.IsNullOrWhiteSpace(parameters[1]) || !parameters[1].Contains(valueSeparator))
             {
-                Console.WriteLine($"Ошибка! Второй обязательный параметр '{NewFIOParameter}' - должен содержать хотя бы один символ.");
+                Console.WriteLine($"Ошибка! Второй обязательный параметр '{NewFullNameParameter}' - должен содержать хотя бы один символ.");
                 Console.WriteLine($"Ошибка! Разделитель значенй в параметре должен быть '{valueSeparator}'.");
                 return;
             }
 
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
-                var fioArray = parameters[1].Split(valueSeparator);
-                int lastName = 0;
+                var fullNameArray = parameters[1].Split(valueSeparator);
+                int surName = 0;
                 int firstName = 1;
-                int midName = 2;
+                int middleName = 2;
 
                 var ward = 
                     unitOfWork.GetById<Ward, int>(wardId); 
 
-                ward.FIO = new FIO(fioArray[lastName], fioArray[firstName], fioArray[midName]);
+                ward.FullName.Update( new FullName(fullNameArray[surName], fullNameArray[firstName], fullNameArray[middleName]));
 
                 unitOfWork.Save();
 

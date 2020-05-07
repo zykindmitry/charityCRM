@@ -1,4 +1,6 @@
-﻿namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
+﻿using System.Linq;
+
+namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
 {
     public class WardListViewModel : WardViewModel
     {
@@ -9,12 +11,12 @@
         public WardListViewModel(Ward model)
         {
             Id = model.Id;
-            FIO = model.FIO;
+            FullName = model.FullName;
             Address = model.Address;
             BirthDate = model.BirthDate;
             Phone = model.Phone;
             CreatedAt = model.CreatedAt;
-            ThisWardCategories = ThisWardCategories;
+            WardCategories = model.WardCategories.Select(s => s.WardCategory);
         }
 
         public int Id { get; set; }

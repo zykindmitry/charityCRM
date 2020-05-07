@@ -29,7 +29,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help =>
             (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}]', чтобы получить категорию подопечного. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-ward-categories'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-ward-categories' или 'lwc'.")
             .ToString();        
 
         public void Execute(string[] parameters)
@@ -50,7 +50,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var wardCategory = repository.GetById(wardCategoryId);
 
             Console.WriteLine($"{nameof(WardCategory.Name)}: {wardCategory.Name}.");
-            Console.WriteLine("Подкаегории:");
+            Console.WriteLine("Подкатегории:");
 
             if (wardCategory.SubCategories.Count() > 0)
             {
@@ -58,7 +58,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
                 foreach (var subCategory in wardCategory.SubCategories)
                 {
-                    Console.WriteLine("{0,10:0} {1}", subCategory.Id, subCategory.Name);
+                    Console.WriteLine("{0,10:0} {1}", subCategory.WardCategory.Id, subCategory.WardCategory.Name);
                 }
             }
             else

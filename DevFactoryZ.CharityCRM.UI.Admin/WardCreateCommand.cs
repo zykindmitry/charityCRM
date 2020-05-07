@@ -25,13 +25,13 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private static string Alias = "cw";
 
-        private readonly string FIOParameter = $"Фамилия,Имя,Отчество - заключить в кавычки, разделять знаком '{valueSeparator}'";
+        private readonly string FullNameParameter = $"Фамилия,Имя,Отчество - без пробелов, компоненты разделять знаком '{valueSeparator}'";
 
         private const string BirthDateParameter = "Дата рождения";
 
         private const string PhoneParameter = "Номер телефона";
 
-        private const int FIO = 0;
+        private const int FullName = 0;
         
         private const int BirthDate = 1;
 
@@ -45,13 +45,13 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         {
             if (!parameters.Any())
             {
-                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{FIOParameter}', '{BirthDateParameter}'");
+                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{FullNameParameter}', '{BirthDateParameter}'");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(parameters[FIO]) || !parameters[FIO].Contains(valueSeparator))
+            if (string.IsNullOrWhiteSpace(parameters[FullName]) || !parameters[FullName].Contains(valueSeparator))
             {
-                Console.WriteLine($"Ошибка! Первый обязательный параметр '{FIOParameter}' - должен содержать хотя бы один символ.");
+                Console.WriteLine($"Ошибка! Первый обязательный параметр '{FullNameParameter}' - должен содержать хотя бы один символ.");
                 Console.WriteLine($"Ошибка! Разделитель значенй в параметре должен быть '{valueSeparator}'.");
                 return;
             }
@@ -64,24 +64,24 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
-                var fioArray = parameters[FIO].Split(valueSeparator);
-                int lastName = 0;
+                var fullNameArray = parameters[FullName].Split(valueSeparator);
+                int surName = 0;
                 int firstName = 1;
-                int midName = 2;
+                int middleName = 2;
 
                 var wardRegistration =
                     new Ward(
-                        new FIO(fioArray[lastName], fioArray[firstName], fioArray[midName])
+                        new FullName(fullNameArray[surName], fullNameArray[firstName], fullNameArray[middleName])
                         , new Address()
                         , birthDate
-                        , parameters[Phone]
+                        , parameters.Length > Phone ? parameters[Phone] : string.Empty
                         , Array.Empty<WardCategory>());
 
                 unitOfWork.Add(wardRegistration);
                 unitOfWork.Save();
 
                 Console.WriteLine(
-                    $"Подопечный '{wardRegistration.FIO.FullName}', {wardRegistration.BirthDate.ToShortDateString()} г.р., создан с идентификатором (ID = {wardRegistration.Id})");
+                    $"Подопечный '{wardRegistration.FullName}', {wardRegistration.BirthDate.ToShortDateString()} г.р., создан с идентификатором (ID = {wardRegistration.Id})");
             }
         }
 
@@ -97,7 +97,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var resultString = new StringBuilder();
             resultString.AppendLine($"Напишите:");
             resultString.Append($" '{CommandText} (или {Alias})");
-            resultString.Append($" [{FIOParameter}]");
+            resultString.Append($" [{FullNameParameter}]");
             resultString.Append($" [{BirthDateParameter}]");
             resultString.Append($" ({PhoneParameter})'");
             resultString.AppendLine(", чтобы создать подопечного.");

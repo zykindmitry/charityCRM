@@ -5,30 +5,30 @@ using System.Linq;
 namespace DevFactoryZ.CharityCRM
 {
     /// <summary>
-    /// Подопечный фонда
+    /// Подопечный благотворительного фонда.
     /// </summary>
     public class Ward : IAmPersistent<int>
     {
         #region .ctor
 
-        public Ward()
+        public Ward() // For ORM
         {
             CreatedAt = DateTime.UtcNow;
         }
 
-        public Ward(FIO fio, Address address, DateTime birthDate, string phone, IEnumerable<WardCategory> categories)
+        public Ward(FullName fullName, Address address, DateTime birthDate, string phone, IEnumerable<WardCategory> categories)
             :this()
         {
-            FIO = fio;
+            FullName = fullName;
             Address = address;
             BirthDate = birthDate;
             Phone = phone;
-
+            
             categories.Each(category => Grant(category));
         }
 
-        public Ward(FIO fio, Address address, DateTime birthDate, string phone, IEnumerable<WardCategory> categories, DateTime createdAt)
-            : this(fio, address, birthDate, phone, categories)
+        public Ward(FullName fullName, Address address, DateTime birthDate, string phone, IEnumerable<WardCategory> categories, DateTime createdAt)
+            : this(fullName, address, birthDate, phone, categories)
         {
             CreatedAt = createdAt;
         }
@@ -37,101 +37,135 @@ namespace DevFactoryZ.CharityCRM
 
         #region Поля и свойства
 
-        public FIO FIO { get; set; }
+        /// <summary>
+        /// Представляет фамилию, имя, отчество подопечного БФ.
+        /// </summary>
+        public FullName FullName { get; }
 
-        public Address Address { get; set; }
+        /// <summary>
+        /// Представляет адресподопечного БФ
+        /// </summary>
+        public Address Address { get; }
 
+        /// <summary>
+        /// Возвращает дату регистрации подопечного в БФ.
+        /// </summary>
         public DateTime CreatedAt { get; }
 
+        /// <summary>
+        /// Возвращает дату рождения подопечного БФ.
+        /// </summary>
         public DateTime BirthDate { get; set; }
-        
-        public string Phone { get; set; }
 
+        public static bool PhoneIsRequired = false;
+
+        public static int PhoneMaxLength = 12;
+
+        private readonly RealString phone =
+            new RealString(PhoneMaxLength, PhoneIsRequired, "номер телефона подопечного");
+
+        /// <summary>
+        /// Представляет номер телефона подопечного БФ.
+        /// </summary>
+        public string Phone { get => phone.Value; set => phone.Value = value; }
+
+        /// <summary>
+        /// Возвращает идентификатор подопечного в хранилище.
+        /// </summary>
         public int Id { get; protected set; }
 
         public bool CanBeDeleted => true;
 
         #endregion
 
-        #region Методы
-        #endregion
-
         #region Переопределенные методы
 
         public override string ToString()
         {
-            return FIO.FullName;
+            return FullName.ToString();
         }
 
         #endregion
 
         #region Категории подопечного
 
+
+        /// <summary>
+        /// Тип для организации связи many-to-many Ward <--> WardCategory
+        /// </summary>
         public class ThisWardCategory
         {
             protected ThisWardCategory() // for ORM
             {
             }
 
+            /// <summary>
+            /// Используется при добавлении/удалении категории подопечному БФ.
+            /// </summary>
+            /// <param name="wardCategory">Категория, которую требуется добавить/удалить подопечному БФ.</param>
             internal ThisWardCategory(WardCategory wardCategory)
             {
-                WardCategory = wardCategory;
+                WardCategory = wardCategory ?? throw new ArgumentNullException(nameof(wardCategory));
+                WardCategoryId = WardCategory.Id;
             }
 
             /// <summary>
-            /// Навигационное свойство для связки Ward-ThisWardCategory.
-            /// EF сам почему-то не хочет создавать теневое свойство, хотя в аналогичной конфигурации Role-RolePermission теневое свойство создается.
+            /// Навигационное свойство для связи many-to-many Ward-WardCategory.
+            /// Идентификатор подопечного БФ - владельца категории.
             /// </summary>
             public int WardId { get; set; }
 
-            public WardCategory WardCategory { get; protected set; }
+            /// <summary>
+            /// Навигационное свойство для связи many-to-many Ward-WardCategory.
+            /// Идентификатор категории, содержащейся в свойстве ThisWardCategory.WardCategory.
+            /// </summary>
+            public int WardCategoryId { get; set; }
+
+            /// <summary>
+            /// Возвращает экземпляр категории, содержащейся в текущей ThisWardCategory.
+            /// </summary>
+            public WardCategory WardCategory { get; }
+
+            #region Переопределенные методы для корректной работы HashSet<ThisWardCategory>()
+
+            public override bool Equals(object obj)
+            {
+                return obj is ThisWardCategory anotherThisWardCategory
+                    && anotherThisWardCategory.WardCategoryId == WardCategoryId;
+            }
+
+            public override int GetHashCode()
+            {
+                return WardCategoryId;
+            }
+
+            public static bool operator ==(ThisWardCategory left, ThisWardCategory right) => left.Equals(right);
+            public static bool operator !=(ThisWardCategory left, ThisWardCategory right) => !(left == right);
+
+            #endregion
         }
 
-        public static string ThisWardCategoriesFieldName => nameof(wardCategories);
-
-        private readonly List<ThisWardCategory> wardCategories = new List<ThisWardCategory>();
+        /// <summary>
+        /// Возвращает перечень категорий подопечного БФ.
+        /// </summary>
+        public HashSet<ThisWardCategory> WardCategories { get; } = new HashSet<ThisWardCategory>();
 
         /// <summary>
-        /// Возвращает коллекцию категорий подопечного
+        /// Присваивает категорию подопечному БФ.
         /// </summary>
-        public IEnumerable<ThisWardCategory> WardCategories => wardCategories.AsReadOnly();
-
-        /// <summary>
-        /// Присваивает категорию подопечному
-        /// </summary>
-        /// <param name="wardCategory">Категория, которое нужно присвоить подопечному</param>
+        /// <param name="wardCategory">Категория, которуе требуется присвоить подопечному.</param>
         public void Grant(WardCategory wardCategory)
         {
-            if (wardCategories
-                .Any(x => x.WardCategory.Equals(WardCategoryOrNullException(wardCategory))))
-            {
-                throw new InvalidOperationException(
-                    $"Подопечный {this} уже имеет категорию {wardCategory}");
-            }
-
-            wardCategories.Add(new ThisWardCategory(wardCategory));
+            WardCategories.Add(new ThisWardCategory(wardCategory));
         }
 
         /// <summary>
-        /// Удаляет каегорию у подопечного
+        /// Удаляет каегорию у подопечного БФ.
         /// </summary>
-        /// <param name="wardCategory">Категория. которое необходимо удалить</param>
+        /// <param name="wardCategory">Категория. которое требуется удалить.</param>
         public void Deny(WardCategory wardCategory)
         {
-            var thisWardCategory = wardCategories
-                .FirstOrDefault(x => x.WardCategory.Equals(WardCategoryOrNullException(wardCategory)));
-
-            if (thisWardCategory == null)
-            {
-                throw new InvalidOperationException($"Подопечный {this} не имеет категории {wardCategory}");
-            }
-
-            wardCategories.Remove(thisWardCategory);
-        }
-
-        private WardCategory WardCategoryOrNullException(WardCategory wardCatewgory)
-        {
-            return wardCatewgory ?? throw new ArgumentNullException(nameof(wardCatewgory));
+            WardCategories.Remove(new ThisWardCategory(wardCategory));
         }
 
         #endregion

@@ -8,9 +8,9 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
 {
     public class WardViewModel
     {
-        public IFIO FIO { get; set; }
+        public FullName FullName { get; set; }
 
-        public IAddress Address { get; set; }
+        public Address Address { get; set; }
 
         public DateTime BirthDate { get; set; }
 
@@ -18,18 +18,17 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
 
         public string Phone { get; set; }
 
-        public IEnumerable<ThisWardCategory> ThisWardCategories { get; set; }
+        public IEnumerable<WardCategory> WardCategories { get; set; }
 
         public WardData ToDto()
         {
             return new WardData
             {
-                FIO = FIO,
+                FullName = FullName,
                 Address = Address,
                 BirthDate = BirthDate,
                 Phone = Phone,
-                ThisWardCategories = ThisWardCategories.Select(thisWardCategories => 
-                    new WardCategory(thisWardCategories.WardCategory.Name))
+                WardCategories = WardCategories
             };
         }
     }

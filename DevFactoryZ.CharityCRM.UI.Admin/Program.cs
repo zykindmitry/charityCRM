@@ -90,7 +90,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new WardDeleteWardCategoryCommand(services.GetService<ICreateUnitOfWork>()),
                  new WardUpdateAddressCommand(services.GetService<ICreateUnitOfWork>()),
                  new WardUpdateBirthDateCommand(services.GetService<ICreateUnitOfWork>()),
-                 new WardUpdateFIOCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardUpdateFullNameCommand(services.GetService<ICreateUnitOfWork>()),
                  new WardUpdatePhoneCommand(services.GetService<ICreateUnitOfWork>()),
                  new WardCategoryCreateCommand(services.GetService<ICreateUnitOfWork>()),
                  new WardCategoryDeleteCommand(services.GetService<ICreateUnitOfWork>()),

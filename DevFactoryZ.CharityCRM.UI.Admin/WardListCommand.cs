@@ -40,13 +40,11 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         private void WriteHeader()
         {
             var header = new StringBuilder();
-            header.Append($"{nameof(Ward.Id),9}");
-            header.Append($"{nameof(Ward.CreatedAt), 16}");
-            header.Append($"{nameof(Ward.FIO),50}");
-            header.Append($"{nameof(Ward.BirthDate),10}");
-            header.Append($"{nameof(Ward.Address),50}");
-            header.Append($"{nameof(Ward.Phone),10}");
-            header.Append($"{nameof(Ward.WardCategories),50}");
+            header.Append($"{nameof(Ward.Id), 9}");
+            header.Append($"  {nameof(Ward.FullName),-50}");
+            header.Append($"  {nameof(Ward.BirthDate), -10}");
+            header.Append($"  {nameof(Ward.Phone), -16}");
+            header.Append($"  {nameof(Ward.CreatedAt) + " (UTC)",-19}");
 
             Console.WriteLine(header.ToString());
         }
@@ -54,13 +52,13 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         private void WriteBody(Ward passwordConfig)
         {
             var body = new StringBuilder();
-            body.Append($"{passwordConfig.Id,9:0}");
-            body.Append($"{passwordConfig.CreatedAt, 21}");
-            body.Append($"{passwordConfig.FIO.FullName,50}");
-            body.Append($"{passwordConfig.BirthDate,21}");
-            body.Append($"{passwordConfig.Address.FullAddress,50}");
-            body.Append($"{passwordConfig.Phone,12}");
-            body.Append($"{string.Join(',', passwordConfig.WardCategories.Select(c => c.WardCategory.Name)),50}");
+            body.Append($"{passwordConfig.Id, 9:0}");
+            body.Append($"  {passwordConfig.FullName,-50}");
+            body.Append($"  {passwordConfig.BirthDate.ToShortDateString(), -10:dd.MM.yyyy}");
+            body.Append(long.TryParse(passwordConfig.Phone, out long phoneNumber) 
+                ? $"  { phoneNumber, -16:+#(###)###-##-##}" 
+                : $"  {string.Empty, -16}");
+            body.Append($"  {passwordConfig.CreatedAt,-19:dd.MM.yyyy HH:mm:ss}");
 
             Console.WriteLine(body.ToString());
         }

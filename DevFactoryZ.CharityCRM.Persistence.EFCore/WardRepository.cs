@@ -35,6 +35,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         public Ward GetById(int id)
         {
             return setOfWards
+                .Include(r => r.Address)
                 .Include(r => r.WardCategories)
                     .ThenInclude(x => x.WardCategory)                
                 .FirstOrDefault(r => r.Id == id)

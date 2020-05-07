@@ -30,20 +30,22 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public void Execute(string[] parameters)
         {
             var repository = repositoryCreator.Create();
-            var permissions = repository.GetAll();
+            var categories = repository.GetAll();
 
             WriteHeader();
-            permissions.Each(WriteBody);
+            categories.Each(WriteBody);
         }
 
         private void WriteHeader()
         {
-            Console.WriteLine($"{nameof(WardCategory.Id),10} {nameof(WardCategory.Name)}");
+            Console.WriteLine(
+                $"{nameof(WardCategory.Id), 10}  {nameof(WardCategory.Name), -30}  {nameof(WardCategory.SubCategories), -50}");
         }
 
-        private void WriteBody(WardCategory permission)
+        private void WriteBody(WardCategory wardCategory)
         {
-            Console.WriteLine($"{permission.Id,10:0} {permission.Name}");
+            Console.WriteLine(
+                $"{wardCategory.Id, 10:0}  {wardCategory.Name, -30}  {string.Join(",", wardCategory.SubCategories.Select(s => s.WardCategory.Name)), -50}");
         }
 
         public bool Recognize(string command)

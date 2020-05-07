@@ -11,12 +11,12 @@ namespace DevFactoryZ.CharityCRM.Services
         /// <summary>
         /// ФИО подопечного.
         /// </summary>
-        public IFIO FIO { get; set; }
+        public FullName FullName { get; set; }
 
         /// <summary>
         /// Адрес подопечного.
         /// </summary>
-        public IAddress Address { get; set; }
+        public Address Address { get; set; }
 
         /// <summary>
         /// Дата регистрации подопечного в системе.
@@ -34,9 +34,9 @@ namespace DevFactoryZ.CharityCRM.Services
         public string Phone { get; set; }
 
         /// <summary>
-        /// Коллекция категорий <see cref="WardCategory"/>'s для подопечного.
+        /// Набор категорий <see cref="WardCategory"/>'s для подопечного.
         /// </summary>
-        public IEnumerable<WardCategory> ThisWardCategories { get; set; }
+        public IEnumerable<WardCategory> WardCategories { get; set; }
     }
 
     /// <summary>

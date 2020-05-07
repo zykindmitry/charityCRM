@@ -30,8 +30,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help =>
             (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdWardCategoryParameter}] [{IdSubCategoryParameter}]', чтобы добавить подкатегорию для категории подопечного. "))
             .AppendLine()
-            .AppendLine($"    Внимание!!! {IdWardCategoryParameter} можно узнать, выполнив команду 'list-ward-categories'.")
-            .Append($"    Внимание!!! {IdSubCategoryParameter} можно узнать, выполнив команду 'list-ward-categories'.")
+            .AppendLine($"    Внимание!!! {IdWardCategoryParameter} можно узнать, выполнив команду 'list-ward-categories' или 'lwc'.")
+            .Append($"    Внимание!!! {IdSubCategoryParameter} можно узнать, выполнив команду 'list-ward-categories' или 'lwc'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;
@@ -59,12 +59,12 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
                 var wardCategory = 
-                    unitOfWork.GetById<Role, int>(wardCategoryId);
+                    unitOfWork.GetById<WardCategory, int>(wardCategoryId);
 
                 var subCategory =
-                    unitOfWork.GetById<Permission, int>(subCategoryId);
+                    unitOfWork.GetById<WardCategory, int>(subCategoryId);
 
-                wardCategory.Grant(subCategory);
+                wardCategory.AddChild(subCategory);
                 unitOfWork.Save();
 
                 Console.WriteLine($"Подкатегория '{subCategory.Name}' добавлена к категории подопечного '{wardCategory.Name}'.");

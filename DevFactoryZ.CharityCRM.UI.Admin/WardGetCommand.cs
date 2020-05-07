@@ -28,7 +28,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help =>
             (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}]', чтобы получить подопечного. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards' или 'lw'.")
             .ToString();
 
         private readonly ICreateRepository<IWardRepository> repositoryCreator;
@@ -50,9 +50,9 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var repository = repositoryCreator.Create();
             var ward = repository.GetById(roleId);
 
-            Console.WriteLine($"{nameof(Ward.FIO)}: {ward.FIO.FullName}.");
+            Console.WriteLine($"{nameof(Ward.FullName)}: {ward.FullName}.");
             Console.WriteLine($"{nameof(Ward.BirthDate)}: {ward.BirthDate.ToShortDateString()}.");
-            Console.WriteLine($"{nameof(Ward.Address)}: {(string.IsNullOrWhiteSpace(ward.Address.FullAddress) ? "<empty>" : ward.Address.FullAddress)}.");
+            Console.WriteLine($"{nameof(Ward.Address)}: {(string.IsNullOrWhiteSpace(ward.Address.ToString()) ? "<empty>" : ward.Address.ToString())}.");
             Console.WriteLine($"{nameof(Ward.Phone)}: {(string.IsNullOrWhiteSpace(ward.Phone) ? "<empty>" : ward.Phone)}.");
             Console.WriteLine($"{nameof(Ward.CreatedAt)}: {ward.BirthDate}.");
             Console.WriteLine("Категории:");

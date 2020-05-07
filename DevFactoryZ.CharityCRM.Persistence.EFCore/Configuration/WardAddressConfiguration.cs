@@ -13,8 +13,22 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
             ward.OwnsOne(o => o.Address, address =>
             {
                 address.ToTable(nameof(Address));
-                address.Ignore(p => p.FullAddress);
+                
+                address.Property(p => p.PostCode);
 
+                address.Property(p => p.Country);
+
+                address.Property(p => p.Region);
+
+                address.Property(p => p.City);
+
+                address.Property(p => p.Area);
+
+                address.Property(p => p.Street);
+
+                address.Property(p => p.House);
+
+                address.Property(p => p.Flat);
             });
         }
     }

@@ -30,7 +30,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help =>
             (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}] [{NewBirthDateParameter}]', чтобы изменить дату рождения подопечного. "))
             .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards'.")
+            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards' или 'lw'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;

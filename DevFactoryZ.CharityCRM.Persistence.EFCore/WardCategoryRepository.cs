@@ -30,13 +30,16 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         public IEnumerable<WardCategory> GetAll()
         {
             return setOfWardCategories
-                .Include(c => c.SubCategories).ToArray();
+                .Include(r => r.SubCategories)
+                    .ThenInclude(s => s.WardCategory)
+                .ToArray();
         }
 
         public WardCategory GetById(int id)
         {
             return setOfWardCategories
                 .Include(r => r.SubCategories)
+                    .ThenInclude(s => s.WardCategory)
                 .FirstOrDefault(r => r.Id == id)
                 ?? throw new EntityNotFoundException(id, typeof(WardCategory));
         }

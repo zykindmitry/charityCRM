@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 {
@@ -16,10 +18,10 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         {
         }
 
-        public CharityDbContext(string connectionString) 
+        public CharityDbContext(string connectionString)
             : base()
         {
-            this.connectionString = 
+            this.connectionString =
                 connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
@@ -50,11 +52,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             }
         }
 
-        public TEntity GetById<TEntity, TKey>(TKey id) 
+        public TEntity GetById<TEntity, TKey>(TKey id)
             where TEntity : class, IAmPersistent<TKey>
             where TKey : struct
         {
-            return Find<TEntity>(id);
+            return GetRepository<TEntity, TKey>()?.GetById(id) ?? Find<TEntity>(id);
         }
 
         void IUnitOfWork.Add<TEntity>(TEntity newEntity)
@@ -68,6 +70,26 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         }
 
         #endregion
+
+        private IRepository<TEntity, TKey> GetRepository<TEntity, TKey>()
+            where TEntity : class, IAmPersistent<TKey>
+            where TKey : struct
+        {
+            var repositoryTypeInfo = typeof(CharityDbContext)
+                .Assembly
+                .DefinedTypes
+                .FirstOrDefault(p =>
+                    !p.IsGenericType
+                    && !p.IsInterface
+                    && p.ImplementedInterfaces.Any(e => e.Equals(typeof(IRepository<TEntity, TKey>))));
+
+            var repository = repositoryTypeInfo?
+                .AsType()
+                .GetConstructor(new Type[] { typeof(DbSet<TEntity>), typeof(Action) })?
+                .Invoke(new object[] { this.Set<TEntity>(), new Action(this.Save) }) as IRepository<TEntity, TKey>;
+
+            return repository;
+        }
 
         #region Реализация IDisposable
 

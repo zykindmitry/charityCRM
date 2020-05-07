@@ -15,7 +15,10 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
                     .HasMaxLength(WardCategory.NameMaxLength)
                     .IsRequired(WardCategory.NameIsRequired);
 
-            wardCategory.Ignore(x => x.SubCategories);
+            wardCategory
+                .HasMany(x => x.SubCategories)
+                .WithOne()
+                .HasForeignKey("WardCategoryId");
         }
     }
 }

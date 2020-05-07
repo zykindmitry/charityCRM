@@ -30,8 +30,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public string Help =>
             (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdWardParameter}] [{IdWardCategoryParameter}]', чтобы добавить категорию для подопечного. "))
             .AppendLine()
-            .AppendLine($"    Внимание!!! {IdWardParameter} можно узнать, выполнив команду 'list-wards'.")
-            .Append($"    Внимание!!! {IdWardCategoryParameter} можно узнать, выполнив команду 'list-ward-categories'.")
+            .AppendLine($"    Внимание!!! {IdWardParameter} можно узнать, выполнив команду 'list-wards' или 'lw'.")
+            .Append($"    Внимание!!! {IdWardCategoryParameter} можно узнать, выполнив команду 'list-ward-categories' или 'lwc'.")
             .ToString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;
@@ -67,7 +67,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 ward.Grant(wardcCategory);
                 unitOfWork.Save();
 
-                Console.WriteLine($"Категория '{wardcCategory.Name}' присвоена подопечному '{ward.FIO.FullName}'.");
+                Console.WriteLine($"Категория '{wardcCategory.Name}' присвоена подопечному '{ward.FullName}'.");
             }
 
         }
