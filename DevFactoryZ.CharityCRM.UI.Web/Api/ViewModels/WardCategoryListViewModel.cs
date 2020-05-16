@@ -14,7 +14,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
         {
             Id = model.Id;
             Name = model.Name;
-            SubCategories = model.SubCategories.Select(s => s.WardCategory);
+            SubCategories = model.SubCategories;
         }
 
         public int Id { get; set; }

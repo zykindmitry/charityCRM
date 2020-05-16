@@ -1,7 +1,6 @@
 ﻿using DevFactoryZ.CharityCRM.Persistence;
 using System;
 using System.Text;
-using System.Linq;
 
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
@@ -64,7 +63,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var wardcCategory =
                     unitOfWork.GetById<WardCategory, int>(wardCategoryId);
 
-                ward.Deny(wardcCategory);
+                ward.RemoveCategory(wardcCategory);
                 unitOfWork.Save();
 
                 Console.WriteLine($"Категория '{wardcCategory.Name}' удалена у подопечного '{ward.FullName}'.");

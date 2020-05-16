@@ -18,7 +18,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
         public ActionResult<WardCategoryListViewModel[]> Get()
         {
             return GetResultWithErrorHandling(
-               repository => repository.GetAll().Select(model => new WardCategoryListViewModel(model)).ToArray());
+               repository => repository.GetAll().Select(model => 
+                  new WardCategoryListViewModel(model)).ToArray());
         }
 
         [HttpGet("{id}")]

@@ -10,7 +10,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
     /// </summary>
     class WardCreateCommand : ICommand
     {
-        private const char valueSeparator = ',';
+        //private const char valueSeparator = ',';
 
         /// <summary>
         /// Создает экземпляр <see cref="WardCreateCommand"/>
@@ -25,17 +25,32 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private static string Alias = "cw";
 
-        private readonly string FullNameParameter = $"Фамилия,Имя,Отчество - без пробелов, компоненты разделять знаком '{valueSeparator}'";
-
+        private const string FirstNameParameter = "Имя";
+        private const string MiddleNameParameter = "Отчество";
+        private const string SurNameParameter = "Фамилия";
         private const string BirthDateParameter = "Дата рождения";
-
         private const string PhoneParameter = "Номер телефона";
+        private static string CityParameter = "Город, село и т.п.";
 
-        private const int FullName = 0;
-        
-        private const int BirthDate = 1;
+        private const char valueSeparator = ' ';
+        private const char keyNameSeparator = '|';
+        private const string parametersSeparator = "--";
+        private const int wardComponentsCount = 6;
 
-        private const int Phone = 2;
+        private static char[] FirstNameKey = new char[] { 'и', 'f' };
+        private static char[] MiddleNameKey = new char[] { 'о', 'm' };
+        private static char[] SurNameKey = new char[] { 'ф', 'l' };
+        private static char[] BirthDateKey = new char[] { 'р', 'b' };
+        private static char[] PhoneKey = new char[] { 'т', 'p' };
+        private static char[] CityKey = new char[] { 'г', 'c' };
+
+        private static int FirstNameIndex = 0;
+        private static int MiddleNameIndex = 1;
+        private static int SurNameIndex = 2;
+        private static int BirthDateIndex = 3;
+        private static int PhoneIndex = 4;
+        private static int CityIndex = 5;
+
 
         public string Help => ComposeHelpString();
 
@@ -43,39 +58,52 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         public void Execute(string[] parameters)
         {
-            if (!parameters.Any())
+
+            if (!parameters.Any() || !parameters.Any(p => p.Contains(parametersSeparator)))
             {
-                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{FullNameParameter}', '{BirthDateParameter}'");
+                Console.WriteLine
+                    ($"Ошибка! Отсутствует несколько обязательных опций: '{FirstNameParameter}', '{SurNameParameter}', '{BirthDateParameter}', '{CityParameter}'.");
+
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(parameters[FullName]) || !parameters[FullName].Contains(valueSeparator))
+            if (!parameters.Any(p => p.Contains($"{parametersSeparator}{BirthDateKey.First()}"))
+                && !parameters.Any(p => p.Contains($"{parametersSeparator}{BirthDateKey.Last()}")))
             {
-                Console.WriteLine($"Ошибка! Первый обязательный параметр '{FullNameParameter}' - должен содержать хотя бы один символ.");
-                Console.WriteLine($"Ошибка! Разделитель значенй в параметре должен быть '{valueSeparator}'.");
+                Console.WriteLine
+                    ($"Ошибка! Отсутствует обязательная опция: '{BirthDateParameter}'");
+
                 return;
             }
+            
+            var orderedWardComponent = GetOrderedOptions(parameters);
 
-            if (!DateTime.TryParse(parameters[BirthDate], out DateTime birthDate))
+            if (!DateTime.TryParse(orderedWardComponent[BirthDateIndex], out DateTime birthDate))
             {
-                Console.WriteLine($"Ошибка! Неправильный формат даты во втором обязательном параметре '{BirthDateParameter}'");
+                Console.WriteLine($"Ошибка! Неправильный формат даты в обязательной опции '{BirthDateParameter}'");
                 return;
             }
 
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
-                var fullNameArray = parameters[FullName].Split(valueSeparator);
-                int surName = 0;
-                int firstName = 1;
-                int middleName = 2;
-
                 var wardRegistration =
                     new Ward(
-                        new FullName(fullNameArray[surName], fullNameArray[firstName], fullNameArray[middleName])
-                        , new Address()
-                        , birthDate
-                        , parameters.Length > Phone ? parameters[Phone] : string.Empty
-                        , Array.Empty<WardCategory>());
+                        new FullName(
+                            orderedWardComponent[SurNameIndex],
+                            orderedWardComponent[FirstNameIndex],
+                            orderedWardComponent[MiddleNameIndex]),
+                        new Address(
+                            string.Empty, 
+                            string.Empty, 
+                            string.Empty, 
+                            orderedWardComponent[CityIndex], 
+                            string.Empty, 
+                            string.Empty, 
+                            string.Empty, 
+                            string.Empty),
+                        birthDate,
+                        orderedWardComponent[PhoneIndex] ?? string.Empty,
+                        Array.Empty<WardCategory>());
 
                 unitOfWork.Add(wardRegistration);
                 unitOfWork.Save();
@@ -83,6 +111,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 Console.WriteLine(
                     $"Подопечный '{wardRegistration.FullName}', {wardRegistration.BirthDate.ToShortDateString()} г.р., создан с идентификатором (ID = {wardRegistration.Id})");
             }
+            
         }
 
         public bool Recognize(string command)
@@ -90,18 +119,67 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             return command == CommandText || command == Alias;
         }
 
+        private string[] GetOrderedOptions(string[] parameters)
+        {
+            var source = string.Join(valueSeparator, parameters).Split(parametersSeparator);
+
+            var ruKeys = new char[] {
+                FirstNameKey.First(),
+                MiddleNameKey.First(),
+                SurNameKey.First(),
+                BirthDateKey.First(),
+                PhoneKey.First(),
+                CityKey.First()
+            };
+
+            var enKeys = new char[] {
+                FirstNameKey.Last(),
+                MiddleNameKey.Last(),
+                SurNameKey.Last(),
+                BirthDateKey.Last(),
+                PhoneKey.Last(),
+                CityKey.Last()
+            };
+
+            var result = new string[wardComponentsCount];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = null;
+            }
+
+            foreach (var item in source)
+            {
+                var index = Array.IndexOf(ruKeys, item.FirstOrDefault());
+
+                if (index < 0)
+                {
+                    index = Array.IndexOf(enKeys, item.FirstOrDefault());
+                }
+
+                if (index >= 0 && index < wardComponentsCount)
+                {
+                    result[index] += $"{valueSeparator}{string.Concat(item.Skip(1))}".Trim();
+                };
+            }
+
+            return result;
+        }
+
         private string ComposeHelpString()
         {
-            var sampleWard = new Ward();
-
-            var resultString = new StringBuilder();
-            resultString.AppendLine($"Напишите:");
-            resultString.Append($" '{CommandText} (или {Alias})");
-            resultString.Append($" [{FullNameParameter}]");
-            resultString.Append($" [{BirthDateParameter}]");
-            resultString.Append($" ({PhoneParameter})'");
-            resultString.AppendLine(", чтобы создать подопечного.");
-            resultString.AppendLine($"Все компоненты ФИО (в т.ч. отсутствующие) обязтельно разделяются знаком '{valueSeparator}'!");
+            var resultString = new StringBuilder()
+                .AppendLine("Cоздание подопечного:")
+                .Append($"  {CommandText} (кратко {Alias})")
+                .Append($" {parametersSeparator}<обязательная опция 1> <значение> {parametersSeparator}<обязательная опция 2> <значение>... ")
+                .AppendLine($" {parametersSeparator}<долполнительная опция 1> <значение> {parametersSeparator}<дополнительная опция 2> <значение>... ")
+                .AppendLine($"    Обязательные опции:")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, FirstNameKey)} - {FirstNameParameter}")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, SurNameKey)} - {SurNameParameter}")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, BirthDateKey)} - {BirthDateParameter}")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, CityKey)} - {CityParameter}")
+                .AppendLine($"    Дополнительные опции:")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, MiddleNameKey)} - {MiddleNameParameter}")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, PhoneKey)} - {PhoneParameter}");
 
             return resultString.ToString();
         }

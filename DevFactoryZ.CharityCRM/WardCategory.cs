@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -10,7 +11,10 @@ namespace DevFactoryZ.CharityCRM
     {
         #region .ctor
 
-        public WardCategory() // For ORM
+        /// <summary>
+        /// Для создания миграций
+        /// </summary>
+        public WardCategory()
         {
 
         }
@@ -23,12 +27,18 @@ namespace DevFactoryZ.CharityCRM
         {
             Name = !string.IsNullOrWhiteSpace(name)
                 ? name
-                : throw new ArgumentNullException( nameof(name), "Наименование категории подопечного не может быть пустым.");
+                : throw new ArgumentNullException( nameof(name), 
+                    "Наименование категории подопечного не может быть пустым.");
         }
 
         #endregion
 
         #region Поля и свойства класса
+
+        /// <summary>
+        /// Возвращает или задает имя роли
+        /// </summary>
+        public string Name { get => name.Value; set => name.Value = value; }
 
         public static bool NameIsRequired = true;
 
@@ -38,14 +48,9 @@ namespace DevFactoryZ.CharityCRM
             new RealString(NameMaxLength, NameIsRequired, "наименование категории подопечного");
 
         /// <summary>
-        /// Возвращает или задает имя роли
-        /// </summary>
-        public string Name { get => name.Value; set => name.Value = value; }
-
-        /// <summary>
         /// Возвращает/присваивает идентификатор категории БФ.
         /// </summary>
-        public int Id { get; protected set; }
+        public int Id { get; set; }
         
         public bool CanBeDeleted => true;
 
@@ -54,70 +59,9 @@ namespace DevFactoryZ.CharityCRM
         #region Дочерние подкатегории
 
         /// <summary>
-        /// Тип для организации связи many-to-many WardCatgory <--> WardCategory
-        /// Используется для построения иерархической структуры категорий подопечного БФ.
-        /// </summary>
-        public class WardCategorySubCategory
-        {
-            protected WardCategorySubCategory() // for ORM
-            {
-            }
-
-            /// <summary>
-            /// Используется при добавлении/удалении подкатегории в/из категории.
-            /// </summary>
-            /// <param name="wardCategory">Подкатегория, которую требуется добавить/удалить в/из категории.</param>
-            internal WardCategorySubCategory(WardCategory wardCategory)
-            {
-                WardCategory = wardCategory ?? throw new ArgumentNullException(nameof(wardCategory));
-                SubCategoryId = WardCategory.Id;
-            }
-
-            /// <summary>
-            /// Навигационное свойство для связи many-to-many WardCatgory <--> WardCategory.
-            /// Идентификатор подкатегории, содержащейся в свойстве WardCategorySubCategory.WardCategory
-            /// </summary>
-            public int SubCategoryId { get; set; }
-
-            /// <summary>
-            /// Навигационное свойство для связи many-to-many WardCategory <--> WardCategory.
-            /// Идентификатор родительского WardCategory
-            /// </summary>
-            public int WardCategoryId { get; set; }
-
-            /// <summary>
-            /// Возвращает экземпляр подкатегории, содержащейся в текущей WardCategorySubCategory
-            /// </summary>
-            public WardCategory WardCategory { get; }
-
-            #region Переопределенные методы для корректной работы HashSet<WardCategorySubCategory>()
-
-            public override bool Equals(object obj)
-            {
-                return 
-                    obj is WardCategorySubCategory anotherCategorySubCategory
-                    && anotherCategorySubCategory.SubCategoryId == SubCategoryId;
-            }
-
-            public override int GetHashCode()
-            {
-                return SubCategoryId;
-            }
-
-            public static bool operator ==(WardCategorySubCategory left, WardCategorySubCategory right) => left.Equals(right);
-            public static bool operator !=(WardCategorySubCategory left, WardCategorySubCategory right) => !(left == right);
-
-            #endregion
-        }
-
-        /// <summary>
         /// Возвращает перечень подкатегорий для текущей категории подопечного БФ.
         /// </summary>
-        public HashSet<WardCategorySubCategory> SubCategories { get; } = new HashSet<WardCategorySubCategory>();
-
-        #endregion
-
-        #region Методы класса
+        public HashSet<WardCategory> SubCategories { get; } = new HashSet<WardCategory>();
 
         /// <summary>
         /// Добавляет подкатегорию подопечного.
@@ -125,7 +69,20 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="wardCategory">Объект категории подопечного БФ, которому будет присвоен в качестве родителя текущий экземпляр класса</param>
         public void AddChild(WardCategory wardCategory)
         {
-            if (!SubCategories.Add(new WardCategorySubCategory(wardCategory)))
+            if (Id == wardCategory.Id)
+            {
+                throw new ArgumentException(
+                    $"Циклическая ссылка. Категории не могут быть родителями сам себе.", 
+                        nameof(wardCategory));
+            }
+
+            if (wardCategory.SubCategories.Any(s => s.Equals(this)))
+            {
+                throw new ArgumentException(
+                    $"Циклическая ссылка. Категория не может одновременно быть родителем и подкатегорией для другой категории.", nameof(wardCategory));
+            }
+
+            if (!SubCategories.Add(wardCategory))
             {
                 throw new InvalidOperationException(
                     $"Категория '{wardCategory.Id} ({wardCategory.Name})' уже входит в список подкатегорий для категории '{Id} ({Name})'.");
@@ -138,7 +95,7 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="wardCategory">Объект подкатегории подопечного для удаления из родительской категории.</param>
         public void RemoveChild(WardCategory wardCategory)
         {
-            if (!SubCategories.Remove(new WardCategorySubCategory(wardCategory)))
+            if (!SubCategories.Remove(wardCategory))
             {
                 throw new InvalidOperationException(
                     $"Категория '{wardCategory.Id} ({wardCategory.Name})' не входит в список подкатегорий для категории '{Id} ({Name})'.");
@@ -158,13 +115,19 @@ namespace DevFactoryZ.CharityCRM
 
         public override int GetHashCode()
         {
-            return Id;
+            return Id.GetHashCode();
         }
 
         public override string ToString()
         {
             return Name;
         }
+
+        public static bool operator ==(WardCategory left, WardCategory right) =>
+            left.Equals(right);
+
+        public static bool operator !=(WardCategory left, WardCategory right) => 
+            !(left == right);
 
         #endregion
     }

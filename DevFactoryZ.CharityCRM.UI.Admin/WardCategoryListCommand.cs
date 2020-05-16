@@ -45,7 +45,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         private void WriteBody(WardCategory wardCategory)
         {
             Console.WriteLine(
-                $"{wardCategory.Id, 10:0}  {wardCategory.Name, -30}  {string.Join(",", wardCategory.SubCategories.Select(s => s.WardCategory.Name)), -50}");
+                $"{wardCategory.Id, 10:0}  {wardCategory.Name, -30}  {string.Join(",", wardCategory.SubCategories.Select(s => s.Name)), -50}");
         }
 
         public bool Recognize(string command)

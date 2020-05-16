@@ -61,7 +61,9 @@ namespace DevFactoryZ.CharityCRM.Ioc
                         provider.GetService<IAccountSessionRepository>(), 
                         WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())))
                 .AddTransient<IWardService>(
-                    provider => new WardService(provider.GetService<IWardRepository>()));
+                    provider => new WardService(provider.GetService<IWardRepository>()))
+                .AddTransient<IWardCategoryService>(
+                    provider => new WardCategoryService(provider.GetService<IWardCategoryRepository>()));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)

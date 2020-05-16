@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
 {
@@ -12,23 +9,55 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Configuration
         {
             ward.OwnsOne(o => o.Address, address =>
             {
-                address.ToTable(nameof(Address));
+                address.ToTable(nameof(Ward));
                 
-                address.Property(p => p.PostCode);
+                address
+                    .Property(p => p.PostCode)
+                        .HasColumnName(nameof(Address.PostCode))
+                        .HasMaxLength(Address.PostCodeMaxLength)
+                        .IsRequired(Address.PostCodeIsRequired);
 
-                address.Property(p => p.Country);
+                address
+                    .Property(p => p.Country)
+                        .HasColumnName(nameof(Address.Country))
+                        .HasMaxLength(Address.CountryMaxLength)
+                        .IsRequired(Address.CountryIsRequired);
 
-                address.Property(p => p.Region);
+                address
+                    .Property(p => p.Region)
+                        .HasColumnName(nameof(Address.Region))
+                        .HasMaxLength(Address.RegionMaxLength)
+                        .IsRequired(Address.RegionIsRequired);
 
-                address.Property(p => p.City);
+                address
+                    .Property(p => p.City)
+                        .HasColumnName(nameof(Address.City))
+                        .HasMaxLength(Address.CityMaxLength)
+                        .IsRequired(Address.CityIsRequired);
 
-                address.Property(p => p.Area);
+                address
+                    .Property(p => p.Area)
+                        .HasColumnName(nameof(Address.Area))
+                        .HasMaxLength(Address.AreaMaxLength)
+                        .IsRequired(Address.AreaIsRequired);
 
-                address.Property(p => p.Street);
+                address
+                    .Property(p => p.Street)
+                        .HasColumnName(nameof(Address.Street))
+                        .HasMaxLength(Address.StreetMaxLength)
+                        .IsRequired(Address.StreetIsRequired);
 
-                address.Property(p => p.House);
+                address
+                    .Property(p => p.House)
+                        .HasColumnName(nameof(Address.House))
+                        .HasMaxLength(Address.HouseMaxLength)
+                        .IsRequired(Address.HouseIsRequired);
 
-                address.Property(p => p.Flat);
+                address
+                    .Property(p => p.Flat)
+                        .HasColumnName(nameof(Address.Flat))
+                        .HasMaxLength(Address.FlatMaxLength)
+                        .IsRequired(Address.FlatIsRequired);
             });
         }
     }

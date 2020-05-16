@@ -261,7 +261,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.ToTable("Ward");
                 });
 
-            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward+ThisWardCategory", b =>
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward+WardCategoryCollectionElement", b =>
                 {
                     b.Property<int>("WardId")
                         .HasColumnType("int");
@@ -288,24 +288,14 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .HasColumnType("nvarchar(30)")
                         .HasMaxLength(30);
 
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ParentId");
+
                     b.ToTable("WardCategory");
-                });
-
-            modelBuilder.Entity("DevFactoryZ.CharityCRM.WardCategory+WardCategorySubCategory", b =>
-                {
-                    b.Property<int>("WardCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubCategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WardCategoryId", "SubCategoryId");
-
-                    b.HasIndex("SubCategoryId");
-
-                    b.ToTable("WardCategoriesSubCategories");
                 });
 
             modelBuilder.Entity("DevFactoryZ.CharityCRM.CashDonation", b =>
@@ -403,35 +393,54 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.OwnsOne("DevFactoryZ.CharityCRM.Address", "Address", b1 =>
                         {
                             b1.Property<int>("WardId")
-                                .HasColumnType("int");
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                             b1.Property<string>("Area")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("Area")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
 
                             b1.Property<string>("City")
-                                .HasColumnType("nvarchar(max)");
+                                .IsRequired()
+                                .HasColumnName("City")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
 
                             b1.Property<string>("Country")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("Country")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
 
                             b1.Property<string>("Flat")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("Flat")
+                                .HasColumnType("nvarchar(10)")
+                                .HasMaxLength(10);
 
                             b1.Property<string>("House")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("House")
+                                .HasColumnType("nvarchar(30)")
+                                .HasMaxLength(30);
 
                             b1.Property<string>("PostCode")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("PostCode")
+                                .HasColumnType("nvarchar(6)")
+                                .HasMaxLength(6);
 
                             b1.Property<string>("Region")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("Region")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
 
                             b1.Property<string>("Street")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnName("Street")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
 
                             b1.HasKey("WardId");
 
-                            b1.ToTable("Address");
+                            b1.ToTable("Ward");
 
                             b1.WithOwner()
                                 .HasForeignKey("WardId");
@@ -470,12 +479,12 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward+ThisWardCategory", b =>
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward+WardCategoryCollectionElement", b =>
                 {
                     b.HasOne("DevFactoryZ.CharityCRM.WardCategory", "WardCategory")
                         .WithMany()
                         .HasForeignKey("WardCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DevFactoryZ.CharityCRM.Ward", null)
@@ -485,19 +494,11 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DevFactoryZ.CharityCRM.WardCategory+WardCategorySubCategory", b =>
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.WardCategory", b =>
                 {
-                    b.HasOne("DevFactoryZ.CharityCRM.WardCategory", "WardCategory")
-                        .WithMany()
-                        .HasForeignKey("SubCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("DevFactoryZ.CharityCRM.WardCategory", null)
                         .WithMany("SubCategories")
-                        .HasForeignKey("WardCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParentId");
                 });
 #pragma warning restore 612, 618
         }

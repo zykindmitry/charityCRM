@@ -39,26 +39,28 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private void WriteHeader()
         {
-            var header = new StringBuilder();
-            header.Append($"{nameof(Ward.Id), 9}");
-            header.Append($"  {nameof(Ward.FullName),-50}");
-            header.Append($"  {nameof(Ward.BirthDate), -10}");
-            header.Append($"  {nameof(Ward.Phone), -16}");
-            header.Append($"  {nameof(Ward.CreatedAt) + " (UTC)",-19}");
+            var header = new StringBuilder()
+                .Append($"{nameof(Ward.Id), 9}")
+                .Append($"  {nameof(Ward.FullName), -50}")
+                .Append($"  {nameof(Ward.BirthDate), -10}")
+                .Append($"  {nameof(Ward.Phone), -17}")
+                .Append($"  {nameof(Ward.CreatedAt) + " (UTC)", -19}")
+                .Append($"  {nameof(Ward.WardCategories), -30}");
 
             Console.WriteLine(header.ToString());
         }
 
-        private void WriteBody(Ward passwordConfig)
+        private void WriteBody(Ward ward)
         {
-            var body = new StringBuilder();
-            body.Append($"{passwordConfig.Id, 9:0}");
-            body.Append($"  {passwordConfig.FullName,-50}");
-            body.Append($"  {passwordConfig.BirthDate.ToShortDateString(), -10:dd.MM.yyyy}");
-            body.Append(long.TryParse(passwordConfig.Phone, out long phoneNumber) 
-                ? $"  { phoneNumber, -16:+#(###)###-##-##}" 
-                : $"  {string.Empty, -16}");
-            body.Append($"  {passwordConfig.CreatedAt,-19:dd.MM.yyyy HH:mm:ss}");
+            var body = new StringBuilder()
+                .Append($"{ward.Id,9:0}")
+                .Append($"  {ward.FullName,-50}")
+                .Append($"  {ward.BirthDate.ToShortDateString(),-10:dd.MM.yyyy}")
+                .Append(long.TryParse(ward.Phone, out long phoneNumber)
+                    ? $"  { phoneNumber,-17:+##(###)###-##-##}"
+                    : $"  {"    <empty>",-17}")
+                .Append($"  {ward.CreatedAt,-19:dd.MM.yyyy HH:mm:ss}")
+                .Append($"  {string.Join(", ", ward.WardCategories.Select(c => c.WardCategory.Name)), -30}");
 
             Console.WriteLine(body.ToString());
         }

@@ -1,7 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
+using DevFactoryZ.CharityCRM.UI.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
@@ -9,15 +13,24 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
     [ApiController]
     public class WardsController : ApiController<IWardService>
     {
-        public WardsController(IWardService service) : base(service)
+        private readonly IWardCategoryService categoryService;
+
+        public WardsController(IWardService service, IWardCategoryService categoryService) 
+            : base(service)
         {
+            this.categoryService = categoryService ??
+                throw new ArgumentNullException(nameof(categoryService));
         }
 
-        [HttpGet]
+        [HttpGet()]
+        [CategoryFilter(nameof(WardListViewModel.CategoryId))]
         public ActionResult<WardListViewModel[]> Get()
         {
             return GetResultWithErrorHandling(
-               service => service.GetAll().Select(model => new WardListViewModel(model)).ToArray());
+               service => service
+                .GetAll()
+                    .Select(model => new WardListViewModel(model))
+                        .ToArray());
         }
 
         [HttpGet("{id}")]
@@ -38,7 +51,10 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             return GetResultWithErrorHandling(
                 service =>
                 {
+                    viewModel.WardCategories = GetTrackedEFEntities(viewModel.WardCategories);
+
                     var model = service.Create(viewModel.ToDto());
+
                     return new WardListViewModel(model);
                 });
         }
@@ -52,13 +68,27 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
             }
 
             return ExecuteWithErrorHandling(
-                service => service.Update(id, viewModel.ToDto()));
+                service => 
+                {
+                    viewModel.WardCategories = GetTrackedEFEntities(viewModel.WardCategories);
+
+                    service.Update(id, viewModel.ToDto());
+                });
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             return ExecuteWithErrorHandling(service => service.Delete(id));
+        }
+
+        private IEnumerable<WardCategory> GetTrackedEFEntities(IEnumerable<WardCategory> entities)
+        {
+            var result = new HashSet<WardCategory>();
+
+            entities?.Each(e => result.Add(categoryService.GetById(e.Id)));
+
+            return result;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DevFactoryZ.CharityCRM.Ioc;
 using DevFactoryZ.CharityCRM.Persistence;
+using DevFactoryZ.CharityCRM.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var services = new ServiceCollection()
                 .WithJsonConfig("appsettings.json")
                 .WithDataAccessComponents("local")
+                .WithDomainServices()
                 .BuildServiceProvider();
             var commands = InitCommands(services);
 
@@ -97,8 +99,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new WardCategoryGetCommand(services.GetService<ICreateRepository<IWardCategoryRepository>>()),
                  new WardCategoryListCommand(services.GetService<ICreateRepository<IWardCategoryRepository>>()),
                  new WardCategoryUpdateCommand(services.GetService<ICreateUnitOfWork>()),
-                 new WardCategoryAddSubCategoryCommand(services.GetService<ICreateUnitOfWork>()),
-                 new WardCategoryDeleteSubCategoryCommand(services.GetService<ICreateUnitOfWork>())
+                 new WardCategoryAddSubCategoryCommand(services.GetService<IWardCategoryService>()),
+                 new WardCategoryDeleteSubCategoryCommand(services.GetService<IWardCategoryService>())
             };
         }
 

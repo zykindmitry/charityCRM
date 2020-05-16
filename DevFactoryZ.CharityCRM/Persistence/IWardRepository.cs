@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DevFactoryZ.CharityCRM.Persistence
+﻿namespace DevFactoryZ.CharityCRM.Persistence
 {
+    /// <summary>
+    /// Интерфейс описывает шаблон репозиторий для подопечного БФ.
+    /// </summary>
     public interface IWardRepository : IRepository<Ward, int>
     {
     }

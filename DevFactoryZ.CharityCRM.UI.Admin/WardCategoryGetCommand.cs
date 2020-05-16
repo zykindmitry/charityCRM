@@ -58,7 +58,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
                 foreach (var subCategory in wardCategory.SubCategories)
                 {
-                    Console.WriteLine("{0,10:0} {1}", subCategory.WardCategory.Id, subCategory.WardCategory.Name);
+                    Console.WriteLine("{0,10:0} {1}", subCategory.Id, subCategory.Name);
                 }
             }
             else

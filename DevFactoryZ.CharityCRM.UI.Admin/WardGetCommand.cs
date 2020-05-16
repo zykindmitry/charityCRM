@@ -41,20 +41,28 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            if (!int.TryParse(parameters.First(), out int roleId))
+            if (!int.TryParse(parameters.First(), out int wardId))
             {
                 Console.WriteLine($"Ошибка! Обязательный параметр '{IdParameter}' должен быть целым положительным числом.");
                 return;
             }
 
             var repository = repositoryCreator.Create();
-            var ward = repository.GetById(roleId);
+            var ward = repository.GetById(wardId);
 
-            Console.WriteLine($"{nameof(Ward.FullName)}: {ward.FullName}.");
-            Console.WriteLine($"{nameof(Ward.BirthDate)}: {ward.BirthDate.ToShortDateString()}.");
-            Console.WriteLine($"{nameof(Ward.Address)}: {(string.IsNullOrWhiteSpace(ward.Address.ToString()) ? "<empty>" : ward.Address.ToString())}.");
-            Console.WriteLine($"{nameof(Ward.Phone)}: {(string.IsNullOrWhiteSpace(ward.Phone) ? "<empty>" : ward.Phone)}.");
-            Console.WriteLine($"{nameof(Ward.CreatedAt)}: {ward.BirthDate}.");
+            var phone = long.TryParse(ward.Phone, out long phoneNumber)
+                ? $"{ phoneNumber:+##(###)###-##-##}"
+                : "<empty>";
+            
+            var address = string.IsNullOrWhiteSpace(ward.Address.ToString().Replace(',', ' ').Trim()) 
+                ? "<empty>" 
+                : ward.Address.ToString();
+
+            Console.WriteLine($"{nameof(Ward.FullName), -10}: {ward.FullName}.");
+            Console.WriteLine($"{nameof(Ward.BirthDate), -10}: {ward.BirthDate.ToShortDateString()}.");
+            Console.WriteLine($"{nameof(Ward.Address), -10}: {address}.");
+            Console.WriteLine($"{nameof(Ward.Phone), -10}: {phone}.");
+            Console.WriteLine($"{nameof(Ward.CreatedAt), -10}: {ward.CreatedAt:dd.MM.yyyy HH:mm:ss}.");
             Console.WriteLine("Категории:");
 
             if (ward.WardCategories.Count() > 0)

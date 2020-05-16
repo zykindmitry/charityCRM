@@ -10,8 +10,6 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
     /// </summary>
     class WardUpdateFullNameCommand : ICommand
     {
-        private const char valueSeparator = ',';
-
         /// <summary>
         /// Создвет экземпляр <see cref="WardUpdateFullNameCommand "/>.
         /// </summary>
@@ -27,21 +25,32 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
 
         private static string IdParameter = "Id подопечного";
 
-        private static string NewFullNameParameter = $"Фамилия,Имя,Отчество - без пробелов, компоненты разделять знаком '{valueSeparator}'.";
+        private const string FirstNameParameter = "Имя";
+        private const string MiddleNameParameter = "Отчество";
+        private const string SurNameParameter = "Фамилия";
 
-        public string Help =>
-            (new StringBuilder($"Напишите '{CommandText} (или {Alias}) [{IdParameter}] [{NewFullNameParameter}]', чтобы изменить ФИО подопечного. "))
-            .AppendLine()
-            .Append($"    Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards' или 'lw'.")
-            .ToString();
+        private const char valueSeparator = ' ';
+        private const char keyNameSeparator = '|';
+        private const string parametersSeparator = "--";
+        private const int wardComponentsCount = 3;
+
+        private static char[] FirstNameKey = new char[] { 'и', 'f' };
+        private static char[] MiddleNameKey = new char[] { 'о', 'm' };
+        private static char[] SurNameKey = new char[] { 'ф', 'l' };
+
+        private static int FirstNameIndex = 0;
+        private static int MiddleNameIndex = 1;
+        private static int SurNameIndex = 2;
+
+        public string Help => ComposeHelpString();
              
         private readonly ICreateUnitOfWork unitOfWorkCreator;
 
         public void Execute(string[] parameters)
         {
-            if (parameters.Length < 2)
+            if (!parameters.Any())
             {
-                Console.WriteLine($"Ошибка! Отсутствует один или два обязательных параметра: '{IdParameter}', '{NewFullNameParameter}'");
+                Console.WriteLine($"Ошибка! Отсутствует первый обязательный параметр: '{IdParameter}'.");
                 return;
             }
 
@@ -51,24 +60,36 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(parameters[1]) || !parameters[1].Contains(valueSeparator))
+            var fullName = GetOrderedOptions(parameters.Skip(1).ToArray());
+
+            if (fullName[FirstNameIndex] == string.Empty)
             {
-                Console.WriteLine($"Ошибка! Второй обязательный параметр '{NewFullNameParameter}' - должен содержать хотя бы один символ.");
-                Console.WriteLine($"Ошибка! Разделитель значенй в параметре должен быть '{valueSeparator}'.");
+                Console.WriteLine(
+                    $"Ошибка! Опция '{FirstNameParameter}' - не может быть пустой.");
+                Console.WriteLine(
+                    $"Если не требуется изменять имя подопечного, просто удалите '{parametersSeparator}{FirstNameKey.First()}' или '{parametersSeparator}{FirstNameKey.Last()}' из коммандной строки.");
+
+                return;
+            }
+
+            if (fullName[SurNameIndex] == string.Empty)
+            {
+                Console.WriteLine(
+                    $"Ошибка! Опция '{SurNameParameter}' - не может быть пустой.");
+                Console.WriteLine(
+                    $"Если не требуется изменять фамилию подопечного, просто удалите '{parametersSeparator}{SurNameKey.First()}' или '{parametersSeparator}{SurNameKey.Last()}' из коммандной строки.");
+
                 return;
             }
 
             using (var unitOfWork = unitOfWorkCreator.Create())
             {
-                var fullNameArray = parameters[1].Split(valueSeparator);
-                int surName = 0;
-                int firstName = 1;
-                int middleName = 2;
-
                 var ward = 
                     unitOfWork.GetById<Ward, int>(wardId); 
 
-                ward.FullName.Update( new FullName(fullNameArray[surName], fullNameArray[firstName], fullNameArray[middleName]));
+                ward.FullName.FirstName = fullName[FirstNameIndex] ?? ward.FullName.FirstName;
+                ward.FullName.MiddleName = fullName[MiddleNameIndex] ?? ward.FullName.MiddleName;
+                ward.FullName.SurName = fullName[SurNameIndex] ?? ward.FullName.SurName;
 
                 unitOfWork.Save();
 
@@ -79,6 +100,62 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         public bool Recognize(string command)
         {
             return command == CommandText || command == Alias;
+        }
+
+        private string[] GetOrderedOptions(string[] parameters)
+        {
+            var source = string.Join(valueSeparator, parameters).Split(parametersSeparator);
+
+            var ruKeys = new char[] {
+                FirstNameKey.First(),
+                MiddleNameKey.First(),
+                SurNameKey.First(),
+            };
+
+            var enKeys = new char[] {
+                FirstNameKey.Last(),
+                MiddleNameKey.Last(),
+                SurNameKey.Last(),
+            };
+
+            var result = new string[wardComponentsCount];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = null;
+            }
+
+            foreach (var item in source)
+            {
+                var index = Array.IndexOf(ruKeys, item.FirstOrDefault());
+
+                if (index < 0)
+                {
+                    index = Array.IndexOf(enKeys, item.FirstOrDefault());
+                }
+
+                if (index >= 0 && index < wardComponentsCount)
+                {
+                    result[index] += $"{valueSeparator}{string.Concat(item.Skip(1))}".Trim();
+                };
+            }
+
+            return result;
+        }
+
+        private string ComposeHelpString()
+        {
+            var resultString = new StringBuilder()
+                .AppendLine("Изменение ФИО подопечного:")
+                .Append($"  {CommandText} (кратко {Alias})")
+                .Append($" <{IdParameter}>")
+                .AppendLine($" {parametersSeparator}<долполнительная опция 1> <значение> {parametersSeparator}<дополнительная опция 2> <значение>... ")
+                .AppendLine($"    Дополнительные опции:")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, FirstNameKey)} - {FirstNameParameter}")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, SurNameKey)} - {SurNameParameter}")
+                .AppendLine($"    {parametersSeparator}{string.Join(keyNameSeparator, MiddleNameKey)} - {MiddleNameParameter}")
+                .AppendLine($"  Внимание!!! {IdParameter} можно узнать, выполнив команду 'list-wards' или 'lw'.");
+
+            return resultString.ToString();
         }
     }
 }

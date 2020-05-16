@@ -1,7 +1,6 @@
-﻿using DevFactoryZ.CharityCRM.Persistence;
-using System;
+﻿using System;
 using System.Text;
-using System.Linq;
+using DevFactoryZ.CharityCRM.Services;
 
 namespace DevFactoryZ.CharityCRM.UI.Admin
 {
@@ -13,10 +12,10 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
         /// <summary>
         /// Создвет экземпляр <see cref="WardCategoryAddSubCategoryCommand"/>.
         /// </summary>
-        /// <param name="unitOfWorkCreator">Экземпляр <see cref="ICreateUnitOfWork"/> для работы с хранилищем.</param>
-        public WardCategoryAddSubCategoryCommand(ICreateUnitOfWork unitOfWorkCreator)
+        /// <param name="wardCategoryService">Экземпляр <see cref="IWardCategoryService"/> для работы с хранилищем.</param>
+        public WardCategoryAddSubCategoryCommand(IWardCategoryService wardCategoryService)
         {
-            this.unitOfWorkCreator = unitOfWorkCreator;
+            this.wardCategoryService = wardCategoryService;
         }
 
         private static string CommandText = "update-ward-category-add-subcategory";
@@ -34,7 +33,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             .Append($"    Внимание!!! {IdSubCategoryParameter} можно узнать, выполнив команду 'list-ward-categories' или 'lwc'.")
             .ToString();
              
-        private readonly ICreateUnitOfWork unitOfWorkCreator;
+        private readonly IWardCategoryService wardCategoryService;
 
         public void Execute(string[] parameters)
         {
@@ -56,19 +55,11 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            using (var unitOfWork = unitOfWorkCreator.Create())
-            {
-                var wardCategory = 
-                    unitOfWork.GetById<WardCategory, int>(wardCategoryId);
+            var subCategory = wardCategoryService.GetById(subCategoryId);
 
-                var subCategory =
-                    unitOfWork.GetById<WardCategory, int>(subCategoryId);
+            wardCategoryService.AddChild(wardCategoryId, subCategory);
 
-                wardCategory.AddChild(subCategory);
-                unitOfWork.Save();
-
-                Console.WriteLine($"Подкатегория '{subCategory.Name}' добавлена к категории подопечного '{wardCategory.Name}'.");
-            }
+            Console.WriteLine($"Подкатегория '{subCategory.Name}' добавлена к категории подопечного '{wardCategoryId}'.");
 
         }
 

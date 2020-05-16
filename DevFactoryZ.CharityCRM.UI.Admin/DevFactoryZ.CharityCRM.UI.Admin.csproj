@@ -7,11 +7,31 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="vendor\bootstrap\css\bootstrap.min.css" />
+    <None Remove="vendor\bootstrap\css\bootstrap.min.css.map" />
+    <None Remove="vendor\bootstrap\js\bootstrap.bundle.min.js" />
+    <None Remove="vendor\bootstrap\js\bootstrap.bundle.min.js.map" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="vendor\bootstrap\css\bootstrap.min.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="vendor\bootstrap\css\bootstrap.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="vendor\bootstrap\js\bootstrap.bundle.min.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="vendor\bootstrap\js\bootstrap.bundle.min.js.map">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
@@ -28,6 +48,10 @@
     <ProjectReference Include="..\DevFactoryZ.CharityCRM.Ioc\DevFactoryZ.CharityCRM.Ioc.csproj" />
     <ProjectReference Include="..\DevFactoryZ.CharityCRM.Services\DevFactoryZ.CharityCRM.Services.csproj" />
     <ProjectReference Include="..\DevFactoryZ.CharityCRM\DevFactoryZ.CharityCRM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="vendor\jquery\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

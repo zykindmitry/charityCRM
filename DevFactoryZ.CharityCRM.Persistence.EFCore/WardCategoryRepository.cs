@@ -17,9 +17,9 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
             this.save = save;
         }
 
-        public void Add(WardCategory permission)
+        public void Add(WardCategory wardCategory)
         {
-            setOfWardCategories.Add(permission);
+            setOfWardCategories.Add(wardCategory);
         }
 
         public void Delete(int id)
@@ -29,17 +29,13 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
 
         public IEnumerable<WardCategory> GetAll()
         {
-            return setOfWardCategories
-                .Include(r => r.SubCategories)
-                    .ThenInclude(s => s.WardCategory)
-                .ToArray();
+            return setOfWardCategories.Include(r => r.SubCategories).ToArray();
         }
 
         public WardCategory GetById(int id)
         {
             return setOfWardCategories
                 .Include(r => r.SubCategories)
-                    .ThenInclude(s => s.WardCategory)
                 .FirstOrDefault(r => r.Id == id)
                 ?? throw new EntityNotFoundException(id, typeof(WardCategory));
         }

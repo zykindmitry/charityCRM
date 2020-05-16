@@ -64,7 +64,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 var wardcCategory =
                     unitOfWork.GetById<WardCategory, int>(wardCategoryId);
 
-                ward.Grant(wardcCategory);
+                ward.AddCategory(wardcCategory);
                 unitOfWork.Save();
 
                 Console.WriteLine($"Категория '{wardcCategory.Name}' присвоена подопечному '{ward.FullName}'.");

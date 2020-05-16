@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -11,12 +10,29 @@ namespace DevFactoryZ.CharityCRM
     {
         #region .ctor
 
-        public Ward() // For ORM
+        /// <summary>
+        /// Для создания миграций
+        /// </summary>
+        public Ward()
         {
             CreatedAt = DateTime.UtcNow;
         }
 
-        public Ward(FullName fullName, Address address, DateTime birthDate, string phone, IEnumerable<WardCategory> categories)
+        /// <summary>
+        /// Создает экземпляр <see cref="Ward"/>.
+        /// Используется при создании нового подопечного.
+        /// </summary>
+        /// <param name="fullName">Фамилия, имя, отчество подопечного БФ.</param>
+        /// <param name="address">Почтовый адрес подопечного БФ.</param>
+        /// <param name="birthDate">Дата рождения подопечного БФ.</param>
+        /// <param name="phone">Телефонный номер подопечного БФ.</param>
+        /// <param name="categories">Катагории подопечного БФ.</param>
+        public Ward(
+            FullName fullName, 
+            Address address, 
+            DateTime birthDate, 
+            string phone, 
+            IEnumerable<WardCategory> categories)
             :this()
         {
             FullName = fullName;
@@ -24,13 +40,7 @@ namespace DevFactoryZ.CharityCRM
             BirthDate = birthDate;
             Phone = phone;
             
-            categories.Each(category => Grant(category));
-        }
-
-        public Ward(FullName fullName, Address address, DateTime birthDate, string phone, IEnumerable<WardCategory> categories, DateTime createdAt)
-            : this(fullName, address, birthDate, phone, categories)
-        {
-            CreatedAt = createdAt;
+            categories.Each(category => AddCategory(category));
         }
 
         #endregion
@@ -57,17 +67,17 @@ namespace DevFactoryZ.CharityCRM
         /// </summary>
         public DateTime BirthDate { get; set; }
 
+        /// <summary>
+        /// Представляет номер телефона подопечного БФ.
+        /// </summary>
+        public string Phone { get => phone.Value; set => phone.Value = value; }
+
         public static bool PhoneIsRequired = false;
 
         public static int PhoneMaxLength = 12;
 
         private readonly RealString phone =
             new RealString(PhoneMaxLength, PhoneIsRequired, "номер телефона подопечного");
-
-        /// <summary>
-        /// Представляет номер телефона подопечного БФ.
-        /// </summary>
-        public string Phone { get => phone.Value; set => phone.Value = value; }
 
         /// <summary>
         /// Возвращает идентификатор подопечного в хранилище.
@@ -89,13 +99,15 @@ namespace DevFactoryZ.CharityCRM
 
         #region Категории подопечного
 
-
         /// <summary>
         /// Тип для организации связи many-to-many Ward <--> WardCategory
         /// </summary>
-        public class ThisWardCategory
+        public class WardCategoryCollectionElement
         {
-            protected ThisWardCategory() // for ORM
+            /// <summary>
+            /// Для создания миграций
+            /// </summary>        
+            protected WardCategoryCollectionElement()
             {
             }
 
@@ -103,10 +115,15 @@ namespace DevFactoryZ.CharityCRM
             /// Используется при добавлении/удалении категории подопечному БФ.
             /// </summary>
             /// <param name="wardCategory">Категория, которую требуется добавить/удалить подопечному БФ.</param>
-            internal ThisWardCategory(WardCategory wardCategory)
+            internal WardCategoryCollectionElement(WardCategory wardCategory)
             {
-                WardCategory = wardCategory ?? throw new ArgumentNullException(nameof(wardCategory));
-                WardCategoryId = WardCategory.Id;
+                WardCategory = wardCategory ?? 
+                    throw new ArgumentNullException(nameof(wardCategory));
+                
+                WardCategoryId = WardCategory.Id > 0 
+                    ? WardCategory.Id
+                    : throw new ArgumentException($"Категория должна иметь {WardCategory.Id} > 0.",
+                        nameof(wardCategory));
             }
 
             /// <summary>
@@ -126,21 +143,24 @@ namespace DevFactoryZ.CharityCRM
             /// </summary>
             public WardCategory WardCategory { get; }
 
-            #region Переопределенные методы для корректной работы HashSet<ThisWardCategory>()
+            #region Переопределенные методы для корректной работы HashSet<WardCategoryCollectionElement>()
 
             public override bool Equals(object obj)
             {
-                return obj is ThisWardCategory anotherThisWardCategory
+                return obj is WardCategoryCollectionElement anotherThisWardCategory
                     && anotherThisWardCategory.WardCategoryId == WardCategoryId;
             }
 
             public override int GetHashCode()
             {
-                return WardCategoryId;
+                return WardCategoryId.GetHashCode();
             }
 
-            public static bool operator ==(ThisWardCategory left, ThisWardCategory right) => left.Equals(right);
-            public static bool operator !=(ThisWardCategory left, ThisWardCategory right) => !(left == right);
+            public static bool operator ==(WardCategoryCollectionElement left, 
+                WardCategoryCollectionElement right) => left.Equals(right);
+            
+            public static bool operator !=(WardCategoryCollectionElement left, 
+                WardCategoryCollectionElement right) => !(left == right);
 
             #endregion
         }
@@ -148,24 +168,25 @@ namespace DevFactoryZ.CharityCRM
         /// <summary>
         /// Возвращает перечень категорий подопечного БФ.
         /// </summary>
-        public HashSet<ThisWardCategory> WardCategories { get; } = new HashSet<ThisWardCategory>();
+        public HashSet<WardCategoryCollectionElement> WardCategories { get; } = 
+            new HashSet<WardCategoryCollectionElement>();
 
         /// <summary>
         /// Присваивает категорию подопечному БФ.
         /// </summary>
         /// <param name="wardCategory">Категория, которуе требуется присвоить подопечному.</param>
-        public void Grant(WardCategory wardCategory)
+        public void AddCategory(WardCategory wardCategory)
         {
-            WardCategories.Add(new ThisWardCategory(wardCategory));
+            WardCategories.Add(new WardCategoryCollectionElement(wardCategory));
         }
 
         /// <summary>
         /// Удаляет каегорию у подопечного БФ.
         /// </summary>
         /// <param name="wardCategory">Категория. которое требуется удалить.</param>
-        public void Deny(WardCategory wardCategory)
+        public void RemoveCategory(WardCategory wardCategory)
         {
-            WardCategories.Remove(new ThisWardCategory(wardCategory));
+            WardCategories.Remove(new WardCategoryCollectionElement(wardCategory));
         }
 
         #endregion

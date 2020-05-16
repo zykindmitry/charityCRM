@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using DevFactoryZ.CharityCRM.Persistence;
 
 namespace DevFactoryZ.CharityCRM.Services
 {
     /// <summary>
-    /// Вспомогательный тип для передачи значений свойств типу <see cref="Ward"/> при создании/изменении подопечного БФ.
+    /// Вспомогательный тип для передачи значений свойств типу <see cref="Ward"/> 
+    /// при создании/изменении подопечного БФ.
     /// </summary>
     public class WardData
     {
@@ -40,7 +42,8 @@ namespace DevFactoryZ.CharityCRM.Services
     }
 
     /// <summary>
-    /// Описывает CRUD-методы и методы добавления/удаления категорий <see cref="WardCategory"/>, для подопечного БФ <see cref="Ward"/>.
+    /// Описывает CRUD-методы и методы добавления/удаления категорий <see cref="WardCategory"/>,
+    /// для подопечного БФ <see cref="Ward"/>.
     /// </summary>
     public interface IWardService
     {
@@ -51,7 +54,8 @@ namespace DevFactoryZ.CharityCRM.Services
         IEnumerable<Ward> GetAll();
 
         /// <summary>
-        /// Получение из хранилища объекта <see cref="Ward"/> по заданному идентификатору <see cref="Ward.Id"/>.
+        /// Получение из хранилища объекта <see cref="Ward"/> по заданному идентификатору 
+        /// <see cref="Ward.Id"/>.
         /// Генерирует <see cref="EntityNotFoundException"/>, если объект не найден.
         /// </summary>
         /// <exception cref="EntityNotFoundException"></exception>
@@ -80,19 +84,5 @@ namespace DevFactoryZ.CharityCRM.Services
         /// </summary>
         /// <param name="id">Идентификатор подопечного для удаления.</param>
         void Delete(int id);
-
-        /// <summary>
-        /// Добавляет <see cref="WardCategory"/> в список категорий для <see cref="Ward"/>.
-        /// </summary>
-        /// <param name="id">Идентификатор подопечного в хранилище.</param>
-        /// <param name="wardCategory"><see cref="WardCategory"/> для добавления.</param>
-        void Grant(int id, WardCategory wardCategory);
-
-        /// <summary>
-        /// Удаляет <see cref="WardCategory"/> из списка категорий для <see cref="Ward"/>.
-        /// </summary>
-        /// <param name="id">Идентификатор подопечного в хранилище.</param>
-        /// <param name="wardCategory"><see cref="WardCategory"/> для удаления.</param>
-        void Deny(int id, WardCategory wardCategory);
     }
 }

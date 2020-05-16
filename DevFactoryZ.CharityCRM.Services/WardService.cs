@@ -14,8 +14,15 @@ namespace DevFactoryZ.CharityCRM.Services
 
         public Ward Create(WardData data)
         {
-            var ward = new Ward(data.FullName, data.Address, data.BirthDate, data.Phone, data.WardCategories);
+            var ward = new Ward(
+                data.FullName, 
+                data.Address, 
+                data.BirthDate, 
+                data.Phone, 
+                data.WardCategories);
+
             repository.Add(ward);
+
             repository.Save();
 
             return ward;
@@ -24,14 +31,6 @@ namespace DevFactoryZ.CharityCRM.Services
         public void Delete(int id)
         {
             repository.Delete(id);
-            repository.Save();
-        }
-
-        public void Deny(int id, WardCategory wardCategory)
-        {
-            var ward = repository.GetById(id);
-            ward.Deny(wardCategory);
-
             repository.Save();
         }
 
@@ -45,21 +44,29 @@ namespace DevFactoryZ.CharityCRM.Services
             return repository.GetById(id);
         }
 
-        public void Grant(int id, WardCategory wardCategory)
-        {
-            var ward = repository.GetById(id);
-            ward.Grant(wardCategory);
-
-            repository.Save();
-        }
-
         public void Update(int id, WardData data)
         {
             var ward = repository.GetById(id);
-            ward.FullName.Update( data.FullName);
-            ward.Address.Update( data.Address);
+
+            ward.FullName.FirstName = data.FullName.FirstName;
+            ward.FullName.MiddleName = data.FullName.MiddleName;
+            ward.FullName.SurName = data.FullName.SurName;
+            
+            ward.Address.PostCode = data.Address.PostCode;
+            ward.Address.Country = data.Address.Country;
+            ward.Address.Region = data.Address.Region;
+            ward.Address.City = data.Address.City;
+            ward.Address.Area = data.Address.Area;
+            ward.Address.Street = data.Address.Street;
+            ward.Address.House = data.Address.House;
+            ward.Address.Flat = data.Address.Flat;
+            
             ward.BirthDate = data.BirthDate;
             ward.Phone = data.Phone;
+
+            ward.WardCategories.Clear();
+
+            data.WardCategories?.Each(c => ward.AddCategory(c));
             
             repository.Save();
         }
