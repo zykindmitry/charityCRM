@@ -100,7 +100,7 @@ namespace DevFactoryZ.CharityCRM
         #region Категории подопечного
 
         /// <summary>
-        /// Тип для организации связи many-to-many Ward <--> WardCategory
+        /// Тип для организации связи many-to-many <see cref="Ward"/> <--> <see cref="CharityCRM.WardCategory"/>.
         /// </summary>
         public class WardCategoryCollectionElement
         {
@@ -112,9 +112,11 @@ namespace DevFactoryZ.CharityCRM
             }
 
             /// <summary>
-            /// Используется при добавлении/удалении категории подопечному БФ.
+            /// Используется при добавлении/удалении категории <see cref="CharityCRM.WardCategory"/> 
+            /// подопечному БФ.
             /// </summary>
-            /// <param name="wardCategory">Категория, которую требуется добавить/удалить подопечному БФ.</param>
+            /// <param name="wardCategory">Категория <see cref="CharityCRM.WardCategory"/>, 
+            /// которую требуется добавить/удалить подопечному БФ.</param>
             internal WardCategoryCollectionElement(WardCategory wardCategory)
             {
                 WardCategory = wardCategory ?? 
@@ -127,19 +129,23 @@ namespace DevFactoryZ.CharityCRM
             }
 
             /// <summary>
-            /// Навигационное свойство для связи many-to-many Ward-WardCategory.
+            /// Навигационное свойство для связи many-to-many 
+            /// <see cref="Ward"/> <--> <see cref="CharityCRM.WardCategory"/>.
             /// Идентификатор подопечного БФ - владельца категории.
             /// </summary>
             public int WardId { get; set; }
 
             /// <summary>
-            /// Навигационное свойство для связи many-to-many Ward-WardCategory.
-            /// Идентификатор категории, содержащейся в свойстве ThisWardCategory.WardCategory.
+            /// Навигационное свойство для связи many-to-many 
+            /// <see cref="Ward"/> <--> <see cref="CharityCRM.WardCategory"/>.
+            /// Идентификатор категории, содержащейся в свойстве 
+            /// <see cref="WardCategoryCollectionElement.WardCategory"/>.
             /// </summary>
             public int WardCategoryId { get; set; }
 
             /// <summary>
-            /// Возвращает экземпляр категории, содержащейся в текущей ThisWardCategory.
+            /// Возвращает экземпляр категории, содержащейся в текущей 
+            /// <see cref="WardCategoryCollectionElement"/>.
             /// </summary>
             public WardCategory WardCategory { get; }
 

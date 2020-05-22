@@ -57,12 +57,9 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            var subCategory =
-                wardCategoryService.GetById(subCategoryId);
+            wardCategoryService.RemoveChild(wardCategoryId, subCategoryId);
 
-            wardCategoryService.RemoveChild(wardCategoryId, subCategory);
-
-            Console.WriteLine($"Подкатегория '{subCategory.Name}' удалена из категории подопечного '{wardCategoryId}'.");
+            Console.WriteLine($"Подкатегория '{subCategoryId}' удалена из категории подопечного '{wardCategoryId}'.");
         }
 
         public bool Recognize(string command)

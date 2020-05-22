@@ -1,18 +1,30 @@
 ﻿const contentTypeValue = 'application/json';
 
 export async function httpPost(url, data) {
+    return httpRequest('POST', url, data);
+};
+
+export async function httpGet(url) {
+    return httpRequest('GET', url, null);
+};
+
+export async function httpPut(url, data) {
+    return ShttpRequest('PUT', url, data)
+};
+
+async function httpRequest(method, url, data){
     return fetch(url, {
-        method: 'POST',
+        method: method,
         headers: {
             "Content-Type": contentTypeValue
         },
-        body: JSON.stringify(data)
+        body: data == null ? data : JSON.stringify(data)
     }).then((response) => {
         if (response.ok) {
             return response.text();
         }
         else {
-             return response.text()
+            return response.text()
                 .then((text) => {
                     return text;
                 }).then((message) => {

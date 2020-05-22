@@ -23,13 +23,16 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
         }
 
         [HttpGet()]
-        [CategoryFilter(nameof(WardListViewModel.CategoryId))]
-        public ActionResult<WardListViewModel[]> Get()
+        public ActionResult<WardListViewModel[]> Get(int? categoryId)
         {
             return GetResultWithErrorHandling(
                service => service
                 .GetAll()
-                    .Select(model => new WardListViewModel(model))
+                    .Where(ward =>
+                        categoryId == null 
+                            ? true 
+                            : ward.WardCategories.Any(c => c.WardCategory.Id == categoryId ))
+                    .Select(ward => new WardListViewModel(ward))
                         .ToArray());
         }
 

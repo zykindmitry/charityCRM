@@ -20,7 +20,5 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels
         }
 
         public int Id { get; set; }
-
-        public int? CategoryId { get; set; }
     }
 }

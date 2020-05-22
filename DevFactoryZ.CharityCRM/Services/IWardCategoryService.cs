@@ -1,4 +1,4 @@
-﻿,using DevFactoryZ.CharityCRM.Persistence;
+﻿using DevFactoryZ.CharityCRM.Persistence;
 using System.Collections.Generic;
 
 namespace DevFactoryZ.CharityCRM.Services
@@ -52,23 +52,31 @@ namespace DevFactoryZ.CharityCRM.Services
         /// <see cref="WardCategory"/>.
         /// </summary>
         /// <param name="parentId">Идентификатор родительской категории в хранилище.</param>
-        /// <param name="child">Подкатегория <see cref="WardCategory"/> для добавления.</param>
-        void AddChild(int parentId, WardCategory child);
+        /// <param name="childId">Идентификатор подкатегории <see cref="WardCategory"/> для добавления.</param>
+        void AddChild(int parentId, int childId);
 
         /// <summary>
         /// Удаляет <see cref="WardCategory"/> из списка подкатегорий для 
         /// <see cref="WardCategory"/>.
         /// </summary>
         /// <param name="parentId">Идентификатор родительской категории в хранилище.</param>
-        /// <param name="child">Подкатегория <see cref="WardCategory"/> для удаления.</param>
-        void RemoveChild(int parentId, WardCategory child);
+        /// <param name="childId">Идентификатор подкатегории <see cref="WardCategory"/> для удаления.</param>
+        void RemoveChild(int parentId, int childId);
 
         /// <summary>
         /// Проверка наличия родительской <see cref="WardCategory"/> у проверяемой 
         /// <see cref="WardCategory"/>.
         /// </summary>
-        /// <param name="wardCategory">Проверяемая <see cref="WardCategory"/>.</param>
+        /// <param name="wardCategoryId">Идентификатор проверяемой <see cref="WardCategory"/>.</param>
         /// <returns>Результат проверки</returns>
-        bool HasParent(WardCategory wardCategory);
+        bool HasParent(int wardCategoryId);
+
+        /// <summary>
+        /// Проверка наличия циклической зависимости между категориями <see cref="WardCategory"/>.
+        /// </summary>
+        /// <param name="parentId">Идентификатор родительской <see cref="WardCategory"/>.</param>
+        /// <param name="childId">Идентификатор дочерней <see cref="WardCategory"/>.</param>
+        /// <returns></returns>
+        bool HasCycling(int parentId, int childId);
     }
 }

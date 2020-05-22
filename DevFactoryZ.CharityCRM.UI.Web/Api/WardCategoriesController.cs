@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DevFactoryZ.CharityCRM.Persistence;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
@@ -15,11 +16,11 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
         }
 
         [HttpGet]
-        public ActionResult<WardCategoryListViewModel[]> Get()
+        public ActionResult<IEnumerable<WardCategoryListViewModel>> Get(bool onlyRoot)
         {
             return GetResultWithErrorHandling(
-               repository => repository.GetAll().Select(model => 
-                  new WardCategoryListViewModel(model)).ToArray());
+                repository => (onlyRoot ? repository.GetRoots() : repository.GetAll())
+                    .Select(model => new WardCategoryListViewModel(model)));
         }
 
         [HttpGet("{id}")]

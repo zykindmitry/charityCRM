@@ -30,7 +30,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Filters
                     if (context.HttpContext.Response.Body != null)
                     {
                         context.HttpContext.Response.Body = 
-                            new CategoryFilter(context.HttpContext.Response.Body, categoryIds);
+                            new CategoryFilterStream(context.HttpContext.Response.Body, categoryIds);
                     }
                 }
             }
@@ -41,12 +41,12 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Filters
 
         }
 
-        private class CategoryFilter : Stream
+        private class CategoryFilterStream : Stream
         {
             private readonly Stream outputStream;
             StringValues categoryIds;
 
-            public CategoryFilter(Stream filterStream, StringValues categoryIds)
+            public CategoryFilterStream(Stream filterStream, StringValues categoryIds)
             {
                 if (filterStream == null)
                 {

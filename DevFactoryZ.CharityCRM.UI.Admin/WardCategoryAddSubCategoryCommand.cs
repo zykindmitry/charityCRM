@@ -55,11 +55,9 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                 return;
             }
 
-            var subCategory = wardCategoryService.GetById(subCategoryId);
+            wardCategoryService.AddChild(wardCategoryId, subCategoryId);
 
-            wardCategoryService.AddChild(wardCategoryId, subCategory);
-
-            Console.WriteLine($"Подкатегория '{subCategory.Name}' добавлена к категории подопечного '{wardCategoryId}'.");
+            Console.WriteLine($"Подкатегория '{subCategoryId}' добавлена к категории подопечного '{wardCategoryId}'.");
 
         }
 

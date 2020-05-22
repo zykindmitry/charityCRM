@@ -28,9 +28,12 @@ namespace DevFactoryZ.CharityCRM.Services
             repository.Save();
         }
 
-        public void RemoveChild(int parentId, WardCategory child)
+        public void RemoveChild(int parentId, int childId)
         {
-            var parent = repository.GetById(parentId);
+            var child = GetById(childId);
+
+            var parent = GetById(parentId);
+            
             parent.RemoveChild(child);
 
             repository.Save();
@@ -46,15 +49,23 @@ namespace DevFactoryZ.CharityCRM.Services
             return repository.GetById(id);
         }
 
-        public void AddChild(int parentId, WardCategory child)
+        public void AddChild(int parentId, int childId)
         {
-            if (HasParent(child))
+            if (HasParent(childId))
             {
                 throw new ArgumentException(
-                    $"Категория '{child.Id} ({child.Name})' уже имеет родителя.", nameof(child));
+                    $"Категория '{childId}' уже имеет родителя.", nameof(childId));
             }
 
-            var parent = repository.GetById(parentId);
+            if (HasCycling(parentId, childId))
+            {
+                throw new ArgumentException(
+                    $"Циклическая ссылка. Нельзя категорию '{childId}' назначать подкатегорией для категории '{parentId}'.");
+            }
+
+            var child = GetById(childId);
+
+            var parent = GetById(parentId);
 
             parent.AddChild(child);
 
@@ -76,10 +87,14 @@ namespace DevFactoryZ.CharityCRM.Services
             repository.Save();
         }
 
-        public bool HasParent(WardCategory wardCategory)
+        public bool HasParent(int wardCategoryId)
         {
-            return repository.GetAll().Any(s => s.SubCategories.Contains(wardCategory));
+            return repository.HasParent(wardCategoryId);
         }
 
+        public bool HasCycling(int parentId, int childId)
+        {
+            return repository.HasCycling(parentId, childId);
+        }
     }
 }
