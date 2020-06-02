@@ -2,15 +2,16 @@
 
 const rootWardCategoriesURL = "/api/wardcategories?onlyRoot=true";
 const allWardsByCategoryURL = "/api/wards?categoryId=";
-const wardsTableHeader = ["№ п/п", "ФИО", "Дата рождения", "Дата регистрации в фонде", "Категории"];
+const wardsTableHeader = ["№ п/п", "ФИО", "Дата рождения", "Дата регистрации в фонде (UTC)", "Категории"];
+const tableColumnsCount = wardsTableHeader.length;
 
 const e = React.createElement;
 
-export class FormWards extends React.Component {
+export class PageWards extends React.Component {
     constructor(props) {
         super(props);
         this.state = { ...props };
-        this.getWards = this.getWards.bind(this);
+        this.getWards = this.getWards.bind(this);        
     }
 
     async getRootWardCategories() {
@@ -32,11 +33,27 @@ export class FormWards extends React.Component {
 
     parseWardListViewModelForTable(source) {
         return JSON.parse(source, function (key, value) {
-            if (key.toLowerCase() == 'createdat' || key.toLowerCase() == 'birthdate') { return value };
-            if (key.toLowerCase() == 'fullname') { return `${value.surName} ${value.firstName} ${value.middleName}`.trim() };
-            if (key.toLowerCase() == 'wardcategories') { return value.map(item => (item.name)).toString() };
+            if (key.toLowerCase() == 'createdat') {
+                return (new Date(Date.parse(value.slice(0, 19)))).toLocaleString();
+            }
+            if (key.toLowerCase() == 'birthdate') {
+                return (new Date(Date.parse(value.slice(0, 19)))).toLocaleDateString();
+            }
+            if (key.toLowerCase() == 'fullname') {
+                return `${value.surName} ${value.firstName} ${value.middleName}`.trim();
+            }
+            if (key.toLowerCase() == 'wardcategories') {
+                return value.map(item => (item.name)).toString();
+            }
             return value;
-        }).map((item, index) => ([Number(index) + 1, item.fullName, item.birthDate, item.createdAt, item.wardCategories]));
+        }).map((item, index) =>
+            ([Number(index) + 1,
+                item.fullName,
+                item.birthDate,
+                item.createdAt,
+                item.wardCategories]
+            )
+        );
     }
 
     findCategoryById(id) {
@@ -68,7 +85,7 @@ export class FormWards extends React.Component {
         return e(
             Body,
             {
-                getRoot: this.state.categories,
+                rootCategories: this.state.categories,
                 getWards: this.getWards,
                 wardsForView: this.state.wardsForView,
                 currentCategory: this.state.currentCategory
@@ -80,13 +97,13 @@ export class FormWards extends React.Component {
 function Body(props){
     return (
         <div>
-            <FormLeftSideBar formName="Меню" topLevelName="Категории" rootCategories={props.getRoot} getWards={props.getWards} />
-            <FormWardContent firstLevelName="Категории" currentCategory={props.currentCategory} wards={props.wardsForView}/>
+            <PageWardsLeftSideBar formName="Меню" topLevelName="Категории" rootCategories={props.rootCategories} getWards={props.getWards} />
+            <PageWardsContent firstLevelName="Категории" currentCategory={props.currentCategory} wardsForView={props.wardsForView}/>
         </div>
     );
 };
 
-function FormLeftSideBar(props) {
+function PageWardsLeftSideBar(props) {
     return (
         <div className="nav-left-sidebar sidebar-dark">
             <div className="menu-list">
@@ -106,8 +123,8 @@ function FormLeftSideBar(props) {
                                     {props.topLevelName}
                                     <span className="badge badge-success">6</span>
                                 </a>
+                                <PageWardsCategoryMenu menuItems={props.rootCategories} getWards={props.getWards} />
                             </li>
-                            <FormWardCategoryMenu menuItems={props.rootCategories} getWards={props.getWards}/>
                         </ul>
                     </div>
                 </div>
@@ -116,8 +133,7 @@ function FormLeftSideBar(props) {
     );
 };
 
-function FormWardContent(props) {
-
+function PageWardsContent(props) {
     return (
         <div className="dashboard-wrapper">
             <div className="container-fluid  dashboard-content">
@@ -163,7 +179,7 @@ function FormWardContent(props) {
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
-                                    <FormDataTable tableId="example" tableHeader={wardsTableHeader} tableFooter={wardsTableHeader} tableData={props.wards} tableClass="table table-striped table-bordered second"/>
+                                    <FormDataTable tableId="wardsTable" columnsCount={tableColumnsCount} tableHeader={wardsTableHeader} tableFooter="" tableData={props.wardsForView} tableClass="table table-striped table-bordered"/>
                                 </div>
                             </div>
                         </div>
@@ -174,12 +190,12 @@ function FormWardContent(props) {
     );
 };
 
-function FormWardCategoryMenu(props) {
+function PageWardsCategoryMenu(props) {
     let subMenu1;
 
-    if (props.menuItems == undefined) {
+    if (props.menuItems == undefined || props.menuItems == null || props.menuItems == "") {
         subMenu1 = <li key="0" className="nav-item">
-            <a className="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-2" aria-controls="submenu-1-2">
+            <a className="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-1" aria-controls="submenu-1-1">
                 -
             </a>
         </li>
@@ -187,10 +203,10 @@ function FormWardCategoryMenu(props) {
     else {
         subMenu1 = props.menuItems.map(item => (
             <li key={item.id} className="nav-item">
-                <a className="nav-link" href="#" onClick={() => props.getWards(item.id)} data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-2" aria-controls="submenu-1-2">
+                <a className="nav-link" href="#" onClick={() => props.getWards(item.id)} data-toggle="collapse" aria-expanded="false" data-target={"#submenu-1-" + item.id} aria-controls={"submenu-1-" + item.id}>
                     {item.name}
                 </a>
-                <div id="submenu-1-2" className="collapse submenu">
+                <div id={"submenu-1-" + item.id} className="collapse submenu">
                     <ul className="nav flex-column">
                         {item.subCategories.map(subItem => (
                             <li key={subItem.id} className="nav-item">
@@ -207,16 +223,25 @@ function FormWardCategoryMenu(props) {
 
     return (
         <div id="submenu-1" className="collapse submenu">
-            <ul className="nav flex-column">{subMenu1}</ul>
+            <ul className="nav flex-column">
+                {subMenu1}
+            </ul>
         </div>
     );
 };
 
 function FormDataTable(props) {
-    let data;
+    let data = <tr><td colSpan={props.columnsCount}> Данные не найдены. </td></tr>;
+    let header = <th colSpan={props.columnsCount}></th>;
+    let footer = <th colSpan={props.columnsCount}></th>;
 
-    let header = props.tableHeader.map((item, index) => (<th key={index}>{item}</th>));
-    let footer = props.tableHeader.map((item, index) => (<th key={index}>{item}</th>));
+    if (props.tableHeader != undefined && props.tableHeader != null && props.tableHeader != "") {
+        header = props.tableHeader.map((item, index) => (<th key={index}>{item}</th>));
+    }
+
+    if (props.tableFooter != undefined && props.tableFooter != null && props.tableFooter != "") {
+        footer = props.tableHeader.map((item, index) => (<th key={index}>{item}</th>));
+    }
 
     if (props.tableData != undefined && props.tableData != null && props.tableData != "") {
         data = props.tableData.map((item, index) => (

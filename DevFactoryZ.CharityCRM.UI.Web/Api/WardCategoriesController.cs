@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DevFactoryZ.CharityCRM.Persistence;
-using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 

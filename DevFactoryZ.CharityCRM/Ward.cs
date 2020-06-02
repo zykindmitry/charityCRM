@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -117,15 +118,16 @@ namespace DevFactoryZ.CharityCRM
             /// </summary>
             /// <param name="wardCategory">Категория <see cref="CharityCRM.WardCategory"/>, 
             /// которую требуется добавить/удалить подопечному БФ.</param>
-            internal WardCategoryCollectionElement(WardCategory wardCategory)
+            /// <param name="wardId">Идентификатор <see cref="Ward.Id"/> подопечного, для которого добавляется/удаляется 
+            /// категория.</param>
+            internal WardCategoryCollectionElement(WardCategory wardCategory, int wardId)
             {
-                WardCategory = wardCategory ?? 
+                WardCategory = wardCategory ??
                     throw new ArgumentNullException(nameof(wardCategory));
-                
-                WardCategoryId = WardCategory.Id > 0 
-                    ? WardCategory.Id
-                    : throw new ArgumentException($"Категория должна иметь {WardCategory.Id} > 0.",
-                        nameof(wardCategory));
+
+                WardCategoryId = WardCategory.Id;
+
+                WardId = wardId;
             }
 
             /// <summary>
@@ -183,7 +185,7 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="wardCategory">Категория, которуе требуется присвоить подопечному.</param>
         public void AddCategory(WardCategory wardCategory)
         {
-            WardCategories.Add(new WardCategoryCollectionElement(wardCategory));
+            WardCategories.Add(new WardCategoryCollectionElement(wardCategory, Id));
         }
 
         /// <summary>
@@ -192,7 +194,11 @@ namespace DevFactoryZ.CharityCRM
         /// <param name="wardCategory">Категория. которое требуется удалить.</param>
         public void RemoveCategory(WardCategory wardCategory)
         {
-            WardCategories.Remove(new WardCategoryCollectionElement(wardCategory));
+            var forRemove = WardCategories.First(c => c.WardCategory.Equals(wardCategory));
+            
+            forRemove.WardId = 0;
+
+            WardCategories.Remove(forRemove);
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿const contentTypeValue = 'application/json';
+﻿'use strict'
+const contentTypeValue = 'application/json';
 
 export async function httpPost(url, data) {
     return httpRequest('POST', url, data);

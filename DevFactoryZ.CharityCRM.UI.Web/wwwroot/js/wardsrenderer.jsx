@@ -1,6 +1,6 @@
-﻿import { FormWards } from './components/formWards.jsx';
+﻿import { PageWards } from './components/pageWards.jsx';
 
 ReactDOM.render(
-    <FormWards />,
+    <PageWards />,
     document.getElementById('root')
 );

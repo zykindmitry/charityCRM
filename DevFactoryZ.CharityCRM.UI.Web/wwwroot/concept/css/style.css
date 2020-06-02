@@ -978,7 +978,7 @@ Borders
 }
 
 .text-warning {
-    bcolor: #ffc108 !important;
+    color: #ffc108 !important;
 }
 
 .text-info {
@@ -5109,8 +5109,8 @@ Vertical Timeline - by CodyHouse.co
     display: flex;
     margin: 0;
     border: 0;
-    -ms-flex-wrap: none;
-    flex-wrap: none;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
@@ -6596,7 +6596,7 @@ Vertical Timeline - by CodyHouse.co
 }
 
 .chat-team-sidebar .tab-pane {
-    overflow-y: none;
+    overflow-y: hidden;
     -ms-overflow-style: none;
     height: 100%;
 }

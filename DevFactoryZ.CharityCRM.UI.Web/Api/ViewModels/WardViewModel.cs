@@ -1,7 +1,5 @@
 ﻿using DevFactoryZ.CharityCRM.Services;
 using System.Collections.Generic;
-using static DevFactoryZ.CharityCRM.Ward;
-using System.Linq;
 using System;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels

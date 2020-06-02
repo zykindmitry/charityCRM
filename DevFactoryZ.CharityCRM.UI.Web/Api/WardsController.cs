@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DevFactoryZ.CharityCRM.Services;
 using DevFactoryZ.CharityCRM.UI.Web.Api.ViewModels;
-using DevFactoryZ.CharityCRM.UI.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
