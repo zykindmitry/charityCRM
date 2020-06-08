@@ -108,13 +108,15 @@ function PageWardsLeftSideBar(props) {
         <div className="nav-left-sidebar sidebar-dark">
             <div className="menu-list">
                 <div className="navbar navbar-expand-lg navbar-light">
-                    <a className="d-xl-none d-lg-none" href="#">Dashboard</a>
+                    <a className="d-xl-none d-lg-none" href="#">
+                        {props.formName}
+                    </a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav flex-column">
-                            <li className="nav-divider">
+                            <li className="nav-divider d-none d-xl-block d-lg-block">
                                 {props.formName}
                             </li>
                             <li className="nav-item">
