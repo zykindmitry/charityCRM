@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
 
 namespace DevFactoryZ.CharityCRM.UI.Web.Api
 {
@@ -9,9 +11,17 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
     {
         private readonly TService service;
 
+        private readonly ILoggerFactory loggerFactory = new LoggerFactory();
+
+        private readonly ILogger logger;
+
         protected ApiController(TService service)
         {
             this.service = service;
+
+            loggerFactory.AddProvider(new DebugLoggerProvider());
+
+            logger = loggerFactory.CreateLogger<TService>();
         }
 
         /// <summary>
@@ -41,17 +51,23 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
                 serviceCall(service);
                 return Ok();
             }
-            catch (EntityNotFoundException)
+            catch (EntityNotFoundException ex)
             {
+                logger.LogError(ex, "Ошибка репозитория");
+
                 return NotFound();
             }
             catch (ValidationException validationError)
             {
+                logger.LogError(validationError, "Ошибка валидации");
+
                 return BadRequest(validationError.Message);
             }
-            catch
+            catch (Exception ex)
             {
                 // todo: log error
+                logger.LogError(ex, "Ошибка на сервере");
+
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Ошибка на сервере");
             }
         }

@@ -239,6 +239,65 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                     b.ToTable("RolePermission");
                 });
 
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(12);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ward");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward+WardCategoryCollectionElement", b =>
+                {
+                    b.Property<int>("WardId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WardCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("WardId", "WardCategoryId");
+
+                    b.HasIndex("WardCategoryId");
+
+                    b.ToTable("WardCategories");
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.WardCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("WardCategory");
+                });
+
             modelBuilder.Entity("DevFactoryZ.CharityCRM.CashDonation", b =>
                 {
                     b.HasBaseType("DevFactoryZ.CharityCRM.Donation");
@@ -327,6 +386,119 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward", b =>
+                {
+                    b.OwnsOne("DevFactoryZ.CharityCRM.Address", "Address", b1 =>
+                        {
+                            b1.Property<int>("WardId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("Area")
+                                .HasColumnName("Area")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnName("City")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
+
+                            b1.Property<string>("Country")
+                                .HasColumnName("Country")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
+
+                            b1.Property<string>("Flat")
+                                .HasColumnName("Flat")
+                                .HasColumnType("nvarchar(10)")
+                                .HasMaxLength(10);
+
+                            b1.Property<string>("House")
+                                .HasColumnName("House")
+                                .HasColumnType("nvarchar(30)")
+                                .HasMaxLength(30);
+
+                            b1.Property<string>("PostCode")
+                                .HasColumnName("PostCode")
+                                .HasColumnType("nvarchar(6)")
+                                .HasMaxLength(6);
+
+                            b1.Property<string>("Region")
+                                .HasColumnName("Region")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
+
+                            b1.Property<string>("Street")
+                                .HasColumnName("Street")
+                                .HasColumnType("nvarchar(50)")
+                                .HasMaxLength(50);
+
+                            b1.HasKey("WardId");
+
+                            b1.ToTable("Ward");
+
+                            b1.WithOwner()
+                                .HasForeignKey("WardId");
+                        });
+
+                    b.OwnsOne("DevFactoryZ.CharityCRM.FullName", "FullName", b1 =>
+                        {
+                            b1.Property<int>("WardId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("FirstName")
+                                .IsRequired()
+                                .HasColumnName("FirstName")
+                                .HasColumnType("nvarchar(30)")
+                                .HasMaxLength(30);
+
+                            b1.Property<string>("MiddleName")
+                                .HasColumnName("MiddleName")
+                                .HasColumnType("nvarchar(30)")
+                                .HasMaxLength(30);
+
+                            b1.Property<string>("SurName")
+                                .IsRequired()
+                                .HasColumnName("SurName")
+                                .HasColumnType("nvarchar(30)")
+                                .HasMaxLength(30);
+
+                            b1.HasKey("WardId");
+
+                            b1.ToTable("Ward");
+
+                            b1.WithOwner()
+                                .HasForeignKey("WardId");
+                        });
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.Ward+WardCategoryCollectionElement", b =>
+                {
+                    b.HasOne("DevFactoryZ.CharityCRM.WardCategory", "WardCategory")
+                        .WithMany()
+                        .HasForeignKey("WardCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevFactoryZ.CharityCRM.Ward", null)
+                        .WithMany("WardCategories")
+                        .HasForeignKey("WardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DevFactoryZ.CharityCRM.WardCategory", b =>
+                {
+                    b.HasOne("DevFactoryZ.CharityCRM.WardCategory", null)
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentId");
                 });
 #pragma warning restore 612, 618
         }

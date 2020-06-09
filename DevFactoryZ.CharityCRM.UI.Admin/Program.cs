@@ -1,5 +1,6 @@
 ﻿using DevFactoryZ.CharityCRM.Ioc;
 using DevFactoryZ.CharityCRM.Persistence;
+using DevFactoryZ.CharityCRM.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
             var services = new ServiceCollection()
                 .WithJsonConfig("appsettings.json")
                 .WithDataAccessComponents("local")
+                .WithDomainServices()
                 .BuildServiceProvider();
             var commands = InitCommands(services);
 
@@ -66,10 +68,8 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new PermissionCreateCommand(services.GetService<ICreateUnitOfWork>()),
                  new PermissionUpdateCommand(services.GetService<ICreateUnitOfWork>()),
                  new PermissionDeleteCommand(services.GetService<ICreateUnitOfWork>()),
-                 new PermissionListCommand(
-                    services.GetService<ICreateRepository<IPermissionRepository>>()),
-                 new PermissionGetCommand(
-                    services.GetService<ICreateRepository<IPermissionRepository>>()),
+                 new PermissionListCommand(services.GetService<ICreateRepository<IPermissionRepository>>()),
+                 new PermissionGetCommand(services.GetService<ICreateRepository<IPermissionRepository>>()),
                  new RoleCreateCommand(services.GetService<ICreateUnitOfWork>()),
                  new RoleUpdateCommand(services.GetService<ICreateUnitOfWork>()),
                  new RoleDeleteCommand(services.GetService<ICreateUnitOfWork>()),
@@ -82,10 +82,25 @@ namespace DevFactoryZ.CharityCRM.UI.Admin
                  new FundRegistrationListCommand(services.GetService<ICreateRepository<IFundRegistrationRepository>>()),
                  new FundRegistrationUpdateCommand(services.GetService<ICreateUnitOfWork>()),
                  new PasswordConfigCreateCommand(services.GetService<ICreateUnitOfWork>()),
-                 new PasswordConfigListCommand(
-                    services.GetService<ICreateRepository<IPasswordConfigRepository>>()),
-                 new PasswordConfigGetCommand(
-                    services.GetService<ICreateRepository<IPasswordConfigRepository>>())
+                 new PasswordConfigListCommand(services.GetService<ICreateRepository<IPasswordConfigRepository>>()),
+                 new PasswordConfigGetCommand(services.GetService<ICreateRepository<IPasswordConfigRepository>>()),
+                 new WardCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardDeleteCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardListCommand(services.GetService<ICreateRepository<IWardRepository>>()),
+                 new WardGetCommand(services.GetService<ICreateRepository<IWardRepository>>()),
+                 new WardAddWardCategoryCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardDeleteWardCategoryCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardUpdateAddressCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardUpdateBirthDateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardUpdateFullNameCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardUpdatePhoneCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardCategoryCreateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardCategoryDeleteCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardCategoryGetCommand(services.GetService<ICreateRepository<IWardCategoryRepository>>()),
+                 new WardCategoryListCommand(services.GetService<ICreateRepository<IWardCategoryRepository>>()),
+                 new WardCategoryUpdateCommand(services.GetService<ICreateUnitOfWork>()),
+                 new WardCategoryAddSubCategoryCommand(services.GetService<IWardCategoryService>()),
+                 new WardCategoryDeleteSubCategoryCommand(services.GetService<IWardCategoryService>())
             };
         }
 

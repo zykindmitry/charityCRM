@@ -31,6 +31,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         {
             return setOfAccountSessions
                 .Include(a => a.Account)
+                    .ThenInclude(p => p.Password.PasswordConfig)
                 .ToArray();
         }
 
@@ -38,6 +39,7 @@ namespace DevFactoryZ.CharityCRM.Persistence.EFCore
         {
             return setOfAccountSessions
                 .Include(a => a.Account)
+                    .ThenInclude(p => p.Password.PasswordConfig)
                 .FirstOrDefault(a => a.Id == id)
                 ?? throw new EntityNotFoundException(id, typeof(Account));
         }

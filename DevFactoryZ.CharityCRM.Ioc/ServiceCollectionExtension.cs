@@ -35,7 +35,9 @@ namespace DevFactoryZ.CharityCRM.Ioc
                 .WithRepository<IFundRegistrationRepository>()
                 .WithRepository<IAccountRepository>()
                 .WithRepository<IAccountSessionRepository>()
-                .WithRepository<IPasswordConfigRepository>();
+                .WithRepository<IPasswordConfigRepository>()
+                .WithRepository<IWardRepository>()
+                .WithRepository<IWardCategoryRepository>();
         }
 
         /// <summary>
@@ -57,7 +59,11 @@ namespace DevFactoryZ.CharityCRM.Ioc
                         provider.GetService<IAccountRepository>(), 
                         provider.GetService<IPasswordConfigRepository>(),
                         provider.GetService<IAccountSessionRepository>(), 
-                        WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())));
+                        WithConfig<AccountSessionConfig>(provider.GetService<IConfiguration>())))
+                .AddTransient<IWardService>(
+                    provider => new WardService(provider.GetService<IWardRepository>()))
+                .AddTransient<IWardCategoryService>(
+                    provider => new WardCategoryService(provider.GetService<IWardCategoryRepository>()));
         }
 
         public static IServiceCollection WithJsonConfig(this IServiceCollection services, params string[] configFilenames)

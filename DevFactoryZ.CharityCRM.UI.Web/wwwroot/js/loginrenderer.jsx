@@ -1,4 +1,4 @@
-﻿import { FormLogin } from './components/formLogin.jsx';
+﻿import { FormLogin } from './components/pageLogin.jsx';
 
 ReactDOM.render(
     <FormLogin />,
