@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace DevFactoryZ.CharityCRM
 {
@@ -54,8 +55,10 @@ namespace DevFactoryZ.CharityCRM
         public bool CanBeDeleted => false;
 
         /// <summary>
-        /// Родительский <see cref="Account"/>
+        /// Родительский <see cref="Account"/>.
+        /// Исключен из JSON-сериализации для хранения в пользовательской сессии.
         /// </summary>
+        [JsonIgnore]
         public Account Account { get; }
 
         /// <summary>

@@ -36,8 +36,8 @@ namespace DevFactoryZ.CharityCRM.UI.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
+            services.AddControllersWithViews();
+            
             services.AddSingleton(Configuration);
                         
             services
@@ -75,7 +75,9 @@ namespace DevFactoryZ.CharityCRM.UI.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=wards}/{action=index}");
             });
         }
     }

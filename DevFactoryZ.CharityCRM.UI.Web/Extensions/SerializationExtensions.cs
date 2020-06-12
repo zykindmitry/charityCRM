@@ -31,6 +31,17 @@ namespace DevFactoryZ.CharityCRM
         }
 
         /// <summary>
+        /// Десериализует JSON-строку <see cref="string"/> в объект указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Результирующий тип.</typeparam>
+        /// <param name="jsonString">JSON-строку <see cref="string"/> для десериализации.</param>
+        /// <returns>Десериализованный объект типа <see cref="T"/></returns>
+        public static T FromJson<T>(this string jsonString) where T : class
+        {
+            return JsonConvert.DeserializeObject<T>(jsonString);
+        }
+
+        /// <summary>
         /// Десериализует JSON-объект в виде массива <see cref="Byte"/>[] в объект указанного типа.
         /// </summary>
         /// <typeparam name="T">Результирующий тип.</typeparam>

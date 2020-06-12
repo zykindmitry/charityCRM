@@ -10,7 +10,7 @@ export async function httpGet(url) {
 };
 
 export async function httpPut(url, data) {
-    return ShttpRequest('PUT', url, data)
+    return httpRequest('PUT', url, data)
 };
 
 async function httpRequest(method, url, data){
