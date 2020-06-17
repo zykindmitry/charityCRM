@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Вход в систему";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
 }
 
 <div class="splash-container login-body">
@@ -26,4 +26,6 @@
     </div>
 </div>
 
-<script type="module" src="js/loginrenderer.jsx"></script>
+@section Scripts{ 
+    <script type="module" src="js/loginrenderer.jsx"></script>
+}

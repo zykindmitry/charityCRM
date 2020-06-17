@@ -1,11 +1,12 @@
 ﻿
 @{
     ViewBag.Title = "Подопечные БФ";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
 }
 
 <div id="root"></div>
 
-<script type="module" src="js/wardsrenderer.jsx"></script>
-
+@section Scripts{ 
+    <script type="module" src="js/wardsrenderer.jsx"></script>
+}
 

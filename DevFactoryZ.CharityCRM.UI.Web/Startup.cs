@@ -77,7 +77,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=wards}/{action=index}");
+                    pattern: "{controller=Wards}/{action=Index}");
             });
         }
     }
