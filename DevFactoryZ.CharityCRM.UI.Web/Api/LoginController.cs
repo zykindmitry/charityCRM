@@ -59,7 +59,7 @@ namespace DevFactoryZ.CharityCRM.UI.Web.Api
                         , Expires = DateTime.UtcNow.Add(cookieConfig.Expiration ?? new TimeSpan())
                     });
 
-                return Ok("Пользователь аутентифицирован.");
+                return RedirectToRoute("default");
             }
             catch (Exception ex)
             {

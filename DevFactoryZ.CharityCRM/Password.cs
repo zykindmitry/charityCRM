@@ -389,8 +389,10 @@ namespace DevFactoryZ.CharityCRM
         /// Если <see cref="passwordToCompare"/> успешно приведен к <see cref="byte[]"/>, сравниваются побайтно поле <see cref="RawHash"/> текущего экземпляра и результат приведения.
         /// Родительский Equals не используется.
         /// </summary>
-        /// <param name="passwordToCompare">Экземпляр пароля, с которым сравнивается текущий экземпляр.</param>
-        /// <returns>Результат проверки: true, если поля <see cref="RawHash"/> равны, false - в ином случае.</returns>
+        /// <param name="passwordToCompare">Экземпляр пароля или хэш пароля в виде <see cref="byte"/>[], с которым сравнивается текущий экземпляр.</param>
+        /// <returns>True, если поле <see cref="RawHash"/> текущего экземпляра равно полю <see cref="RawHash"/> экземпляра для сравнения, или
+        /// поле <see cref="RawHash"/> текущего экземпляра равно переданному для сравнения хэшу пароля в виде <see cref="byte"/>[]. 
+        /// False - в ином случае.</returns>
         public override bool Equals(object passwordToCompare)
         {
             var password = passwordToCompare as Password;
@@ -404,7 +406,7 @@ namespace DevFactoryZ.CharityCRM
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return RawHash.GetHashCode();
         }
 
         #endregion

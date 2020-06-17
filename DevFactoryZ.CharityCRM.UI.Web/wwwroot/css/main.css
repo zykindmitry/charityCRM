@@ -5,12 +5,19 @@ body {
     height: 100%
 }
 
-body {
+.login-body {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
     align-items: center;
-    padding-top: 40px;
-    padding-bottom: 40px
+    padding-top: 140px;
+    padding-bottom: 40px;
 }
 
+.logo-img-header {
+    width: 60%;
+}
+
+.logo-img {
+    width: 100%;
+}
